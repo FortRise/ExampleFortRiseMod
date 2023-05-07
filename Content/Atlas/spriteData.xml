@@ -1,0 +1,16 @@
+<SpriteData>
+  <sprite_string id="PinkSlime">
+    <Texture>images/pinkSlime</Texture>
+    <FrameWidth>20</FrameWidth>
+    <FrameHeight>20</FrameHeight>
+    <OriginX>10</OriginX>
+    <OriginY>20</OriginY>
+    <DownY>1</DownY>
+    <Animations>
+      <Anim id="idle" frames="12"/>
+      <Anim id="fall" delay=".1" frames="13,14,15,16"/>
+      <Anim id="land" delay=".06" loop="False" frames="0,1,2,3,4,5,6,7,8,9,10,11"/>
+      <Anim id="death" delay=".1" loop="False" frames="18,19,20,21,22"/>
+    </Animations>
+  </sprite_string>
+</SpriteData>
