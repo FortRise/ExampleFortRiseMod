@@ -1,0 +1,20 @@
+<TextureAtlas imagePath="../atlas/png">
+  <SubTexture name="gamemodes/crawl" x="0" y="82" width="184" height="82"
+    />
+  <SubTexture name="gamemodes/respawn" x="0" y="0" width="184" height="82"
+    />
+  <SubTexture name="variants/awfullyFastArrows" x="198" y="14" width="14" height="14"
+    />
+  <SubTexture name="variants/awfullySlowArrows" x="184" y="14" width="14" height="14"
+    />
+  <SubTexture name="variants/gottaGoFast" x="240" y="0" width="14" height="14"
+    />
+  <SubTexture name="variants/infiniteArrows" x="226" y="0" width="14" height="14"
+    />
+  <SubTexture name="variants/noDodgeCooldowns" x="212" y="0" width="14" height="14"
+    />
+  <SubTexture name="variants/noHeadBounce" x="198" y="0" width="14" height="14"
+    />
+  <SubTexture name="variants/noLedgeGrab" x="184" y="0" width="14" height="14"
+    />
+</TextureAtlas>

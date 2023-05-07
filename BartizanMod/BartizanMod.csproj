@@ -21,33 +21,26 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>.\Lib\0Harmony.dll</HintPath>
-      <Private>False</Private>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Reference>
+
     <Reference Include="System.Windows.Forms"/>
     <Reference Include="TowerFall">
-      <HintPath>..\..\TowerFall.exe</HintPath>
+      <HintPath>..\..\..\TowerFall.exe</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework">
-      <HintPath>..\lib\Microsoft.Xna.Framework.dll</HintPath>
+      <HintPath>..\..\lib\Microsoft.Xna.Framework.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework.Graphics">
-      <HintPath>..\lib\Microsoft.Xna.Framework.Graphics.dll</HintPath>
+      <HintPath>..\..\lib\Microsoft.Xna.Framework.Graphics.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework.Game">
-      <HintPath>..\lib\Microsoft.Xna.Framework.Game.dll</HintPath>
+      <HintPath>..\..\lib\Microsoft.Xna.Framework.Game.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MMHOOK_TowerFall">
-      <HintPath>..\..\MMHOOK_TowerFall.dll</HintPath>
-    </Reference>
-    <Reference Include="Steamworks.NET">
-      <HintPath>..\..\Steamworks.NET.dll</HintPath>
+      <HintPath>..\..\..\MMHOOK_TowerFall.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
