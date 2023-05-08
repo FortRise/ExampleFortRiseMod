@@ -1,7 +1,7 @@
 {
 	"name": "BartizanMod",
 	"version": "1.0.0",
-	"author": "Kha and Terria",
+	"author": "Kha",
 	"description": "A BartizanMod rewritten in FortRise as a module",
 	"dll": "BartizanMod.dll"
 }
