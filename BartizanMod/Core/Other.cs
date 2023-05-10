@@ -70,7 +70,6 @@ public class MyVersusPlayerMatchResults
     {
         orig(self, session, matchResults, playerIndex, tweenFrom, tweenTo, awards);
         var gem = DynamicData.For(self).Get<Sprite<string>>("gem");
-        Engine.Instance.Commands.Log(gem.ToString());
         if (session.MatchStats[playerIndex].Won)
             PlayerWins[playerIndex]++;
 

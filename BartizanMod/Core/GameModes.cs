@@ -13,9 +13,9 @@ public class RespawnRoundLogic : CustomVersusRoundLogic
     private Counter endDelay;
 
 
-    public static RoundLogicIdentifier Create()
+    public static RoundLogicInfo Create()
     {
-        return new RoundLogicIdentifier {
+        return new RoundLogicInfo {
             Name = "Respawn",
             Icon = BartizanModModule.BartizanAtlas["gamemodes/respawn"],
             RoundType = RoundLogicType.HeadHunters
@@ -170,9 +170,9 @@ public class MobRoundLogic : RespawnRoundLogic
         }
     }
 
-    public static RoundLogicIdentifier CreateForThis()
+    public static RoundLogicInfo CreateForThis()
     {
-        return new RoundLogicIdentifier {
+        return new RoundLogicInfo {
             Name = "Crawl",
             Icon = BartizanModModule.BartizanAtlas["gamemodes/crawl"],
             RoundType = RoundLogicType.HeadHunters

@@ -22,19 +22,19 @@ public class MyMatchVariants : MatchVariants
     private static void ctor_patch(On.TowerFall.MatchVariants.orig_ctor orig, MatchVariants self, bool noPerPlayer)
     {
         orig(self, noPerPlayer);
-        var variantDescriptor = new VariantDescriptor(BartizanModModule.BartizanAtlas);
+        var info = new VariantInfo(BartizanModModule.BartizanAtlas);
         var noHeadBounce = self.AddVariant(
-            "NoHeadBounce", variantDescriptor with { Header = "MODS" }, VariantFlags.PerPlayer, noPerPlayer);
+            "NoHeadBounce", info with { Header = "MODS" }, VariantFlags.PerPlayer, noPerPlayer);
         var noDodgeCooldown = self.AddVariant(
-            "NoDodgeCooldowns", variantDescriptor, VariantFlags.PerPlayer, noPerPlayer);
+            "NoDodgeCooldowns", info, VariantFlags.PerPlayer, noPerPlayer);
         var awfullyFastArrows = self.AddVariant(
-            "AwfullyFastArrows", variantDescriptor, VariantFlags.None, noPerPlayer);
+            "AwfullyFastArrows", info, VariantFlags.None, noPerPlayer);
         var awfullySlowArrows = self.AddVariant(
-            "AwfullySlowArrows", variantDescriptor, VariantFlags.None, noPerPlayer);
+            "AwfullySlowArrows", info, VariantFlags.None, noPerPlayer);
         var noLedgeGrab = self.AddVariant(
-            "NoLedgeGrab", variantDescriptor, VariantFlags.PerPlayer, noPerPlayer);
+            "NoLedgeGrab", info, VariantFlags.PerPlayer, noPerPlayer);
         var infiniteArrows = self.AddVariant(
-            "InfiniteArrows", variantDescriptor, VariantFlags.PerPlayer, noPerPlayer);
+            "InfiniteArrows", info, VariantFlags.PerPlayer, noPerPlayer);
 
         self.CreateCustomLinks(noHeadBounce, self.NoTimeLimit);
         self.CreateCustomLinks(noDodgeCooldown, self.ShowDodgeCooldown);
