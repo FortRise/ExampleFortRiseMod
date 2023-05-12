@@ -24,8 +24,8 @@ public class ExampleModModule : FortModule
 
     public override void LoadContent()
     {
-        ExampleAtlas = Atlas.Create(ToContentPath("Atlas/pinkSlime.xml"), ToContentPath("Atlas/pinkSlime.png"), true);
-        Data = SpriteData.Create(ToContentPath("Atlas/spriteData.xml"), ExampleAtlas);
+        ExampleAtlas = Atlas.Create("Atlas/pinkSlime.xml", "Atlas/pinkSlime.png", true, ContentAccess.ModContent);
+        Data = SpriteData.Create("Atlas/spriteData.xml", ExampleAtlas, ContentAccess.ModContent);
     }
 
     public override void Load()

@@ -1,5 +1,6 @@
 ﻿using FortRise;
 using Monocle;
+using TowerFall;
 
 namespace BartizanMod;
 
@@ -18,7 +19,28 @@ public class BartizanModModule : FortModule
 
     public override void LoadContent()
     {
-        BartizanAtlas = Atlas.Create(ToContentPath("Atlas/atlas.xml"), ToContentPath("Atlas/atlas.png"), true);
+        BartizanAtlas = Atlas.Create("Atlas/atlas.xml", "Atlas/atlas.png", true, ContentAccess.ModContent);
+    }
+
+    public override void OnVariantsRegister(MatchVariants variants, bool noPerPlayer = false)
+    {
+        var info = new VariantInfo(BartizanModModule.BartizanAtlas);
+        var noHeadBounce = variants.AddVariant(
+            "NoHeadBounce", info with { Header = "MODS" }, VariantFlags.PerPlayer, noPerPlayer);
+        var noDodgeCooldown = variants.AddVariant(
+            "NoDodgeCooldowns", info, VariantFlags.PerPlayer, noPerPlayer);
+        var awfullyFastArrows = variants.AddVariant(
+            "AwfullyFastArrows", info, VariantFlags.None, noPerPlayer);
+        var awfullySlowArrows = variants.AddVariant(
+            "AwfullySlowArrows", info, VariantFlags.None, noPerPlayer);
+        var noLedgeGrab = variants.AddVariant(
+            "NoLedgeGrab", info, VariantFlags.PerPlayer, noPerPlayer);
+        var infiniteArrows = variants.AddVariant(
+            "InfiniteArrows", info, VariantFlags.PerPlayer, noPerPlayer);
+
+        variants.CreateCustomLinks(noHeadBounce, variants.NoTimeLimit);
+        variants.CreateCustomLinks(noDodgeCooldown, variants.ShowDodgeCooldown);
+        variants.CreateCustomLinks(awfullyFastArrows, awfullySlowArrows);
     }
 
     public override void Load()
@@ -27,7 +49,6 @@ public class BartizanModModule : FortModule
         MyPlayerGhost.Load();
         MyRollcallElement.Load();
         MyVersusPlayerMatchResults.Load();
-        MyMatchVariants.Load();
         MyPlayer.Load();
         MyArrow.Load();
     }
@@ -38,7 +59,6 @@ public class BartizanModModule : FortModule
         MyPlayerGhost.Unload();
         MyRollcallElement.Unload();
         MyVersusPlayerMatchResults.Unload();
-        MyMatchVariants.Unload();
         MyPlayer.Unload();
         MyArrow.Unload();
     }

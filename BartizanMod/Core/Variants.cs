@@ -7,41 +7,6 @@ using TowerFall;
 
 namespace BartizanMod;
 
-public class MyMatchVariants : MatchVariants
-{
-    internal static void Load() 
-    {
-        On.TowerFall.MatchVariants.ctor += ctor_patch;
-    }
-
-    internal static void Unload() 
-    {
-        On.TowerFall.MatchVariants.ctor -= ctor_patch;
-    }
-
-    private static void ctor_patch(On.TowerFall.MatchVariants.orig_ctor orig, MatchVariants self, bool noPerPlayer)
-    {
-        orig(self, noPerPlayer);
-        var info = new VariantInfo(BartizanModModule.BartizanAtlas);
-        var noHeadBounce = self.AddVariant(
-            "NoHeadBounce", info with { Header = "MODS" }, VariantFlags.PerPlayer, noPerPlayer);
-        var noDodgeCooldown = self.AddVariant(
-            "NoDodgeCooldowns", info, VariantFlags.PerPlayer, noPerPlayer);
-        var awfullyFastArrows = self.AddVariant(
-            "AwfullyFastArrows", info, VariantFlags.None, noPerPlayer);
-        var awfullySlowArrows = self.AddVariant(
-            "AwfullySlowArrows", info, VariantFlags.None, noPerPlayer);
-        var noLedgeGrab = self.AddVariant(
-            "NoLedgeGrab", info, VariantFlags.PerPlayer, noPerPlayer);
-        var infiniteArrows = self.AddVariant(
-            "InfiniteArrows", info, VariantFlags.PerPlayer, noPerPlayer);
-
-        self.CreateCustomLinks(noHeadBounce, self.NoTimeLimit);
-        self.CreateCustomLinks(noDodgeCooldown, self.ShowDodgeCooldown);
-        self.CreateCustomLinks(awfullyFastArrows, awfullySlowArrows);
-    }
-}
-
 public class MyPlayer 
 {
     private static IDetour hook_CanGrabLedge;
