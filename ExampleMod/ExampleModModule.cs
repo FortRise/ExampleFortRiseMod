@@ -30,6 +30,10 @@ public class ExampleModModule : FortModule
 
     public override void Load()
     {
+        Settings.FlightTest = () => 
+        {
+            Music.Play("Flight");
+        };
         var harmony = new Harmony("com.terriatf.ExampleMod");
         // Uncomment this line to patch all of Harmony's patches
         // harmony.PatchAll();

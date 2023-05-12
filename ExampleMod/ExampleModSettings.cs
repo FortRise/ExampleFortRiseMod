@@ -1,5 +1,6 @@
 using Monocle;
 using FortRise;
+using System;
 
 namespace ExampleMod;
 
@@ -10,6 +11,8 @@ public class ExampleModSettings : ModuleSettings
     
     [SettingsNumber(0, 20, 2)]
     public int OnStepping;
+
+    public Action FlightTest;
 }
 
 public static class CommandList 
