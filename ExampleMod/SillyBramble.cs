@@ -22,7 +22,9 @@ public class TriggerBrambleArrow : TriggerArrow
         graphic.Add(0, 0.3f, new int[2] { 0, 1 });
         graphic.Play(0, false);
         graphic.CenterOrigin();
-        return ArrowInfo.Create(graphic, TFGame.Atlas["player/arrowHUD/brambleArrow"]);
+        var arrowInfo = ArrowInfo.Create(graphic, TFGame.Atlas["player/arrowHUD/brambleArrow"]);
+        arrowInfo.Name = "Trigger Bramble Arrows";
+        return arrowInfo;
     }
 
     public TriggerBrambleArrow() : base()
