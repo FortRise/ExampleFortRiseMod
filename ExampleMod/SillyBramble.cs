@@ -31,6 +31,24 @@ public class TriggerBrambleArrow : TriggerArrow
     {
     }
 
+    protected override bool CheckForTargetCollisions()
+    {
+        foreach (Entity entity in base.Level[GameTags.Target])
+        {
+            var levelEntity = (LevelEntity)entity;
+            if (levelEntity.ArrowCheck(this) && levelEntity != this.CannotHit)
+            {
+                Vector2 vector = (levelEntity.Position - (this.Position - this.Speed)).SafeNormalize();
+                levelEntity.OnSqueakyBounce(this, vector);
+                base.State = Arrow.ArrowStates.Falling;
+                this.Speed = vector * -2f;
+                Sounds.env_arrowToyChar.Play(base.X, 1f);
+                return true;
+            }
+        }
+        return false;
+    }
+
     protected override void CreateGraphics()
     {
         var self = DynamicData.For(this);
