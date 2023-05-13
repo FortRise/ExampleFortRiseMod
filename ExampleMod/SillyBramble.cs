@@ -2,19 +2,28 @@ using System.Reflection;
 using FortRise;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod;
 using MonoMod.Utils;
 using TowerFall;
 
 namespace ExampleMod;
 
-[CustomArrows("TriggerBrambleArrows")]
+[CustomArrows("TriggerBrambleArrows", "CreateGraphicPickup")]
 public class TriggerBrambleArrow : TriggerArrow
 {
     // This is automatically been set by the mod loader
     public override ArrowTypes ArrowType { get; set; }
     private bool used, canDie;
     private static Action<TriggerArrow, LevelEntity, Vector2, float> BaseInit;
+
+
+    public static ArrowInfo CreateGraphicPickup() 
+    {
+        var graphic = new Sprite<int>(TFGame.Atlas["pickups/bombArrows"], 12, 12, 0);
+        graphic.Add(0, 0.3f, new int[2] { 0, 1 });
+        graphic.Play(0, false);
+        graphic.CenterOrigin();
+        return ArrowInfo.Create(graphic, TFGame.Atlas["player/arrowHUD/brambleArrow"]);
+    }
 
     public TriggerBrambleArrow() : base()
     {
@@ -148,14 +157,6 @@ public class TriggerBrambleArrow : TriggerArrow
         orig(self, player);
     }
 
-    public static ArrowInfo CreateGraphicPickup() 
-    {
-        var graphic = new Sprite<int>(TFGame.Atlas["pickups/bombArrows"], 12, 12, 0);
-        graphic.Add(0, 0.3f, new int[2] { 0, 1 });
-        graphic.Play(0, false);
-        graphic.CenterOrigin();
-        return ArrowInfo.Create(graphic, TFGame.Atlas["player/arrowHUD/brambleArrow"]);
-    }
 
     public override bool CanCatch(LevelEntity catcher)
     {
