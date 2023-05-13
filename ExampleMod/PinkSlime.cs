@@ -1,9 +1,7 @@
 using System.Reflection;
 using FortRise;
-using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
 using TowerFall;
