@@ -39,6 +39,8 @@ public class ExampleModModule : FortModule
         // harmony.PatchAll();
 
         PinkSlime.LoadPatch();
+        TriggerBrambleArrow.Load();
+        PatchEnemyBramble.Load();
 
         typeof(ModExports).ModInterop();
     }
@@ -46,6 +48,8 @@ public class ExampleModModule : FortModule
     public override void Unload()
     {
         PinkSlime.UnloadPatch();
+        TriggerBrambleArrow.Unload();
+        PatchEnemyBramble.Unload();
     }
 }
 
