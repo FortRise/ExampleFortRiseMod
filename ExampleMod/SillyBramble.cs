@@ -111,7 +111,6 @@ public class TriggerBrambleArrow : TriggerArrow
         if (self is TriggerBrambleArrow bramble) 
         {
             BaseInit(self, owner, position, direction);
-            Logger.Log("Working");
             self.LightVisible = true;
             Player playerDetonator = null;
             Enemy enemyDetonator = null;

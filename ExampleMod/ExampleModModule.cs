@@ -14,6 +14,7 @@ public class ExampleModModule : FortModule
     public static SpriteData Data;
 
     public static ExampleModModule Instance;
+    private Harmony harmony;
 
     public ExampleModModule() 
     {
@@ -34,9 +35,9 @@ public class ExampleModModule : FortModule
         {
             Music.Play("Flight");
         };
-        var harmony = new Harmony("com.terriatf.ExampleMod");
+        harmony = new Harmony("com.terriatf.ExampleMod");
         // Uncomment this line to patch all of Harmony's patches
-        // harmony.PatchAll();
+        harmony.PatchAll();
 
         PinkSlime.LoadPatch();
         TriggerBrambleArrow.Load();
@@ -50,6 +51,7 @@ public class ExampleModModule : FortModule
         PinkSlime.UnloadPatch();
         TriggerBrambleArrow.Unload();
         PatchEnemyBramble.Unload();
+        harmony.UnpatchAll("com.terriatf.ExampleMod");
     }
 }
 
