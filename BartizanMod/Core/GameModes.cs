@@ -196,6 +196,7 @@ public class KillCountHUD : Entity
     public void Increase()
     {
         Sprite<int> sprite = DeathSkull.GetSprite();
+        sprite.Color = ArcherData.GetColorA(playerIndex);
 
         if (this.playerIndex % 2 == 0) {
             sprite.X = 8 + 10 * skullIcons.Count;
