@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Reflection;
 using Monocle;
 using MonoMod.RuntimeDetour;
@@ -90,35 +89,12 @@ public class MyArrow
 {
     internal static void Load() 
     {
-        On.TowerFall.Arrow.ctor += Arrow_ctor;
         On.TowerFall.Arrow.ArrowUpdate += ArrowUpdate_patch;
     }
 
     internal static void Unload() 
     {
-        On.TowerFall.Arrow.ctor -= Arrow_ctor;
         On.TowerFall.Arrow.ArrowUpdate -= ArrowUpdate_patch;
-    }
-
-    private static void Arrow_ctor(On.TowerFall.Arrow.orig_ctor orig, Arrow self)
-    {
-        orig(self);
-        // Session is null, maybe we could have Added function ready in MMHook soon
-        // var matchVariants = self.Level.Session.MatchSettings.Variants;
-        // var awfullyFastArrows = matchVariants.GetCustomVariant("AwfullyFastArrows");
-        // if (awfullyFastArrows == null)
-        // {
-        //     Engine.Instance.Commands.Log("AwfullyFastArrows returns null");
-        //     return;
-        // }
-
-        // if (awfullyFastArrows) 
-        // {
-        //     var dynData = new DynData<Arrow>(self);
-        //     dynData.Set<WrapHitbox>("NormalHitbox", new WrapHitbox(6f, 3f, -1f, -1f));
-        //     dynData.Set<WrapHitbox>("otherArrowHitbox", new WrapHitbox(12f, 4f, -2f, -2f));
-        //     dynData.Dispose();
-        // }
     }
 
     private static void ArrowUpdate_patch(On.TowerFall.Arrow.orig_ArrowUpdate orig, Arrow self)
