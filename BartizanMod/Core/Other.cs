@@ -52,7 +52,7 @@ public class MyVersusPlayerMatchResults
 {
     public static int[] PlayerWins;
 
-    private static OutlineText winsText;
+    private static OutlineText[] winsTexts = new OutlineText[4];
 
     internal static void Load() 
     {
@@ -69,22 +69,24 @@ public class MyVersusPlayerMatchResults
     private static void ctor_patch(On.TowerFall.VersusPlayerMatchResults.orig_ctor orig, VersusPlayerMatchResults self, Session session, VersusMatchResults matchResults, int playerIndex, Vector2 tweenFrom, Vector2 tweenTo, List<AwardInfo> awards)
     {
         orig(self, session, matchResults, playerIndex, tweenFrom, tweenTo, awards);
-        var gem = DynamicData.For(self).Get<Sprite<string>>("gem");
+        var dynData = DynamicData.For(self);
+        var gem = dynData.Get<Sprite<string>>("gem");
         if (session.MatchStats[playerIndex].Won)
             PlayerWins[playerIndex]++;
 
         if (PlayerWins[playerIndex] > 0) {
-            winsText = new OutlineText(TFGame.Font, PlayerWins[playerIndex].ToString(), gem.Position);
-            winsText.Color = Color.White;
-            winsText.OutlineColor = Color.Black;
-            self.Add(winsText);
+            winsTexts[playerIndex] = new OutlineText(TFGame.Font, PlayerWins[playerIndex].ToString(), gem.Position);
+            winsTexts[playerIndex].Color = Color.White;
+            winsTexts[playerIndex].OutlineColor = Color.Black;
+            self.Add(winsTexts[playerIndex]);
         }
     }
 
     private static void Render_patch(On.TowerFall.VersusPlayerMatchResults.orig_Render orig, VersusPlayerMatchResults self)
     {
         orig(self);
-        if (winsText != null)
-            winsText.Render();
+        var playerIndex = DynamicData.For(self).Get<int>("playerIndex");
+        if (winsTexts[playerIndex] != null)
+            winsTexts[playerIndex].Render();
     }
 }
