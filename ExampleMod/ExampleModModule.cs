@@ -42,6 +42,7 @@ public class ExampleModModule : FortModule
         PinkSlime.LoadPatch();
         TriggerBrambleArrow.Load();
         PatchEnemyBramble.Load();
+        BrambleFunPatcher.Load();
 
         typeof(ModExports).ModInterop();
     }
@@ -51,16 +52,19 @@ public class ExampleModModule : FortModule
         PinkSlime.UnloadPatch();
         TriggerBrambleArrow.Unload();
         PatchEnemyBramble.Unload();
+        BrambleFunPatcher.Unload();
         harmony.UnpatchAll("com.terriatf.ExampleMod");
     }
 }
 
 // Harmony can be supported
 
-[HarmonyPatch(typeof(MainMenu), "BoolToString")]
+[HarmonyPatch]
 public class MyPatcher 
 {
-    static void Postfix(ref string __result) 
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(MainMenu), "BoolToString")]
+    static void BoolToStringPostfix(ref string __result) 
     {
         if (__result == "ON") 
         {

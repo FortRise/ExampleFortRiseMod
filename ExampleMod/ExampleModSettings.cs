@@ -8,6 +8,9 @@ public class ExampleModSettings : ModuleSettings
 {
     [SettingsName("Cheat Mode")]
     public bool CheatMode;
+
+    [SettingsName("All Trigger Bramble Arrow")]
+    public bool AllTriggerBrambleArrow;
     
     [SettingsNumber(0, 20, 2)]
     public int OnStepping;
