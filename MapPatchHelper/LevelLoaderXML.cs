@@ -49,20 +49,4 @@ public class LevelLoaderXMLPatch
             }
         });
     } 
-
-    // public delegate IEnumerator orig_Load(LevelLoaderXML self);
-
-    // public static IEnumerator LevelLoaderXML_LoadPatch(orig_Load orig, LevelLoaderXML self) 
-    // {
-    //     var levelSystem = self.Session.MatchSettings.LevelSystem;
-    //     if (levelSystem is QuestLevelSystem questSystem) 
-    //     {
-    //         Logger.Log(questSystem.QuestTowerData.Path);
-    //         if (LevelManager.QuestModifiable.TryGetValue(questSystem.QuestTowerData.Path, out var invoker)) 
-    //         {
-    //             invoker?.Invoke(self.XML);
-    //         }
-    //     }
-    //     yield return orig(self);
-    // }
 }
