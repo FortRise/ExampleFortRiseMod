@@ -1,4 +1,5 @@
-﻿using FortRise;
+﻿using System.Xml;
+using FortRise;
 using HarmonyLib;
 using Monocle;
 using MonoMod.ModInterop;
@@ -45,6 +46,16 @@ public class ExampleModModule : FortModule
         BrambleFunPatcher.Load();
 
         typeof(ModExports).ModInterop();
+
+    }
+
+    public override void Initialize()
+    {
+        ModExports.QuestLevelXMLModifier?.Invoke("Content/Levels/Quest/00.oel", x => {
+            var playerSpawns = x["Entities"].GetElementsByTagName("PlayerSpawn");
+            playerSpawns[0].Attributes["x"].Value = "50";
+            playerSpawns[1].Attributes["x"].Value = "250";
+        });
     }
 
     public override void Unload()
@@ -81,8 +92,8 @@ Example of interppting with libraries
 Learn more: https://github.com/MonoMod/MonoMod/blob/master/README-ModInterop.md
 */
 
-[ModExportName("ExampleModExport")]
+[ModImportName("MapPatcherHelper")]
 public static class ModExports 
 {
-    public static int Add(int x, int y) => x + y;
+    public static Action<string, Action<XmlElement>> QuestLevelXMLModifier;
 }

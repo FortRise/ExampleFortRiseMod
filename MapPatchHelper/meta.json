@@ -1,0 +1,7 @@
+{
+	"name": "MapPatchHelper",
+	"version": "1.0.0",
+	"author": "Terria",
+	"description": "A patch helper that helps you modify a built-in map without touching the original",
+	"dll": "MapPatchHelper.dll"
+}
