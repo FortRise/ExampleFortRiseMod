@@ -135,8 +135,8 @@ public class MobRoundLogic : RespawnRoundLogic
 
     void RemoveGhostAndRespawn(int playerIndex, Vector2 position=default(Vector2))
     {
-        if (activeGhosts[playerIndex] != null) {
-            var ghost = activeGhosts[playerIndex];
+        var ghost = activeGhosts[playerIndex];
+        if (ghost != null) {
             var player = this.RespawnPlayer(playerIndex);
             if (player == null)
                 return;
@@ -149,8 +149,8 @@ public class MobRoundLogic : RespawnRoundLogic
                 player.Speed.X = ghost.Speed.X;
                 player.Speed.Y = ghost.Speed.Y;
             }
-            activeGhosts[playerIndex].RemoveSelf();
-            activeGhosts[playerIndex] = null;
+            ghost.RemoveSelf();
+            ghost = null;
         }
     }
 

@@ -26,17 +26,17 @@ public class BartizanModModule : FortModule
     {
         var info = new VariantInfo(BartizanModModule.BartizanAtlas);
         var noHeadBounce = variants.AddVariant(
-            "NoHeadBounce", info with { Header = "BARTIZAN" }, VariantFlags.PerPlayer, noPerPlayer);
+            "NoHeadBounce", info with { Header = "BARTIZAN" }, VariantFlags.PerPlayer | VariantFlags.CanRandom, noPerPlayer);
         var noDodgeCooldown = variants.AddVariant(
-            "NoDodgeCooldowns", info, VariantFlags.PerPlayer, noPerPlayer);
+            "NoDodgeCooldowns", info, VariantFlags.PerPlayer | VariantFlags.CanRandom, noPerPlayer);
         var awfullyFastArrows = variants.AddVariant(
-            "AwfullyFastArrows", info, VariantFlags.None, noPerPlayer);
+            "AwfullyFastArrows", info, VariantFlags.None | VariantFlags.CanRandom, noPerPlayer);
         var awfullySlowArrows = variants.AddVariant(
-            "AwfullySlowArrows", info, VariantFlags.None, noPerPlayer);
+            "AwfullySlowArrows", info, VariantFlags.None | VariantFlags.CanRandom, noPerPlayer);
         var noLedgeGrab = variants.AddVariant(
-            "NoLedgeGrab", info, VariantFlags.PerPlayer, noPerPlayer);
+            "NoLedgeGrab", info, VariantFlags.PerPlayer | VariantFlags.CanRandom, noPerPlayer);
         var infiniteArrows = variants.AddVariant(
-            "InfiniteArrows", info, VariantFlags.PerPlayer, noPerPlayer);
+            "InfiniteArrows", info, VariantFlags.PerPlayer | VariantFlags.CanRandom, noPerPlayer);
         
         noHeadBounce.IncompatibleWith(variants.NoTimeLimit);
         noDodgeCooldown.IncompatibleWith(variants.ShowDodgeCooldown);
