@@ -1,6 +1,7 @@
 {
 	"name": "ExampleMod",
 	"version": "1.0.0",
+	"required": "2.2.0",
 	"author": "Terria",
 	"description": "An example mod made for demonstration purposes",
 	"dll": "ExampleMod.dll"
