@@ -46,7 +46,6 @@ public class ExampleModModule : FortModule
         BrambleFunPatcher.Load();
 
         typeof(ModExports).ModInterop();
-
     }
 
     public override void Initialize()
