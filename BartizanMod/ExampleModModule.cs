@@ -37,10 +37,10 @@ public class BartizanModModule : FortModule
             "NoLedgeGrab", info, VariantFlags.PerPlayer, noPerPlayer);
         var infiniteArrows = variants.AddVariant(
             "InfiniteArrows", info, VariantFlags.PerPlayer, noPerPlayer);
-
-        variants.CreateCustomLinks(noHeadBounce, variants.NoTimeLimit);
-        variants.CreateCustomLinks(noDodgeCooldown, variants.ShowDodgeCooldown);
-        variants.CreateCustomLinks(awfullyFastArrows, awfullySlowArrows);
+        
+        noHeadBounce.IncompatibleWith(variants.NoTimeLimit);
+        noDodgeCooldown.IncompatibleWith(variants.ShowDodgeCooldown);
+        awfullyFastArrows.IncompatibleWith(awfullySlowArrows);
     }
 
     public override void Load()
