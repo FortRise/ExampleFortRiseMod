@@ -26,7 +26,7 @@ public class BartizanModModule : FortModule
     {
         var info = new VariantInfo(BartizanModModule.BartizanAtlas);
         var noHeadBounce = variants.AddVariant(
-            "NoHeadBounce", info with { Header = "MODS" }, VariantFlags.PerPlayer, noPerPlayer);
+            "NoHeadBounce", info with { Header = "BARTIZAN" }, VariantFlags.PerPlayer, noPerPlayer);
         var noDodgeCooldown = variants.AddVariant(
             "NoDodgeCooldowns", info, VariantFlags.PerPlayer, noPerPlayer);
         var awfullyFastArrows = variants.AddVariant(
