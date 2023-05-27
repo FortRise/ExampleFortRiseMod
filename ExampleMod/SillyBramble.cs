@@ -2,6 +2,7 @@ using System.Reflection;
 using FortRise;
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod;
 using MonoMod.Utils;
 using TowerFall;
 
@@ -84,8 +85,15 @@ public class TriggerBrambleArrow : TriggerArrow
         On.TowerFall.TriggerArrow.SetDetonator_Player += SetDetonatorPlayerPatch;
         On.TowerFall.TriggerArrow.SetDetonator_Enemy += SetDetonatorEnemyPatch;
         On.TowerFall.TriggerArrow.Detonate += DetonatePatch;
-        On.TowerFall.TriggerArrow.Init += InitPatch;
         On.TowerFall.TriggerArrow.RemoveDetonator += RemoveDetonatorPatch;
+    }
+
+    public static void Unload() 
+    {
+        On.TowerFall.TriggerArrow.SetDetonator_Player -= SetDetonatorPlayerPatch;
+        On.TowerFall.TriggerArrow.SetDetonator_Enemy -= SetDetonatorEnemyPatch;
+        On.TowerFall.TriggerArrow.Detonate -= DetonatePatch;
+        On.TowerFall.TriggerArrow.RemoveDetonator -= RemoveDetonatorPatch;
     }
 
     private static void RemoveDetonatorPatch(On.TowerFall.TriggerArrow.orig_RemoveDetonator orig, TriggerArrow self)
@@ -106,39 +114,57 @@ public class TriggerBrambleArrow : TriggerArrow
         orig(self);
     }
 
-    private static void InitPatch(On.TowerFall.TriggerArrow.orig_Init orig, TriggerArrow self, LevelEntity owner, Vector2 position, float direction)
+    [MonoModLinkTo("TowerFall.Arrow", "System.Void Init(TowerFall.LevelEntity,Microsoft.Xna.Framework.Vector2,System.Single)")]
+    protected void base_Init(LevelEntity owner, Vector2 position, float direction) 
     {
-        if (self is TriggerBrambleArrow bramble) 
+        base.Init(owner, position, direction);
+    }
+
+    protected override void Init(LevelEntity owner, Vector2 position, float direction)
+    {
+        base_Init(owner, position, direction);
+        LightVisible = true;
+        Player playerDetonator = null;
+        Enemy enemyDetonator = null;
+        var dynData = DynamicData.For(this);
+        dynData.Get<Alarm>("primed").Start();
+        dynData.Get<Alarm>("enemyDetonateCheck").Stop();
+        dynData.Set("playerDetonator", playerDetonator);
+        dynData.Set("enemyDetonator", enemyDetonator);
+        if (owner is Enemy)
         {
-            BaseInit(self, owner, position, direction);
-            self.LightVisible = true;
-            Player playerDetonator = null;
-            Enemy enemyDetonator = null;
-            var dynData = DynamicData.For(self);
-            dynData.Get<Alarm>("primed").Start();
-            dynData.Get<Alarm>("enemyDetonateCheck").Stop();
-            dynData.Set("playerDetonator", playerDetonator);
-            dynData.Set("enemyDetonator", enemyDetonator);
-            if (owner is Enemy)
-            {
-                bramble.SetDetonator(owner as Enemy);
-            }
-
-            bramble.used = bramble.canDie = false;
-            bramble.StopFlashing();
-            return;
+            SetDetonator(owner as Enemy);
         }
-        orig(self, owner, position, direction);
+
+        used = canDie = false;
+        StopFlashing();
     }
 
-    public static void Unload() 
-    {
-        On.TowerFall.TriggerArrow.SetDetonator_Player -= SetDetonatorPlayerPatch;
-        On.TowerFall.TriggerArrow.SetDetonator_Enemy -= SetDetonatorEnemyPatch;
-        On.TowerFall.TriggerArrow.Detonate -= DetonatePatch;
-        On.TowerFall.TriggerArrow.Init -= InitPatch;
-        On.TowerFall.TriggerArrow.RemoveDetonator -= RemoveDetonatorPatch;
-    }
+    // private static void InitPatch(On.TowerFall.TriggerArrow.orig_Init orig, TriggerArrow self, LevelEntity owner, Vector2 position, float direction)
+    // {
+    //     if (self is TriggerBrambleArrow bramble) 
+    //     {
+    //         BaseInit(self, owner, position, direction);
+    //         self.LightVisible = true;
+    //         Player playerDetonator = null;
+    //         Enemy enemyDetonator = null;
+    //         var dynData = DynamicData.For(self);
+    //         dynData.Get<Alarm>("primed").Start();
+    //         dynData.Get<Alarm>("enemyDetonateCheck").Stop();
+    //         dynData.Set("playerDetonator", playerDetonator);
+    //         dynData.Set("enemyDetonator", enemyDetonator);
+    //         if (owner is Enemy)
+    //         {
+    //             bramble.SetDetonator(owner as Enemy);
+    //         }
+
+    //         bramble.used = bramble.canDie = false;
+    //         bramble.StopFlashing();
+    //         return;
+    //     }
+    //     orig(self, owner, position, direction);
+    // }
+
 
     private static void DetonatePatch(On.TowerFall.TriggerArrow.orig_Detonate orig, TriggerArrow self)
     {

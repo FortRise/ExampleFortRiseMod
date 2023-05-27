@@ -41,9 +41,9 @@ public class ExampleModModule : FortModule
         // Uncomment this line to patch all of Harmony's patches
         harmony.PatchAll();
 
-        // PinkSlime.LoadPatch();
-        // TriggerBrambleArrow.Load();
-        // PatchEnemyBramble.Load();
+        PinkSlime.LoadPatch();
+        TriggerBrambleArrow.Load();
+        PatchEnemyBramble.Load();
         BrambleFunPatcher.Load();
 
         typeof(ModExports).ModInterop();
@@ -63,9 +63,9 @@ public class ExampleModModule : FortModule
 
     public override void Unload()
     {
-        // PinkSlime.UnloadPatch();
-        // TriggerBrambleArrow.Unload();
-        // PatchEnemyBramble.Unload();
+        PinkSlime.UnloadPatch();
+        TriggerBrambleArrow.Unload();
+        PatchEnemyBramble.Unload();
         BrambleFunPatcher.Unload();
         harmony.UnpatchAll("com.terriatf.ExampleMod");
     }
