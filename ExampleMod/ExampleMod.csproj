@@ -31,18 +31,18 @@
       <HintPath>..\..\..\TowerFall.exe</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.Xna.Framework">
-      <HintPath>..\..\lib\Microsoft.Xna.Framework.dll</HintPath>
+    <Reference Include="FNA">
+      <HintPath>..\..\..\FNA.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Graphics">
+    <!-- <Reference Include="Microsoft.Xna.Framework.Graphics">
       <HintPath>..\..\lib\Microsoft.Xna.Framework.Graphics.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework.Game">
       <HintPath>..\..\lib\Microsoft.Xna.Framework.Game.dll</HintPath>
       <Private>False</Private>
-    </Reference>
+    </Reference> -->
     <Reference Include="MMHOOK_TowerFall">
       <HintPath>..\..\..\MMHOOK_TowerFall.dll</HintPath>
       <Private>False</Private>

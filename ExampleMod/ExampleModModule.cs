@@ -1,6 +1,7 @@
 ﻿using System.Xml;
 using FortRise;
 using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.ModInterop;
 using TowerFall;
@@ -26,8 +27,8 @@ public class ExampleModModule : FortModule
 
     public override void LoadContent()
     {
-        ExampleAtlas = Atlas.Create("Atlas/pinkSlime.xml", "Atlas/pinkSlime.png", true, ContentAccess.ModContent);
-        Data = SpriteData.Create("Atlas/spriteData.xml", ExampleAtlas, ContentAccess.ModContent);
+        ExampleAtlas = Content.LoadAtlas("Atlas/pinkSlime.xml", "Atlas/pinkSlime.png", true);
+        Data = Content.LoadSpriteData("Atlas/spriteData.xml", ExampleAtlas);
     }
 
     public override void Load()
@@ -40,9 +41,9 @@ public class ExampleModModule : FortModule
         // Uncomment this line to patch all of Harmony's patches
         harmony.PatchAll();
 
-        PinkSlime.LoadPatch();
-        TriggerBrambleArrow.Load();
-        PatchEnemyBramble.Load();
+        // PinkSlime.LoadPatch();
+        // TriggerBrambleArrow.Load();
+        // PatchEnemyBramble.Load();
         BrambleFunPatcher.Load();
 
         typeof(ModExports).ModInterop();
@@ -55,13 +56,16 @@ public class ExampleModModule : FortModule
             playerSpawns[0].Attributes["x"].Value = "50";
             playerSpawns[1].Attributes["x"].Value = "250";
         });
+        var vector2 = new Vector2(40, 40);
+        Logger.Log(vector2.X);
+        Logger.Log(vector2.Y);
     }
 
     public override void Unload()
     {
-        PinkSlime.UnloadPatch();
-        TriggerBrambleArrow.Unload();
-        PatchEnemyBramble.Unload();
+        // PinkSlime.UnloadPatch();
+        // TriggerBrambleArrow.Unload();
+        // PatchEnemyBramble.Unload();
         BrambleFunPatcher.Unload();
         harmony.UnpatchAll("com.terriatf.ExampleMod");
     }

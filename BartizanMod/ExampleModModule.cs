@@ -19,7 +19,7 @@ public class BartizanModModule : FortModule
 
     public override void LoadContent()
     {
-        BartizanAtlas = Atlas.Create("Atlas/atlas.xml", "Atlas/atlas.png", true, ContentAccess.ModContent);
+        BartizanAtlas = Content.LoadAtlas("Atlas/atlas.xml", "Atlas/atlas.png", true);
     }
 
     public override void OnVariantsRegister(MatchVariants variants, bool noPerPlayer = false)
