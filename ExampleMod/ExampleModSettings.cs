@@ -15,6 +15,9 @@ public class ExampleModSettings : ModuleSettings
     [SettingsNumber(0, 20, 2)]
     public int OnStepping;
 
+    [SettingsOptions("Wings", "Shields", "Bows", "Arrows")]
+    public int Equipment;
+
     public Action FlightTest;
 }
 

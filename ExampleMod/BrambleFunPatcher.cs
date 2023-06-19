@@ -15,8 +15,8 @@ public static class BrambleFunPatcher
             typeof(TowerFall.QuestSpawnPortal.Events).GetMethod("InvokeQuestSpawnPortal_FinishSpawn", BindingFlags.NonPublic | BindingFlags.Static),
             InvokeFinishSpawn_patch            
         );
-    }
 
+    }
     internal static void InvokeFinishSpawn_patch(ILContext ctx) 
     {
         var cursor = new ILCursor(ctx);

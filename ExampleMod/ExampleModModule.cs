@@ -1,6 +1,5 @@
 ﻿using System.Xml;
 using FortRise;
-using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.ModInterop;
@@ -16,7 +15,6 @@ public class ExampleModModule : FortModule
     public static SpriteData Data;
 
     public static ExampleModModule Instance;
-    private Harmony harmony;
 
     public ExampleModModule() 
     {
@@ -24,6 +22,9 @@ public class ExampleModModule : FortModule
     }
     public override Type SettingsType => typeof(ExampleModSettings);
     public static ExampleModSettings Settings => (ExampleModSettings)Instance.InternalSettings;
+
+    public override Type SaveDataType => typeof(ExampleModSaveData);
+    public static ExampleModSaveData SaveData => (ExampleModSaveData)Instance.InternalSaveData; 
 
     public override void LoadContent()
     {
@@ -37,28 +38,45 @@ public class ExampleModModule : FortModule
         {
             Music.Play("Flight");
         };
-        harmony = new Harmony("com.terriatf.ExampleMod");
-        // Uncomment this line to patch all of Harmony's patches
-        harmony.PatchAll();
 
         PinkSlime.LoadPatch();
         TriggerBrambleArrow.Load();
         PatchEnemyBramble.Load();
         BrambleFunPatcher.Load();
 
-        typeof(ModExports).ModInterop();
+        typeof(MapPatchImport).ModInterop();
     }
 
     public override void Initialize()
     {
-        ModExports.QuestLevelXMLModifier?.Invoke("Content/Levels/Quest/00.oel", x => {
+        MapPatchImport.QuestLevelXMLModifier?.Invoke("Content/Levels/Quest/00.oel", x => {
             var playerSpawns = x["Entities"].GetElementsByTagName("PlayerSpawn");
             playerSpawns[0].Attributes["x"].Value = "50";
             playerSpawns[1].Attributes["x"].Value = "250";
         });
-        var vector2 = new Vector2(40, 40);
-        Logger.Log(vector2.X);
-        Logger.Log(vector2.Y);
+    }
+
+    public static bool Hey;
+
+    public override void CreateModSettings(List<OptionsButton> optionList)
+    {
+        var optionButton = new OptionsButton("HELLO");
+        optionButton.SetCallbacks(() => {
+            optionButton.State = BoolToString(Hey);
+        }, null, null, () => {
+            Hey = !Hey;
+            return Hey;
+        });
+        optionList.Add(optionButton);
+
+        string BoolToString(bool value)
+        {
+            if (!value)
+            {
+                return "OFF";
+            }
+            return "ON";
+        }
     }
 
     public override void Unload()
@@ -67,25 +85,6 @@ public class ExampleModModule : FortModule
         TriggerBrambleArrow.Unload();
         PatchEnemyBramble.Unload();
         BrambleFunPatcher.Unload();
-        harmony.UnpatchAll("com.terriatf.ExampleMod");
-    }
-}
-
-// Harmony can be supported
-
-[HarmonyPatch]
-public class MyPatcher 
-{
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(MainMenu), "BoolToString")]
-    static void BoolToStringPostfix(ref string __result) 
-    {
-        if (__result == "ON") 
-        {
-            __result = "ENABLED";
-            return;
-        }
-        __result = "DISABLED";
     }
 }
 
@@ -96,7 +95,7 @@ Learn more: https://github.com/MonoMod/MonoMod/blob/master/README-ModInterop.md
 */
 
 [ModImportName("MapPatcherHelper")]
-public static class ModExports 
+public static class MapPatchImport 
 {
     public static Action<string, Action<XmlElement>> QuestLevelXMLModifier;
 }
