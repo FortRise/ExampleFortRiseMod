@@ -8,7 +8,7 @@ namespace BartizanMod;
 [CustomRoundLogic("RespawnRoundLogic")]
 public class RespawnRoundLogic : CustomVersusRoundLogic
 {
-    private KillCountHUD[] killCountHUDs = new KillCountHUD[4];
+    private KillCountHUD[] killCountHUDs;
     private bool wasFinalKill;
     private Counter endDelay;
 
@@ -42,14 +42,18 @@ public class RespawnRoundLogic : CustomVersusRoundLogic
 
     public RespawnRoundLogic(Session session) : base(session, false)
     {
-        for (int i = 0; i < 4; i++) {
-            if (TFGame.Players[i]) {
+        var playerCount = EightPlayerImport.IsEightPlayer != null ? EightPlayerImport.IsEightPlayer() ? 8 : 4 : 4;
+        killCountHUDs = new KillCountHUD[playerCount];
+        for (int i = 0; i < playerCount; i++) 
+        {
+            if (TFGame.Players[i]) 
+            {
                 killCountHUDs[i] = new KillCountHUD(i);
                 this.Session.CurrentLevel.Add(killCountHUDs[i]);
             }
         }
         this.endDelay = new Counter();
-			this.endDelay.Set(90);
+        this.endDelay.Set(90);
     }
 
     public override void OnLevelLoadFinish()
@@ -122,18 +126,20 @@ public class RespawnRoundLogic : CustomVersusRoundLogic
 [CustomRoundLogic("MobRoundLogic", "CreateForThis")]
 public class MobRoundLogic : RespawnRoundLogic
 {
-    PlayerGhost[] activeGhosts = new PlayerGhost[4];
+    private PlayerGhost[] activeGhosts;
 
     public MobRoundLogic(Session session)
         : base(session)
     {
+        var playerCount = EightPlayerImport.IsEightPlayer != null ? EightPlayerImport.IsEightPlayer() ? 8 : 4 : 4;
+        activeGhosts = new PlayerGhost[playerCount];
     }
 
     protected override void AfterOnPlayerDeath(Player player)
     {
     }
 
-    void RemoveGhostAndRespawn(int playerIndex, Vector2 position=default(Vector2))
+    private void RemoveGhostAndRespawn(int playerIndex, Vector2 position = default)
     {
         var ghost = activeGhosts[playerIndex];
         if (ghost != null) {
@@ -159,20 +165,25 @@ public class MobRoundLogic : RespawnRoundLogic
         base.OnPlayerDeath(player, corpse, playerIndex, cause, position, killerIndex);
         this.Session.CurrentLevel.Add(activeGhosts[playerIndex] = new PlayerGhost(corpse));
 
-        if (killerIndex == playerIndex || killerIndex == -1) {
-            if (this.Session.CurrentLevel.LivingPlayers == 0) {
+        if (killerIndex == playerIndex || killerIndex == -1) 
+        {
+            if (this.Session.CurrentLevel.LivingPlayers == 0) 
+            {
                 var otherPlayers = TFGame.Players.Select((playing, idx) => playing && idx != playerIndex ? (int?)idx : null).Where(idx => idx != null).ToList();
                 var randomPlayer = new Random().Choose(otherPlayers).Value;
                 RemoveGhostAndRespawn(randomPlayer);
             }
-        } else {
+        } 
+        else 
+        {
             RemoveGhostAndRespawn(killerIndex, position);
         }
     }
 
     public static RoundLogicInfo CreateForThis()
     {
-        return new RoundLogicInfo {
+        return new RoundLogicInfo 
+        {
             Name = "Crawl",
             Icon = BartizanModModule.BartizanAtlas["gamemodes/crawl"],
             RoundType = RoundLogicType.HeadHunters
@@ -182,8 +193,8 @@ public class MobRoundLogic : RespawnRoundLogic
 
 public class KillCountHUD : Entity
 {
-    int playerIndex;
-    List<Sprite<int>> skullIcons = new List<Sprite<int>>();
+    private int playerIndex;
+    private List<Sprite<int>> skullIcons = new();
 
     public int Count { get { return this.skullIcons.Count; } }
 
@@ -198,13 +209,17 @@ public class KillCountHUD : Entity
         Sprite<int> sprite = DeathSkull.GetSprite();
         sprite.Color = ArcherData.GetColorA(playerIndex);
 
-        if (this.playerIndex % 2 == 0) {
-            sprite.X = 8 + 10 * skullIcons.Count;
-        } else {
-            sprite.X = 320 - 8 - 10 * skullIcons.Count;
-        }
+        var width = EightPlayerImport.IsEightPlayer != null ? EightPlayerImport.IsEightPlayer() ? 420 : 320 : 320;
 
-        sprite.Y = this.playerIndex / 2 == 0 ? 20 : 240 - 20;
+        if (this.playerIndex % 2 == 0) 
+            sprite.X = 8 + 10 * skullIcons.Count;
+        else 
+            sprite.X = width - 8 - 10 * skullIcons.Count;
+        float offset = 0;
+        if (playerIndex > 4)
+            offset = 20;
+
+        sprite.Y = this.playerIndex / 2 is 0 or 2 or 4 ? 20 + offset : (240 - 20) - offset;
         //sprite.Play(0, restart: false);
         sprite.Stop();
         this.skullIcons.Add(sprite);
@@ -213,7 +228,8 @@ public class KillCountHUD : Entity
 
     public void Decrease()
     {
-        if (this.skullIcons.Any()) {
+        if (this.skullIcons.Any()) 
+        {
             base.Remove(this.skullIcons.Last());
             this.skullIcons.Remove(this.skullIcons.Last());
         }
@@ -221,7 +237,8 @@ public class KillCountHUD : Entity
 
     public override void Render()
     {
-        foreach (Sprite<int> sprite in this.skullIcons) {
+        foreach (Sprite<int> sprite in this.skullIcons) 
+        {
             sprite.DrawOutline(1);
         }
         base.Render();

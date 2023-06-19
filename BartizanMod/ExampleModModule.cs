@@ -1,5 +1,6 @@
 ﻿using FortRise;
 using Monocle;
+using MonoMod.ModInterop;
 using TowerFall;
 
 namespace BartizanMod;
@@ -19,7 +20,7 @@ public class BartizanModModule : FortModule
 
     public override void LoadContent()
     {
-        BartizanAtlas = Content.LoadAtlas("Atlas/atlas.xml", "Atlas/atlas.png", true);
+        BartizanAtlas = Content.LoadAtlas("Atlas/atlas.xml", "Atlas/atlas.png");
     }
 
     public override void OnVariantsRegister(MatchVariants variants, bool noPerPlayer = false)
@@ -45,6 +46,7 @@ public class BartizanModModule : FortModule
 
     public override void Load()
     {
+        typeof(EightPlayerImport).ModInterop();
         RespawnRoundLogic.Load();
         MyPlayerGhost.Load();
         MyRollcallElement.Load();
