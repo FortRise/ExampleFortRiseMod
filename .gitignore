@@ -4,3 +4,4 @@ bin/
 EightPlayerMod
 .vs/
 Properties/
+*.user
