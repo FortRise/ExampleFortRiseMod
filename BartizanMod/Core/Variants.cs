@@ -87,9 +87,12 @@ public class MyPlayer
 
 public class MyArrow 
 {
+    private static PropertyInfo Comp_TimeMult;
+
     internal static void Load() 
     {
         On.TowerFall.Arrow.ArrowUpdate += ArrowUpdate_patch;
+        Comp_TimeMult = typeof(Engine).GetProperty("TimeMult");
     }
 
     internal static void Unload() 
@@ -97,22 +100,23 @@ public class MyArrow
         On.TowerFall.Arrow.ArrowUpdate -= ArrowUpdate_patch;
     }
 
+
     private static void ArrowUpdate_patch(On.TowerFall.Arrow.orig_ArrowUpdate orig, Arrow self)
     {
         var matchVariants = self.Level.Session.MatchSettings.Variants;
 
         if (matchVariants.GetCustomVariant("AwfullySlowArrows")) 
         {
-            typeof(Engine).GetProperty("TimeMult").SetValue(null, Engine.TimeMult * 0.2f, null);
+            Comp_TimeMult.SetValue(null, Engine.TimeMult * 0.2f, null);
             orig(self);
-            typeof(Engine).GetProperty("TimeMult").SetValue(null, Engine.TimeMult / 0.2f, null);
+            Comp_TimeMult.SetValue(null, Engine.TimeMult / 0.2f, null);
             return;
         }
         if (matchVariants.GetCustomVariant("AwfullyFastArrows")) 
         {
-            typeof(Engine).GetProperty("TimeMult").SetValue(null, Engine.TimeMult * 3.0f, null);
+            Comp_TimeMult.SetValue(null, Engine.TimeMult * 3.0f, null);
             orig(self);
-            typeof(Engine).GetProperty("TimeMult").SetValue(null, Engine.TimeMult / 3.0f, null);
+            Comp_TimeMult.SetValue(null, Engine.TimeMult / 3.0f, null);
             return;
         }
         orig(self);

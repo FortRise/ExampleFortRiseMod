@@ -10,8 +10,10 @@ namespace BartizanMod;
 public class BartizanModModule : FortModule
 {
     public static Atlas BartizanAtlas;
-
+    public static SpriteData BartizanData;
     public static BartizanModModule Instance;
+
+    public static bool EightPlayerMod;
 
     public BartizanModModule() 
     {
@@ -21,6 +23,7 @@ public class BartizanModModule : FortModule
     public override void LoadContent()
     {
         BartizanAtlas = Content.LoadAtlas("Atlas/atlas.xml", "Atlas/atlas.png");
+        BartizanData = Content.LoadSpriteData("Atlas/spriteData.xml", BartizanAtlas);
     }
 
     public override void OnVariantsRegister(MatchVariants variants, bool noPerPlayer = false)
@@ -63,5 +66,10 @@ public class BartizanModModule : FortModule
         MyVersusPlayerMatchResults.Unload();
         MyPlayer.Unload();
         MyArrow.Unload();
+    }
+
+    public override void Initialize()
+    {
+        EightPlayerMod = IsModExists("WiderSetMod");
     }
 }

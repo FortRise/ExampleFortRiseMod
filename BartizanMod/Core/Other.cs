@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -43,7 +44,7 @@ public class MyRollcallElement
 
     public static void StartVersus_patch(orig_RollcallElement_StartVersus orig, RollcallElement self) 
     {
-        var playerCount = EightPlayerImport.LaunchedEightPlayer != null ? EightPlayerImport.LaunchedEightPlayer() ? 8 : 4 : 4;
+        var playerCount = EightPlayerUtils.GetMenuPlayerCount();
         MyVersusPlayerMatchResults.PlayerWins = new int[playerCount];
         orig(self);
     }
@@ -70,7 +71,7 @@ public class MyVersusPlayerMatchResults
     private static void ctor_patch(On.TowerFall.VersusPlayerMatchResults.orig_ctor orig, VersusPlayerMatchResults self, Session session, VersusMatchResults matchResults, int playerIndex, Vector2 tweenFrom, Vector2 tweenTo, List<AwardInfo> awards)
     {
         orig(self, session, matchResults, playerIndex, tweenFrom, tweenTo, awards);
-        var playerCount = EightPlayerImport.IsEightPlayer != null ? EightPlayerImport.IsEightPlayer() ? 8 : 4 : 4;
+        var playerCount = EightPlayerUtils.GetPlayerCount();
         winsTexts = new OutlineText[playerCount];
         var dynData = DynamicData.For(self);
         var gem = dynData.Get<Sprite<string>>("gem");

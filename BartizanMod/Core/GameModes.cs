@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Monocle;
 using TowerFall;
@@ -42,7 +45,7 @@ public class RespawnRoundLogic : CustomVersusRoundLogic
 
     public RespawnRoundLogic(Session session) : base(session, false)
     {
-        var playerCount = EightPlayerImport.IsEightPlayer != null ? EightPlayerImport.IsEightPlayer() ? 8 : 4 : 4;
+        var playerCount = EightPlayerUtils.GetPlayerCount();
         killCountHUDs = new KillCountHUD[playerCount];
         for (int i = 0; i < playerCount; i++) 
         {
@@ -131,7 +134,7 @@ public class MobRoundLogic : RespawnRoundLogic
     public MobRoundLogic(Session session)
         : base(session)
     {
-        var playerCount = EightPlayerImport.IsEightPlayer != null ? EightPlayerImport.IsEightPlayer() ? 8 : 4 : 4;
+        var playerCount = EightPlayerUtils.GetPlayerCount();
         activeGhosts = new PlayerGhost[playerCount];
     }
 
@@ -209,7 +212,7 @@ public class KillCountHUD : Entity
         Sprite<int> sprite = DeathSkull.GetSprite();
         sprite.Color = ArcherData.GetColorA(playerIndex);
 
-        var width = EightPlayerImport.IsEightPlayer != null ? EightPlayerImport.IsEightPlayer() ? 420 : 320 : 320;
+        var width = EightPlayerUtils.GetScreenWidth();
 
         if (this.playerIndex % 2 == 0) 
             sprite.X = 8 + 10 * skullIcons.Count;
@@ -220,7 +223,6 @@ public class KillCountHUD : Entity
             offset = 20;
 
         sprite.Y = this.playerIndex / 2 is 0 or 2 or 4 ? 20 + offset : (240 - 20) - offset;
-        //sprite.Play(0, restart: false);
         sprite.Stop();
         this.skullIcons.Add(sprite);
         base.Add(sprite);
