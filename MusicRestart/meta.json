@@ -1,0 +1,7 @@
+{
+    "name": "Music Restart",
+	"version": "1.0.0",
+	"author": "Terria",
+	"description": "Restart music after restart",
+	"dll": "MusicRestart.dll"
+}
