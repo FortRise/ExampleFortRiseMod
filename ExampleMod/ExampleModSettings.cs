@@ -35,7 +35,7 @@ public static class CommandList
         if (Engine.Instance.Scene is Level)
         {
             int num = Commands.ParseInt(args, 0, 0);
-            if (num < 0 || num >= Arrow.ARROW_TYPES + RiseCore.ArrowsID.Count)
+            if (num < 0 || num >= Arrow.ARROW_TYPES + RiseCore.ArrowsRegistry.Count)
             {
                 Engine.Instance.Commands.Log("Invalid arrow type!");
                 return;

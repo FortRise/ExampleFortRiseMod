@@ -1,4 +1,5 @@
 using System.Reflection;
+using FortRise;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using TowerFall;
@@ -12,7 +13,7 @@ public static class BrambleFunPatcher
     internal static void Load() 
     {
         hook_InvokeQuestSpawnPortal_FinishSpawn = new ILHook(
-            typeof(TowerFall.QuestSpawnPortal.Events).GetMethod("InvokeQuestSpawnPortal_FinishSpawn", BindingFlags.NonPublic | BindingFlags.Static),
+            typeof(RiseCore.Events).GetMethod("InvokeQuestSpawnPortal_FinishSpawn", BindingFlags.NonPublic | BindingFlags.Static),
             InvokeFinishSpawn_patch            
         );
 
@@ -26,7 +27,8 @@ public static class BrambleFunPatcher
             {
                 if (ExampleModModule.Settings.AllTriggerBrambleArrow) 
                 {
-                    return FortRise.RiseCore.ArrowsID["TriggerBrambleArrows"];
+                    var brambleArrow = RiseCore.ArrowsRegistry["TriggerBrambleArrows"];
+                    return brambleArrow.Types;
                 }
                 return arrowTypes;
             });

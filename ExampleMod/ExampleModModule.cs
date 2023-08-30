@@ -28,7 +28,7 @@ public class ExampleModModule : FortModule
 
     public override void LoadContent()
     {
-        ExampleAtlas = Content.LoadAtlas("Atlas/pinkSlime.xml", "Atlas/pinkSlime.png", true);
+        ExampleAtlas = Content.LoadAtlas("Atlas/pinkSlime.xml", "Atlas/pinkSlime.png");
         Data = Content.LoadSpriteData("Atlas/spriteData.xml", ExampleAtlas);
     }
 
@@ -58,25 +58,13 @@ public class ExampleModModule : FortModule
 
     public static bool Hey;
 
-    public override void CreateModSettings(List<OptionsButton> optionList)
+    public override void CreateModSettings(TextContainer optionList)
     {
-        var optionButton = new OptionsButton("HELLO");
-        optionButton.SetCallbacks(() => {
-            optionButton.State = BoolToString(Hey);
-        }, null, null, () => {
-            Hey = !Hey;
-            return Hey;
+        var toggler = new TextContainer.Toggleable("CONFIRM ME", Hey);
+        toggler.Change(x => {
+            Hey = x;
         });
-        optionList.Add(optionButton);
-
-        string BoolToString(bool value)
-        {
-            if (!value)
-            {
-                return "OFF";
-            }
-            return "ON";
-        }
+        optionList.Add(toggler);
     }
 
     public override void Unload()
