@@ -1,0 +1,5 @@
+<TextureAtlas imagePath="{{atlas.sheet_path}}">
+  {{#each atlas.frames as frame}}
+  <SubTexture name="{{@key}}" mapTo="quest/floorMiasma" x="{{this.x}}" y="{{this.y}}" width="{{this.width}}" height="{{this.height}}" tag="level={{replace @key "quest\\floorMiasma--" ""}}"/>
+  {{/each}}
+</TextureAtlas>
