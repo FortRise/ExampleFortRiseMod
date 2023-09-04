@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Reflection;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
 using TowerFall;
 
@@ -10,39 +8,26 @@ namespace BartizanMod;
 
 public class MyRollcallElement 
 {
-    private static IDetour hook_ForceStart;
-    private static IDetour hook_StartVersus;
-
     internal static void Load() 
     {
-        hook_ForceStart = new Hook(
-            typeof(RollcallElement).GetMethod("ForceStart", BindingFlags.NonPublic | BindingFlags.Instance),
-            ForceStart_patch
-        );
-        hook_StartVersus = new Hook(
-            typeof(RollcallElement).GetMethod("StartVersus", BindingFlags.NonPublic | BindingFlags.Instance),
-            StartVersus_patch
-        );
+        On.TowerFall.RollcallElement.ForceStart += ForceStart_patch;
+        On.TowerFall.RollcallElement.StartVersus += StartVersus_patch;
     }
 
     internal static void Unload() 
     {
-        hook_ForceStart.Dispose();
-        hook_StartVersus.Dispose();
+        On.TowerFall.RollcallElement.ForceStart -= ForceStart_patch;
+        On.TowerFall.RollcallElement.StartVersus -= StartVersus_patch;
     }
 
-    public delegate void orig_RollcallElement_ForceStart(RollcallElement self);
-
-    public static void ForceStart_patch(orig_RollcallElement_ForceStart orig, RollcallElement self) 
+    private static void StartVersus_patch(On.TowerFall.RollcallElement.orig_StartVersus orig, RollcallElement self)
     {
-        MyVersusPlayerMatchResults.PlayerWins = new int[4];
+        var playerCount = EightPlayerUtils.GetMenuPlayerCount();
+        MyVersusPlayerMatchResults.PlayerWins = new int[playerCount];
         orig(self);
     }
 
-
-    public delegate void orig_RollcallElement_StartVersus(RollcallElement self);
-
-    public static void StartVersus_patch(orig_RollcallElement_StartVersus orig, RollcallElement self) 
+    private static void ForceStart_patch(On.TowerFall.RollcallElement.orig_ForceStart orig, RollcallElement self)
     {
         var playerCount = EightPlayerUtils.GetMenuPlayerCount();
         MyVersusPlayerMatchResults.PlayerWins = new int[playerCount];
@@ -54,7 +39,6 @@ public class MyVersusPlayerMatchResults
 {
     public static int[] PlayerWins;
 
-    private static OutlineText[] winsTexts;
 
     internal static void Load() 
     {
@@ -71,8 +55,6 @@ public class MyVersusPlayerMatchResults
     private static void ctor_patch(On.TowerFall.VersusPlayerMatchResults.orig_ctor orig, VersusPlayerMatchResults self, Session session, VersusMatchResults matchResults, int playerIndex, Vector2 tweenFrom, Vector2 tweenTo, List<AwardInfo> awards)
     {
         orig(self, session, matchResults, playerIndex, tweenFrom, tweenTo, awards);
-        var playerCount = EightPlayerUtils.GetPlayerCount();
-        winsTexts = new OutlineText[playerCount];
         var dynData = DynamicData.For(self);
         var gem = dynData.Get<Sprite<string>>("gem");
         if (session.MatchStats[playerIndex].Won)
@@ -80,10 +62,11 @@ public class MyVersusPlayerMatchResults
 
         if (PlayerWins[playerIndex] > 0) 
         {
-            winsTexts[playerIndex] = new OutlineText(TFGame.Font, PlayerWins[playerIndex].ToString(), gem.Position);
-            winsTexts[playerIndex].Color = Color.White;
-            winsTexts[playerIndex].OutlineColor = Color.Black;
-            self.Add(winsTexts[playerIndex]);
+            var winText = new OutlineText(TFGame.Font, PlayerWins[playerIndex].ToString(), gem.Position);
+            winText.Color = Color.White;
+            winText.OutlineColor = Color.Black;
+            self.Add(winText);
+            dynData.Set("winText", winText);
         }
     }
 
@@ -91,7 +74,7 @@ public class MyVersusPlayerMatchResults
     {
         orig(self);
         var playerIndex = DynamicData.For(self).Get<int>("playerIndex");
-        if (winsTexts[playerIndex] != null)
-            winsTexts[playerIndex].Render();
+        if (DynamicData.For(self).TryGet<OutlineText>("winText", out var text)) 
+            text.Render();
     }
 }

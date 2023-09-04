@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.Utils;
 using TowerFall;
 
 namespace BartizanMod;
@@ -145,13 +146,16 @@ public class MobRoundLogic : RespawnRoundLogic
     private void RemoveGhostAndRespawn(int playerIndex, Vector2 position = default)
     {
         var ghost = activeGhosts[playerIndex];
-        if (ghost != null) {
+        if (ghost != null) 
+        {
             var player = this.RespawnPlayer(playerIndex);
             if (player == null)
                 return;
+
             // if we've been given a position, make sure the ghost spawns at that position and
             // retains its speed pre-spawn.
-            if (position != default(Vector2)) {
+            if (position != default(Vector2)) 
+            {
                 player.Position.X = position.X;
                 player.Position.Y = position.Y;
 
@@ -166,6 +170,7 @@ public class MobRoundLogic : RespawnRoundLogic
     public override void OnPlayerDeath(Player player, PlayerCorpse corpse, int playerIndex, DeathCause cause, Vector2 position, int killerIndex)
     {
         base.OnPlayerDeath(player, corpse, playerIndex, cause, position, killerIndex);
+
         this.Session.CurrentLevel.Add(activeGhosts[playerIndex] = new PlayerGhost(corpse));
 
         if (killerIndex == playerIndex || killerIndex == -1) 
@@ -249,8 +254,6 @@ public class KillCountHUD : Entity
 
 public class MyPlayerGhost 
 {
-    private static PlayerCorpse corpse;
-
     internal static void Load() 
     {
         On.TowerFall.PlayerGhost.ctor += ctor_patch;
@@ -265,7 +268,7 @@ public class MyPlayerGhost
 
     private static void ctor_patch(On.TowerFall.PlayerGhost.orig_ctor orig, TowerFall.PlayerGhost self, PlayerCorpse corpse)
     {
-        MyPlayerGhost.corpse = corpse;
+        DynamicData.For(self).Set("corpse", corpse);
         orig(self, corpse);
     }
 
@@ -273,7 +276,7 @@ public class MyPlayerGhost
     {
         orig(self, killerIndex, arrow, explosion, shock);
         var mobLogic = self.Level.Session.RoundLogic as MobRoundLogic;
-        if (mobLogic != null) 
+        if (mobLogic != null && DynamicData.For(self).TryGet<PlayerCorpse>("corpse", out var corpse)) 
         {
             mobLogic.OnPlayerDeath(null, corpse, self.PlayerIndex, DeathCause.Arrow, self.Position, killerIndex);
         }
