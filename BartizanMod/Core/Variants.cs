@@ -1,4 +1,5 @@
 using System.Reflection;
+using FortRise;
 using Monocle;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
@@ -39,8 +40,7 @@ public class MyPlayer
 
     private static void HurtBouncedOn_patch(On.TowerFall.Player.orig_HurtBouncedOn orig, Player self, int bouncerIndex)
     {
-        var matchVariants = self.Level.Session.MatchSettings.Variants;
-        if (!matchVariants.GetCustomVariant("NoHeadBounce")[self.PlayerIndex])
+        if (!VariantManager.GetCustomVariant("NoHeadBounce")[self.PlayerIndex])
             orig(self, bouncerIndex);
     }
 
@@ -48,8 +48,7 @@ public class MyPlayer
 
     public static bool Player_CanGrabLedge_patch(orig_Player_CanGrabLedge orig, Player self, int targetY, int direction) 
     {
-        var matchVariants = self.Level.Session.MatchSettings.Variants;
-        if (matchVariants.GetCustomVariant("NoLedgeGrab")[self.PlayerIndex]) 
+        if (VariantManager.GetCustomVariant("NoLedgeGrab")[self.PlayerIndex]) 
             return false;
         
         return orig(self, targetY, direction);
@@ -59,8 +58,8 @@ public class MyPlayer
 
     public static int Player_GetDodgeExitState(orig_Player_GetDodgeExitState orig, Player self) 
     {
-        var matchVariants = self.Level.Session.MatchSettings.Variants;
-        if (matchVariants.GetCustomVariant("NoDodgeCooldowns")[self.PlayerIndex]) 
+        /* New */
+        if (VariantManager.GetCustomVariant("NoDodgeCooldowns")[self.PlayerIndex]) 
         {
             var dynData = new DynData<Player>(self);
             dynData.Set("dodgeCooldown", false);
@@ -73,8 +72,7 @@ public class MyPlayer
 
     public static void Player_ShootArrow(orig_Player_ShootArrow orig, Player self) 
     {
-        var matchVariants = self.Level.Session.MatchSettings.Variants;
-        if (matchVariants.GetCustomVariant("InfiniteArrows")[self.PlayerIndex]) 
+        if (VariantManager.GetCustomVariant("InfiniteArrows")[self.PlayerIndex]) 
         {
             var arrow = self.Arrows.Arrows[0];
             orig(self);
@@ -103,16 +101,14 @@ public class MyArrow
 
     private static void ArrowUpdate_patch(On.TowerFall.Arrow.orig_ArrowUpdate orig, Arrow self)
     {
-        var matchVariants = self.Level.Session.MatchSettings.Variants;
-
-        if (matchVariants.GetCustomVariant("AwfullySlowArrows")) 
+        if (VariantManager.GetCustomVariant("AwfullySlowArrows")) 
         {
             Comp_TimeMult.SetValue(null, Engine.TimeMult * 0.2f, null);
             orig(self);
             Comp_TimeMult.SetValue(null, Engine.TimeMult / 0.2f, null);
             return;
         }
-        if (matchVariants.GetCustomVariant("AwfullyFastArrows")) 
+        if (VariantManager.GetCustomVariant("AwfullyFastArrows")) 
         {
             Comp_TimeMult.SetValue(null, Engine.TimeMult * 3.0f, null);
             orig(self);

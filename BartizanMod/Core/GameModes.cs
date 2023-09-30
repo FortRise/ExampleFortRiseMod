@@ -15,6 +15,7 @@ public class RespawnRoundLogic : CustomVersusRoundLogic
     private KillCountHUD[] killCountHUDs;
     private bool wasFinalKill;
     private Counter endDelay;
+    private float[] autoReviveCounters;
 
 
     public static RoundLogicInfo Create()
@@ -58,6 +59,7 @@ public class RespawnRoundLogic : CustomVersusRoundLogic
         }
         this.endDelay = new Counter();
         this.endDelay.Set(90);
+        autoReviveCounters = new float[playerCount];
     }
 
     public override void OnLevelLoadFinish()
@@ -70,12 +72,45 @@ public class RespawnRoundLogic : CustomVersusRoundLogic
     public override void OnUpdate()
     {
         base.OnUpdate();
-        if (base.RoundStarted && base.Session.CurrentLevel.Ending && base.Session.CurrentLevel.CanEnd) {
-            if (this.endDelay) {
+        if (base.RoundStarted && base.Session.CurrentLevel.Ending && base.Session.CurrentLevel.CanEnd) 
+        {
+            if (this.endDelay) 
+            {
                 this.endDelay.Update();
                 return;
             }
             base.Session.EndRound();
+        }
+        if (BartizanModModule.Instance.Settings.RespawnMode == BartizanModSettings.Delayed && !Session.CurrentLevel.Ending) 
+        {
+            for (int i = 0; i < autoReviveCounters.Length; i++) 
+            {
+                if (this.autoReviveCounters[i] > 0f)
+                {
+                    this.autoReviveCounters[i] -= Engine.TimeMult;
+                    if (this.autoReviveCounters[i] <= 0f)
+                    {
+                        this.DoAutoRevive(i);
+                    }
+                }
+            }
+        }
+    }
+
+    private void DoAutoRevive(int playerIndex)
+    {
+        TeamReviver selectedTeamReviver = null;
+        foreach (TeamReviver teamReviver in base.Session.CurrentLevel[GameTags.TeamReviver])
+        {
+            if (teamReviver.Corpse.PlayerIndex == playerIndex)
+            {
+                selectedTeamReviver = teamReviver;
+                break;
+            }
+        }
+        if (selectedTeamReviver != null && !selectedTeamReviver.AutoRevive)
+        {
+            selectedTeamReviver.AutoRevive = true;
         }
     }
 
@@ -92,9 +127,12 @@ public class RespawnRoundLogic : CustomVersusRoundLogic
         return player;
     }
 
-    protected virtual void AfterOnPlayerDeath(Player player)
+    protected virtual void AfterOnPlayerDeath(Player player, PlayerCorpse corpse)
     {
-        this.RespawnPlayer(player.PlayerIndex);
+        if (BartizanModModule.Instance.Settings.RespawnMode == BartizanModSettings.Instant)
+            this.RespawnPlayer(player.PlayerIndex);
+        else
+            Session.CurrentLevel.Add(new TeamReviver(corpse, TeamReviver.Modes.Quest));
     }
 
     public override void OnPlayerDeath(Player player, PlayerCorpse corpse, int playerIndex, DeathCause cause, Vector2 position, int killerIndex)
@@ -122,7 +160,9 @@ public class RespawnRoundLogic : CustomVersusRoundLogic
             base.FinalKill(corpse, winner);
         }
 
-        this.AfterOnPlayerDeath(player);
+        autoReviveCounters[playerIndex] = 60f;
+
+        this.AfterOnPlayerDeath(player, corpse);
     }
 }
 
@@ -139,7 +179,7 @@ public class MobRoundLogic : RespawnRoundLogic
         activeGhosts = new PlayerGhost[playerCount];
     }
 
-    protected override void AfterOnPlayerDeath(Player player)
+    protected override void AfterOnPlayerDeath(Player player, PlayerCorpse corpse)
     {
     }
 
@@ -281,5 +321,4 @@ public class MyPlayerGhost
             mobLogic.OnPlayerDeath(null, corpse, self.PlayerIndex, DeathCause.Arrow, self.Position, killerIndex);
         }
     }
-
 }
