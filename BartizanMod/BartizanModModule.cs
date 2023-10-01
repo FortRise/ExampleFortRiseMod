@@ -114,7 +114,7 @@ public class BartizanModModule : FortModule, ITowerPatcher
     }
 }
 
-[CustomPickup("Bartizan/TeleporterOrb", Chance = 1f)]
+[CustomPickup("Bartizan/TeleporterOrb", Chance = 0.5f)]
 public class TeleporterOrb : CustomOrbPickup 
 {
     public TeleporterOrb(Vector2 position, Vector2 targetPosition) : base(position, targetPosition)
