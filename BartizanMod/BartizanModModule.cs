@@ -52,7 +52,7 @@ public class BartizanModModule : FortModule, ITowerPatcher
             VariantManager.GetVariantIconFromName("NoTeleporterOrb", BartizanAtlas)
         );
 
-        manager.AddArrowVariants(
+        manager.AddArrowVariant(
             RiseCore.ArrowsRegistry["Bartizan/TriggerBramble"],
             TFGame.MenuAtlas["variants/startWithBrambleArrows"],
             TFGame.MenuAtlas["variants/noBrambleArrows"]
