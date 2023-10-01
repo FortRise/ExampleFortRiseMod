@@ -15,6 +15,7 @@ namespace BartizanMod;
 public class BartizanModModule : FortModule, ITowerPatcher
 {
     public static Atlas BartizanAtlas;
+    public static SpriteData BartizanData;
     public static BartizanModModule Instance;
 
     public override Type SettingsType => typeof(BartizanModSettings);
@@ -30,6 +31,7 @@ public class BartizanModModule : FortModule, ITowerPatcher
     public override void LoadContent()
     {
         BartizanAtlas = Content.LoadAtlas("Atlas/atlas.xml", "Atlas/atlas.png");
+        BartizanData = Content.LoadSpriteData("Atlas/SpriteData/spriteData.xml", BartizanAtlas);
     }
 
     public override void OnVariantsRegister(VariantManager manager, bool noPerPlayer = false) 
@@ -47,7 +49,7 @@ public class BartizanModModule : FortModule, ITowerPatcher
 
         manager.AddPickupVariant(
             RiseCore.PickupRegistry["Bartizan/TeleporterOrb"], 
-            VariantManager.GetVariantIconFromName("NoHeadBounce", BartizanAtlas)
+            VariantManager.GetVariantIconFromName("NoTeleporterOrb", BartizanAtlas)
         );
 
         manager.AddArrowVariants(
@@ -101,14 +103,18 @@ public class BartizanModModule : FortModule, ITowerPatcher
     public void PatchTower(OnTower tower)
     {
         tower.VERSUS_Thornwood
-            .IncreaseTreasureRates(RiseCore.PickupRegistry["Bartizan/TriggerBramble"].ID);
+            .IncreaseTreasureRates("Bartizan/TriggerBramble");
 
         tower.VERSUS_Dreadwood
-            .IncreaseTreasureRates(RiseCore.PickupRegistry["Bartizan/TriggerBramble"].ID, 2);
+            .IncreaseTreasureRates("Bartizan/TriggerBramble", 2);
+        
+        tower.VERSUS_All(x => {
+            x.IncreaseTreasureRates("Bartizan/TeleporterOrb");
+        });
     }
 }
 
-[CustomPickup("Bartizan/TeleporterOrb")]
+[CustomPickup("Bartizan/TeleporterOrb", Chance = 1f)]
 public class TeleporterOrb : CustomOrbPickup 
 {
     public TeleporterOrb(Vector2 position, Vector2 targetPosition) : base(position, targetPosition)
@@ -131,7 +137,9 @@ public class TeleporterOrb : CustomOrbPickup
 
     public override CustomOrbInfo CreateInfo()
     {
-        return new CustomOrbInfo(null, Color.Aqua, null);
+        var sprite = BartizanModModule.BartizanData.GetSpriteInt("TeleporterOrb");
+        return new CustomOrbInfo(
+            new Hitbox(16, 16, -8, -8), Color.Aqua, sprite);
     }
 }
 
@@ -151,7 +159,7 @@ public class TriggerBrambleArrow : TriggerArrow
         graphic.Play(0, false);
         graphic.CenterOrigin();
         var arrowInfo = ArrowInfo.Create(graphic, TFGame.Atlas["player/arrowHUD/brambleArrow"]);
-        arrowInfo.Name = "Trigger Bramble Arrows";
+        arrowInfo.Name = "TriggerBramble Arrows";
         return arrowInfo;
     }
 

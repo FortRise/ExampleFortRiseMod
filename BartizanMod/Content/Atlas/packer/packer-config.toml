@@ -4,7 +4,8 @@ output_type = "Json"
 template_path = ["template.xml"]
 folders = [
     "gamemodes",
-    "variants"
+    "variants",
+    "pickups"
 ]
 
 [image_options]
