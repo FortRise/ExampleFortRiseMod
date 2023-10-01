@@ -46,12 +46,12 @@ public class BartizanModModule : FortModule, ITowerPatcher
         var infiniteArrows = manager.AddVariant(DeclareFromInfo("InfiniteArrows"), noPerPlayer);
 
         manager.AddPickupVariant(
-            RiseCore.PickupRegistry["Adventure World/TeleporterOrb"], 
+            RiseCore.PickupRegistry["Bartizan/TeleporterOrb"], 
             VariantManager.GetVariantIconFromName("NoHeadBounce", BartizanAtlas)
         );
 
         manager.AddArrowVariants(
-            RiseCore.ArrowsRegistry["TriggerBrambleArrows"],
+            RiseCore.ArrowsRegistry["Bartizan/TriggerBramble"],
             TFGame.MenuAtlas["variants/startWithBrambleArrows"],
             TFGame.MenuAtlas["variants/noBrambleArrows"]
         );
@@ -78,6 +78,7 @@ public class BartizanModModule : FortModule, ITowerPatcher
         MyPlayer.Load();
         MyArrow.Load();
         TriggerBrambleArrow.Load();
+        MyPlayerCorpse.Load();
     }
 
     public override void Unload()
@@ -89,6 +90,7 @@ public class BartizanModModule : FortModule, ITowerPatcher
         MyPlayer.Unload();
         MyArrow.Unload();
         TriggerBrambleArrow.Unload();
+        MyPlayerCorpse.Unload();
     }
 
     public override void Initialize()
@@ -98,35 +100,15 @@ public class BartizanModModule : FortModule, ITowerPatcher
 
     public void PatchTower(OnTower tower)
     {
-        tower.DARKWORLD_TheAmaranth
-            .Normal()
-            .Level(0)
-            .AddTreasure("Adventure World/TeleporterOrb")
-            .Back().Back()
-            .Legendary()
-            .AllLevel(x => {
-                x.AddTreasure("Adventure World/TeleporterOrb");
-            });
-        tower.VERSUS_Flight
-            .IncreaseTreasureRates(RiseCore.PickupRegistry["TriggerBrambleArrows"].ID)
-            .DecreaseTreasureRates(Pickups.BombArrows)
-            .DecreaseTreasureRates(Pickups.SpeedBoots)
-            .DecreaseTreasureRates(Pickups.Shield)
-            .DecreaseTreasureRates(Pickups.Mirror)
-            .DecreaseTreasureRates(Pickups.DarkOrb)
-            .DecreaseTreasureRates(Pickups.TimeOrb)
-            .DecreaseTreasureRates(Pickups.LavaOrb)
-            .DecreaseTreasureRates(Pickups.SpaceOrb)
-            .DecreaseTreasureRates(Pickups.ChaosOrb)
-            .DecreaseTreasureRates(Pickups.Bomb)
-            .DecreaseTreasureRates(Pickups.Wings)
-            .DecreaseTreasureRates(Pickups.Wings)
-            .DecreaseTreasureRates(Pickups.Wings)
-            .DecreaseTreasureRates(Pickups.Wings);
+        tower.VERSUS_Thornwood
+            .IncreaseTreasureRates(RiseCore.PickupRegistry["Bartizan/TriggerBramble"].ID);
+
+        tower.VERSUS_Dreadwood
+            .IncreaseTreasureRates(RiseCore.PickupRegistry["Bartizan/TriggerBramble"].ID, 2);
     }
 }
 
-[CustomPickup("Adventure World/TeleporterOrb")]
+[CustomPickup("Bartizan/TeleporterOrb")]
 public class TeleporterOrb : CustomOrbPickup 
 {
     public TeleporterOrb(Vector2 position, Vector2 targetPosition) : base(position, targetPosition)
@@ -154,7 +136,7 @@ public class TeleporterOrb : CustomOrbPickup
 }
 
 
-[CustomArrows("TriggerBrambleArrows", "CreateGraphicPickup")]
+[CustomArrows("Bartizan/TriggerBramble", "CreateGraphicPickup")]
 public class TriggerBrambleArrow : TriggerArrow
 {
     // This is automatically been set by the mod loader

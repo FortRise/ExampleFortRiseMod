@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
@@ -186,7 +187,7 @@ public class MobRoundLogic : RespawnRoundLogic
     private void RemoveGhostAndRespawn(int playerIndex, Vector2 position = default)
     {
         var ghost = activeGhosts[playerIndex];
-        if (ghost != null) 
+        if (ghost != null && ghost.Scene != null) 
         {
             var player = this.RespawnPlayer(playerIndex);
             if (player == null)
@@ -194,7 +195,7 @@ public class MobRoundLogic : RespawnRoundLogic
 
             // if we've been given a position, make sure the ghost spawns at that position and
             // retains its speed pre-spawn.
-            if (position != default(Vector2)) 
+            if (position != default) 
             {
                 player.Position.X = position.X;
                 player.Position.Y = position.Y;
@@ -207,11 +208,13 @@ public class MobRoundLogic : RespawnRoundLogic
         }
     }
 
-    public override void OnPlayerDeath(Player player, PlayerCorpse corpse, int playerIndex, DeathCause cause, Vector2 position, int killerIndex)
+    private IEnumerator GhostSpawnSequence(PlayerCorpse corpse, int playerIndex, Vector2 position, int killerIndex)
     {
-        base.OnPlayerDeath(player, corpse, playerIndex, cause, position, killerIndex);
-
-        this.Session.CurrentLevel.Add(activeGhosts[playerIndex] = new PlayerGhost(corpse));
+        while (corpse.Squished != Vector2.Zero || corpse.Revived)
+        {
+            yield return null;
+        }
+        Session.CurrentLevel.Add(activeGhosts[playerIndex] = new PlayerGhost(corpse));
 
         if (killerIndex == playerIndex || killerIndex == -1) 
         {
@@ -226,6 +229,19 @@ public class MobRoundLogic : RespawnRoundLogic
         {
             RemoveGhostAndRespawn(killerIndex, position);
         }
+    }
+
+    public override void OnPlayerDeath(Player player, PlayerCorpse corpse, int playerIndex, DeathCause cause, Vector2 position, int killerIndex)
+    {
+        base.OnPlayerDeath(player, corpse, playerIndex, cause, position, killerIndex);
+        
+        if (DynamicData.For(corpse).TryGet<Coroutine>("ghostMobCoroutine", out var val)) 
+        {
+            val.Replace(GhostSpawnSequence(corpse, playerIndex, position, killerIndex));
+            val.Active = true;
+        }
+        // this.Session.CurrentLevel.Add(activeGhosts[playerIndex] = new PlayerGhost(corpse));
+
     }
 
     public static RoundLogicInfo CreateForThis()
@@ -292,7 +308,7 @@ public class KillCountHUD : Entity
     }
 }
 
-public class MyPlayerGhost 
+public static class MyPlayerGhost 
 {
     internal static void Load() 
     {
@@ -319,6 +335,42 @@ public class MyPlayerGhost
         if (mobLogic != null && DynamicData.For(self).TryGet<PlayerCorpse>("corpse", out var corpse)) 
         {
             mobLogic.OnPlayerDeath(null, corpse, self.PlayerIndex, DeathCause.Arrow, self.Position, killerIndex);
+        }
+    }
+}
+
+public static class MyPlayerCorpse 
+{
+    public static void Load() 
+    {
+        On.TowerFall.PlayerCorpse.ctor_string_Allegiance_Vector2_Facing_int_int += ctor_patch;
+        On.TowerFall.PlayerCorpse.Update += Update_patch;
+    }
+
+    public static void Unload() 
+    {
+        On.TowerFall.PlayerCorpse.ctor_string_Allegiance_Vector2_Facing_int_int -= ctor_patch;
+        On.TowerFall.PlayerCorpse.Update -= Update_patch;
+    }
+
+    private static void ctor_patch(On.TowerFall.PlayerCorpse.orig_ctor_string_Allegiance_Vector2_Facing_int_int orig, PlayerCorpse self, string corpseSpriteID, Allegiance teamColor, Vector2 position, Facing facing, int playerIndex, int killerIndex)
+    {
+        orig(self, corpseSpriteID, teamColor, position, facing, playerIndex, killerIndex);
+        var level = Engine.Instance.Scene as Level;
+        if (level.Session.MatchSettings.CurrentModeName == "MobRoundLogic") 
+        {
+            var dynSelf = DynamicData.For(self);
+            var coroutine = new Coroutine();
+            dynSelf.Set("ghostMobCoroutine", coroutine);
+        }
+    }
+
+    private static void Update_patch(On.TowerFall.PlayerCorpse.orig_Update orig, PlayerCorpse self)
+    {
+        orig(self);
+        if (DynamicData.For(self).TryGet<Coroutine>("ghostMobCoroutine", out var val) && val.Active) 
+        {
+            val.Update();
         }
     }
 }
