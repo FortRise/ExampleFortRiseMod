@@ -1,0 +1,41 @@
+{
+  "sheet_path": "../atlas/png",
+  "frames": {
+    "variants/bottomlessQuiver": {
+      "x": 14,
+      "y": 14,
+      "width": 14,
+      "height": 14
+    },
+    "variants/atomicArrow": {
+      "x": 28,
+      "y": 0,
+      "width": 14,
+      "height": 14
+    },
+    "variants/jesterHat": {
+      "x": 0,
+      "y": 14,
+      "width": 14,
+      "height": 14
+    },
+    "variants/chestDeath": {
+      "x": 14,
+      "y": 0,
+      "width": 14,
+      "height": 14
+    },
+    "variants/annoyingMage": {
+      "x": 28,
+      "y": 14,
+      "width": 14,
+      "height": 14
+    },
+    "variants/shockDeath": {
+      "x": 0,
+      "y": 0,
+      "width": 14,
+      "height": 14
+    }
+  }
+}
