@@ -21,6 +21,8 @@ public class AdditionalVariantsModule : FortModule
         InvincibleTechnomageVariantSequence.Load();
         PlayerDeathVariants.Load();
         JesterHat.Load();
+        DarkWorld.Load();
+        LavaOverload.Load();
     }
 
     public override void Unload()
@@ -30,6 +32,8 @@ public class AdditionalVariantsModule : FortModule
         InvincibleTechnomageVariantSequence.Unload();
         PlayerDeathVariants.Unload();
         JesterHat.Unload();
+        DarkWorld.Unload();
+        LavaOverload.Unload();
     }
 
     private void BottomlessQuiver(On.TowerFall.Player.orig_Added orig, TowerFall.Player self)
@@ -71,12 +75,24 @@ public class AdditionalVariantsModule : FortModule
             description: "Allows player to teleport by dashing".ToUpperInvariant(),
             CustomVariantFlags.PerPlayer | CustomVariantFlags.CanRandom
         );
+        var darkInfo = new CustomVariantInfo(
+            "DarkWorld", AVAtlas["variants/darkWorld"], 
+            description: "Makes dark effect darker".ToUpperInvariant(),
+            CustomVariantFlags.CanRandom
+        );
+        var lavaInfo = new CustomVariantInfo(
+            "LavaOverload", AVAtlas["variants/lavaOverload"], 
+            description: "Four sides lava will appear".ToUpperInvariant(),
+            CustomVariantFlags.CanRandom
+        );
         var bottomlessQuiver =  manager.AddVariant(blQuiverInfo);
         manager.AddVariant(atomicInfo);
         var annoyingMage = manager.AddVariant(annoyanceInfo);
         manager.AddVariant(shockInfo);
         manager.AddVariant(chestInfo);
         manager.AddVariant(jestInfo);
+        manager.AddVariant(darkInfo);
+        manager.AddVariant(lavaInfo);
 
         manager.CreateLinks(bottomlessQuiver, manager.MatchVariants.NoQuivers);
         manager.CreateLinks(bottomlessQuiver, manager.MatchVariants.SmallQuivers);
