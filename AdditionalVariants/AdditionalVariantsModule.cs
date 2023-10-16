@@ -1,6 +1,7 @@
-﻿using FortRise;
+﻿using AdditionalVariants.EX;
+using AdditionalVariants.EX.JesterHat;
+using FortRise;
 using Monocle;
-using TowerFall;
 
 namespace AdditionalVariants;
 
@@ -23,6 +24,7 @@ public class AdditionalVariantsModule : FortModule
         JesterHat.Load();
         DarkWorld.Load();
         LavaOverload.Load();
+        FortRise.RiseCore.Events.OnPreInitialize += OnPreInitialize;
     }
 
     public override void Unload()
@@ -34,58 +36,64 @@ public class AdditionalVariantsModule : FortModule
         JesterHat.Unload();
         DarkWorld.Unload();
         LavaOverload.Unload();
+        FortRise.RiseCore.Events.OnPreInitialize -= OnPreInitialize;
+    }
+
+    private void OnPreInitialize()
+    {
+        TfExAPIModImports.RegisterVariantStateEvents(this, "JestersHat", JesterHatStateEvents.OnSaveState, JesterHatStateEvents.OnLoadState);
     }
 
     private void BottomlessQuiver(On.TowerFall.Player.orig_Added orig, TowerFall.Player self)
     {
         orig(self);
-        if (self.Level.Session.MatchSettings.Variants.GetCustomVariant("BottomlessQuiver")[self.PlayerIndex]) 
+        if (self.Level.Session.MatchSettings.Variants.GetCustomVariant("BottomlessQuiver")[self.PlayerIndex])
             self.Arrows.SetMaxArrows(int.MaxValue);
     }
 
     public override void OnVariantsRegister(VariantManager manager, bool noPerPlayer = false)
     {
         var blQuiverInfo = new CustomVariantInfo(
-            "BottomlessQuiver", AVAtlas["variants/bottomlessQuiver"], 
+            "BottomlessQuiver", AVAtlas["variants/bottomlessQuiver"],
             "No limit on how many arrows you can hold".ToUpperInvariant(),
             CustomVariantFlags.PerPlayer | CustomVariantFlags.CanRandom
         );
         var atomicInfo = new CustomVariantInfo(
-            "AtomicArrow", AVAtlas["variants/atomicArrow"], 
+            "AtomicArrow", AVAtlas["variants/atomicArrow"],
             description: "Arrow explodes when stucked".ToUpperInvariant(),
             CustomVariantFlags.PerPlayer | CustomVariantFlags.CanRandom
         );
         var annoyanceInfo = new CustomVariantInfo(
-            "AnnoyingMage", AVAtlas["variants/annoyingMage"], 
+            "AnnoyingMage", AVAtlas["variants/annoyingMage"],
             description: "Summons an invincible Technomage".ToUpperInvariant(),
             CustomVariantFlags.CanRandom
         );
         var shockInfo = new CustomVariantInfo(
-            "ShockDeath", AVAtlas["variants/shockDeath"], 
+            "ShockDeath", AVAtlas["variants/shockDeath"],
             description: "Summons a shockwave when a player died".ToUpperInvariant(),
             CustomVariantFlags.PerPlayer | CustomVariantFlags.CanRandom
         );
         var chestInfo = new CustomVariantInfo(
-            "ChestDeath", AVAtlas["variants/chestDeath"], 
+            "ChestDeath", AVAtlas["variants/chestDeath"],
             description: "Spawns a chest when a player died".ToUpperInvariant(),
             CustomVariantFlags.PerPlayer | CustomVariantFlags.CanRandom
         );
         var jestInfo = new CustomVariantInfo(
-            "JestersHat", AVAtlas["variants/jesterHat"], 
+            "JestersHat", AVAtlas["variants/jesterHat"],
             description: "Allows player to teleport by dashing".ToUpperInvariant(),
             CustomVariantFlags.PerPlayer | CustomVariantFlags.CanRandom
         );
         var darkInfo = new CustomVariantInfo(
-            "DarkWorld", AVAtlas["variants/darkWorld"], 
+            "DarkWorld", AVAtlas["variants/darkWorld"],
             description: "Makes dark effect darker".ToUpperInvariant(),
             CustomVariantFlags.CanRandom
         );
         var lavaInfo = new CustomVariantInfo(
-            "LavaOverload", AVAtlas["variants/lavaOverload"], 
+            "LavaOverload", AVAtlas["variants/lavaOverload"],
             description: "Four sides lava will appear".ToUpperInvariant(),
             CustomVariantFlags.CanRandom
         );
-        var bottomlessQuiver =  manager.AddVariant(blQuiverInfo);
+        var bottomlessQuiver = manager.AddVariant(blQuiverInfo);
         manager.AddVariant(atomicInfo);
         var annoyingMage = manager.AddVariant(annoyanceInfo);
         manager.AddVariant(shockInfo);
