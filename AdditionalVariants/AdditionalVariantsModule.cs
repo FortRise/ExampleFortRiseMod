@@ -41,7 +41,8 @@ public class AdditionalVariantsModule : FortModule
 
     private void OnPreInitialize()
     {
-        TfExAPIModImports.RegisterVariantStateEvents(this, "JestersHat", JesterHatStateEvents.OnSaveState, JesterHatStateEvents.OnLoadState);
+        TfExAPIModImports.RegisterVariantStateEvents?.Invoke
+            (this, "JestersHat", JesterHatStateEvents.OnSaveState, JesterHatStateEvents.OnLoadState);
     }
 
     private void BottomlessQuiver(On.TowerFall.Player.orig_Added orig, TowerFall.Player self)
