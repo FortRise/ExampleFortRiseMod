@@ -44,7 +44,7 @@ public static class PlayerDeathVariants
                 Allegiance.Neutral => AdditionalVariantsModule.AVAtlas["chest/graychest"],
                 Allegiance.Blue => AdditionalVariantsModule.AVAtlas["chest/bluechest"],
                 Allegiance.Red => AdditionalVariantsModule.AVAtlas["chest/redchest"],
-                _ => AdditionalVariantsModule.AVAtlas["chest/graychest"],
+                _ => TFGame.Atlas["treasureChestSpecial"],
             };
             DynamicData.For(chest).Get<Sprite<int>>("sprite").SwapSubtexture(texture);
 
