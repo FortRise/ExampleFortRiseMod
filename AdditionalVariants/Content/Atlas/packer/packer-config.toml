@@ -2,7 +2,8 @@ name = "atlas"
 output_path = "../"
 output_type = "Json"
 folders = [
-    "variants"
+    "variants",
+    "chest"
 ]
 
 [image_options]

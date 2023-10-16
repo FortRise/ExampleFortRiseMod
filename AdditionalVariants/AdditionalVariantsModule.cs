@@ -7,7 +7,7 @@ namespace AdditionalVariants;
 [Fort("com.terria.additionalvariants", "Additional Variants")]
 public class AdditionalVariantsModule : FortModule
 {
-    private static Atlas AVAtlas;
+    public static Atlas AVAtlas;
 
     public override void LoadContent()
     {

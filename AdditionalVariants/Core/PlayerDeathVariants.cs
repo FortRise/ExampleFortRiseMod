@@ -1,5 +1,6 @@
 using FortRise;
 using Monocle;
+using MonoMod.Utils;
 using TowerFall;
 
 namespace AdditionalVariants;
@@ -38,6 +39,14 @@ public static class PlayerDeathVariants
                 var treasureSpawns = self.Level.Session.TreasureSpawner.GetTreasureSpawn();
                 chest = new TreasureChest(posY, TreasureChest.Types.AutoOpen, TreasureChest.AppearModes.Time, treasureSpawns, 30);
             }
+            var texture = self.TeamColor switch
+            {
+                Allegiance.Neutral => AdditionalVariantsModule.AVAtlas["chest/graychest"],
+                Allegiance.Blue => AdditionalVariantsModule.AVAtlas["chest/bluechest"],
+                Allegiance.Red => AdditionalVariantsModule.AVAtlas["chest/redchest"],
+                _ => AdditionalVariantsModule.AVAtlas["chest/graychest"],
+            };
+            DynamicData.For(chest).Get<Sprite<int>>("sprite").SwapSubtexture(texture);
 
             self.Level.Add(chest);
         }
