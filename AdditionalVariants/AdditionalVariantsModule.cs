@@ -24,18 +24,24 @@ public class AdditionalVariantsModule : FortModule
         JesterHat.Load();
         DarkWorld.Load();
         LavaOverload.Load();
+        NoDodgeCancel.Load();
+        ChaoticRoll.Load();
+        FadingArrow.Load();
         FortRise.RiseCore.Events.OnPreInitialize += OnPreInitialize;
     }
 
     public override void Unload()
     {
         On.TowerFall.Player.Added -= BottomlessQuiver;
+        NoDodgeCancel.Unload();
         AtomicArrow.Unload();
         InvincibleTechnomageVariantSequence.Unload();
         PlayerDeathVariants.Unload();
         JesterHat.Unload();
         DarkWorld.Unload();
         LavaOverload.Unload();
+        ChaoticRoll.Unload();
+        FadingArrow.Unload();
         FortRise.RiseCore.Events.OnPreInitialize -= OnPreInitialize;
     }
 
@@ -94,6 +100,21 @@ public class AdditionalVariantsModule : FortModule
             description: "Four sides lava will appear".ToUpperInvariant(),
             CustomVariantFlags.CanRandom
         );
+        var rollInfo = new CustomVariantInfo(
+            "ChaoticRoll", AVAtlas["variants/chaoticroll"],
+            description: "Random variants every round".ToUpperInvariant()
+        );
+        var noDodgeCancelInfo = new CustomVariantInfo(
+            "NoDodgeCancel", AVAtlas["variants/nododgecancel"],
+            description: "Removes the dodge cancellation mechanic".ToUpperInvariant(),
+            CustomVariantFlags.CanRandom | CustomVariantFlags.PerPlayer
+        );
+        var fadingInfo = new CustomVariantInfo(
+            "FadingArrow", AVAtlas["variants/fadingArrow"],
+            description: "Arrow will start fading when stucked".ToUpperInvariant(),
+            CustomVariantFlags.CanRandom | CustomVariantFlags.PerPlayer
+        );
+
         var bottomlessQuiver = manager.AddVariant(blQuiverInfo);
         manager.AddVariant(atomicInfo);
         var annoyingMage = manager.AddVariant(annoyanceInfo);
@@ -102,9 +123,13 @@ public class AdditionalVariantsModule : FortModule
         manager.AddVariant(jestInfo);
         manager.AddVariant(darkInfo);
         manager.AddVariant(lavaInfo);
+        manager.AddVariant(rollInfo);
+        var noDodgeCancel = manager.AddVariant(noDodgeCancelInfo);
+        manager.AddVariant(fadingInfo);
 
         manager.CreateLinks(bottomlessQuiver, manager.MatchVariants.NoQuivers);
         manager.CreateLinks(bottomlessQuiver, manager.MatchVariants.SmallQuivers);
         manager.CreateLinks(annoyingMage, manager.MatchVariants.DarkPortals);
+        manager.CreateLinks(noDodgeCancel, manager.MatchVariants.NoDodging);
     }
 }

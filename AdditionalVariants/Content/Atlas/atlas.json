@@ -7,63 +7,81 @@
       "width": 40,
       "height": 10
     },
-    "variants/jesterHat": {
-      "x": 40,
-      "y": 28,
+    "variants/annoyingMage": {
+      "x": 44,
+      "y": 24,
       "width": 14,
       "height": 14
     },
-    "chest/bluechest": {
-      "x": 0,
-      "y": 20,
-      "width": 40,
-      "height": 10
-    },
-    "variants/shockDeath": {
-      "x": 40,
-      "y": 0,
+    "variants/darkWorld": {
+      "x": 30,
+      "y": 10,
       "width": 14,
       "height": 14
     },
     "chest/graychest": {
-      "x": 0,
-      "y": 10,
+      "x": 40,
+      "y": 0,
       "width": 40,
       "height": 10
     },
-    "variants/darkWorld": {
+    "variants/chaoticroll": {
       "x": 0,
-      "y": 30,
+      "y": 42,
+      "width": 16,
+      "height": 16
+    },
+    "chest/bluechest": {
+      "x": 80,
+      "y": 0,
+      "width": 40,
+      "height": 10
+    },
+    "variants/nododgecancel": {
+      "x": 0,
+      "y": 10,
+      "width": 16,
+      "height": 16
+    },
+    "variants/jesterHat": {
+      "x": 16,
+      "y": 38,
       "width": 14,
       "height": 14
     },
     "variants/chestDeath": {
-      "x": 14,
-      "y": 30,
-      "width": 14,
-      "height": 14
-    },
-    "variants/bottomlessQuiver": {
-      "x": 28,
-      "y": 42,
-      "width": 14,
-      "height": 14
-    },
-    "variants/atomicArrow": {
-      "x": 42,
-      "y": 42,
-      "width": 14,
-      "height": 14
-    },
-    "variants/annoyingMage": {
-      "x": 0,
-      "y": 44,
+      "x": 30,
+      "y": 24,
       "width": 14,
       "height": 14
     },
     "variants/lavaOverload": {
-      "x": 40,
-      "y": 14,
+      "x": 16,
+      "y": 24,
+      "width": 14,
+      "height": 14
+    },
+    "variants/bottomlessQuiver": {
+      "x": 30,
+      "y": 38,
+      "width": 14,
+      "height": 14
+    },
+    "variants/atomicArrow": {
+      "x": 44,
+      "y": 10,
+      "width": 14,
+      "height": 14
+    },
+    "variants/fadingArrow": {
+      "x": 0,
+      "y": 26,
+      "width": 16,
+      "height": 16
+    },
+    "variants/shockDeath": {
+      "x": 16,
+      "y": 10,
       "width": 14,
       "height": 14
     }
