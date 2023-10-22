@@ -32,7 +32,9 @@ public static class NoDodgeCancel
             });
         }
 
-        if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCall<Monocle.Counter>("op_Implicit"))) 
+        if (cursor.TryGotoNext(MoveType.After, 
+            instr => instr.MatchLdfld<TowerFall.Player>("jumpBufferCounter"),
+            instr => instr.MatchCall<Monocle.Counter>("op_Implicit"))) 
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<bool, Player, bool>>((dodgePressed, self) => {
@@ -43,11 +45,24 @@ public static class NoDodgeCancel
             });
         }
 
+        if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(2.8f)))
+        {
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.EmitDelegate<Func<float, Player, float>>((speed, self) => {
+                var canActive = VariantManager.GetCustomVariant("NoHypers")[self.PlayerIndex];
+                if (canActive) 
+                    return 1f;
+                return speed;
+            });
+        }
+
         if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdfld<TowerFall.InputState>("DodgePressed"))) 
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<bool, Player, bool>>((dodgePressed, self) => {
-                if (VariantManager.GetCustomVariant("NoDodgeCancel")[self.PlayerIndex]) 
+                var canActive = VariantManager.GetCustomVariant("NoDodgeCancel")[self.PlayerIndex] || 
+                    VariantManager.GetCustomVariant("NoHypers")[self.PlayerIndex];
+                if (canActive) 
                     return false;
                 
                 return dodgePressed;

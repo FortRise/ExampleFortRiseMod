@@ -1,35 +1,29 @@
 {
   "sheet_path": "../atlas/png",
   "frames": {
-    "chest/redchest": {
-      "x": 0,
-      "y": 0,
-      "width": 40,
-      "height": 10
-    },
-    "variants/annoyingMage": {
-      "x": 44,
-      "y": 24,
-      "width": 14,
-      "height": 14
-    },
-    "variants/darkWorld": {
-      "x": 30,
-      "y": 10,
-      "width": 14,
-      "height": 14
-    },
     "chest/graychest": {
       "x": 40,
       "y": 0,
       "width": 40,
       "height": 10
     },
-    "variants/chaoticroll": {
+    "variants/jesterHat": {
+      "x": 30,
+      "y": 26,
+      "width": 14,
+      "height": 14
+    },
+    "variants/noDodgeCancel": {
       "x": 0,
-      "y": 42,
+      "y": 26,
       "width": 16,
       "height": 16
+    },
+    "variants/bottomlessQuiver": {
+      "x": 44,
+      "y": 24,
+      "width": 14,
+      "height": 14
     },
     "chest/bluechest": {
       "x": 80,
@@ -37,50 +31,62 @@
       "width": 40,
       "height": 10
     },
-    "variants/nododgecancel": {
+    "variants/noHypers": {
       "x": 0,
       "y": 10,
       "width": 16,
       "height": 16
     },
-    "variants/jesterHat": {
+    "variants/lavaOverload": {
       "x": 16,
-      "y": 38,
+      "y": 40,
       "width": 14,
       "height": 14
     },
     "variants/chestDeath": {
       "x": 30,
-      "y": 24,
+      "y": 40,
       "width": 14,
       "height": 14
     },
-    "variants/lavaOverload": {
-      "x": 16,
-      "y": 24,
-      "width": 14,
-      "height": 14
-    },
-    "variants/bottomlessQuiver": {
-      "x": 30,
+    "variants/annoyingMage": {
+      "x": 44,
       "y": 38,
       "width": 14,
       "height": 14
     },
-    "variants/atomicArrow": {
-      "x": 44,
+    "variants/darkWorld": {
+      "x": 32,
       "y": 10,
       "width": 14,
       "height": 14
     },
     "variants/fadingArrow": {
       "x": 0,
-      "y": 26,
+      "y": 42,
+      "width": 16,
+      "height": 16
+    },
+    "chest/redchest": {
+      "x": 0,
+      "y": 0,
+      "width": 40,
+      "height": 10
+    },
+    "variants/chaoticroll": {
+      "x": 16,
+      "y": 10,
       "width": 16,
       "height": 16
     },
     "variants/shockDeath": {
       "x": 16,
+      "y": 26,
+      "width": 14,
+      "height": 14
+    },
+    "variants/atomicArrow": {
+      "x": 46,
       "y": 10,
       "width": 14,
       "height": 14
