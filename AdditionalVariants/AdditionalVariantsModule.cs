@@ -1,4 +1,4 @@
-﻿using AdditionalVariants.EX;
+using AdditionalVariants.EX;
 using AdditionalVariants.EX.JesterHat;
 using FortRise;
 using Monocle;
@@ -9,15 +9,18 @@ namespace AdditionalVariants;
 public class AdditionalVariantsModule : FortModule
 {
     public static Atlas AVAtlas;
+    public static NeonShaderResource NeonShader;
 
     public override void LoadContent()
     {
         AVAtlas = Content.LoadAtlas("Atlas/atlas.json", "Atlas/atlas.png");
+        NeonShader = Content.LoadShader<NeonShaderResource>("Effects/neon.fxb", "Neon", out var _);
     }
 
     public override void Load()
     {
         On.TowerFall.Player.Added += BottomlessQuiver;
+        On.TowerFall.Level.Begin += Begin_patch;
         AtomicArrow.Load();
         InvincibleTechnomageVariantSequence.Load();
         PlayerDeathVariants.Load();
@@ -30,9 +33,17 @@ public class AdditionalVariantsModule : FortModule
         FortRise.RiseCore.Events.OnPreInitialize += OnPreInitialize;
     }
 
+    private void Begin_patch(On.TowerFall.Level.orig_Begin orig, TowerFall.Level self)
+    {
+        orig(self);
+        // var filter = new NeonFilter();
+        // self.Activate(filter);
+    }
+
     public override void Unload()
     {
         On.TowerFall.Player.Added -= BottomlessQuiver;
+        On.TowerFall.Level.Begin -= Begin_patch;
         NoDodgeCancel.Unload();
         AtomicArrow.Unload();
         InvincibleTechnomageVariantSequence.Unload();
@@ -104,8 +115,13 @@ public class AdditionalVariantsModule : FortModule
             "ChaoticRoll", AVAtlas["variants/chaoticroll"],
             description: "Random variants every round".ToUpperInvariant()
         );
+        var noHypersInfo = new CustomVariantInfo(
+            "NoHypers", AVAtlas["variants/noHypers"],
+            description: "Removes the ability to hyper dodge".ToUpperInvariant(),
+            CustomVariantFlags.CanRandom | CustomVariantFlags.PerPlayer
+        );
         var noDodgeCancelInfo = new CustomVariantInfo(
-            "NoDodgeCancel", AVAtlas["variants/nododgecancel"],
+            "NoDodgeCancel", AVAtlas["variants/noDodgeCancel"],
             description: "Removes the dodge cancellation mechanic".ToUpperInvariant(),
             CustomVariantFlags.CanRandom | CustomVariantFlags.PerPlayer
         );
@@ -124,12 +140,15 @@ public class AdditionalVariantsModule : FortModule
         manager.AddVariant(darkInfo);
         manager.AddVariant(lavaInfo);
         manager.AddVariant(rollInfo);
+        var noHyper = manager.AddVariant(noHypersInfo);
         var noDodgeCancel = manager.AddVariant(noDodgeCancelInfo);
         manager.AddVariant(fadingInfo);
 
         manager.CreateLinks(bottomlessQuiver, manager.MatchVariants.NoQuivers);
         manager.CreateLinks(bottomlessQuiver, manager.MatchVariants.SmallQuivers);
         manager.CreateLinks(annoyingMage, manager.MatchVariants.DarkPortals);
+        manager.CreateLinks(noHyper, manager.MatchVariants.NoDodging);
         manager.CreateLinks(noDodgeCancel, manager.MatchVariants.NoDodging);
+        manager.CreateLinks(noHyper, noDodgeCancel);
     }
 }
