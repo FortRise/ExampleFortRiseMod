@@ -1,6 +1,6 @@
 {
 	"name": "BartizanMod",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"required": "2.4.0",
 	"author": "Kha",
 	"description": "A BartizanMod rewritten in FortRise as a module",

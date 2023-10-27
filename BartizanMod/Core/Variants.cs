@@ -101,14 +101,14 @@ public class MyArrow
 
     private static void ArrowUpdate_patch(On.TowerFall.Arrow.orig_ArrowUpdate orig, Arrow self)
     {
-        if (VariantManager.GetCustomVariant("AwfullySlowArrows")) 
+        if (VariantManager.GetCustomVariant("AwfullySlowArrows")[self.PlayerIndex]) 
         {
             Comp_TimeMult.SetValue(null, Engine.TimeMult * 0.2f, null);
             orig(self);
             Comp_TimeMult.SetValue(null, Engine.TimeMult / 0.2f, null);
             return;
         }
-        if (VariantManager.GetCustomVariant("AwfullyFastArrows")) 
+        if (VariantManager.GetCustomVariant("AwfullyFastArrows")[self.PlayerIndex]) 
         {
             Comp_TimeMult.SetValue(null, Engine.TimeMult * 3.0f, null);
             orig(self);
