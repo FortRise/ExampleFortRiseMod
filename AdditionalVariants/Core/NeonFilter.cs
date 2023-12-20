@@ -7,21 +7,13 @@ namespace AdditionalVariants;
 
 public class NeonFilter : ShaderFilter
 {
-    private RenderTarget2D neonRT;
     public NeonFilter() 
     {
-        neonRT = new RenderTarget2D(Engine.Instance.GraphicsDevice, 320, 240);
     }
 
 
     public override void AfterRender(RenderTarget2D canvas)
     {
-        // Override the main canvas
-        Engine.Instance.GraphicsDevice.SetRenderTarget(canvas);
-        Draw.SpriteBatch.Begin(SpriteSortMode.Texture, BlendState.AlphaBlend, SamplerState.PointClamp, 
-            DepthStencilState.None, RasterizerState.CullNone);
-        Draw.SpriteBatch.Draw(neonRT, Vector2.Zero, Color.White);
-        Draw.SpriteBatch.End();
     }
 
     public override void BeforeRender(RenderTarget2D canvas)
@@ -32,20 +24,35 @@ public class NeonFilter : ShaderFilter
     public override void Render(RenderTarget2D canvas)
     {
         var shader = AdditionalVariantsModule.NeonShader;
-        Engine.Instance.GraphicsDevice.SetRenderTarget(neonRT);
-        Draw.SpriteBatch.Begin(SpriteSortMode.Texture, BlendState.AlphaBlend, SamplerState.PointClamp, 
-            DepthStencilState.None, RasterizerState.CullNone, shader.Shader);
+        Draw.SpriteBatch.BeginShaderRegion();
 
+        shader.UseTexture1(ForegroundRenderTarget);
         shader.Apply();
         Draw.SpriteBatch.Draw(ForegroundRenderTarget, Vector2.Zero, Color.White);
-        Draw.SpriteBatch.End();
+
+        Draw.SpriteBatch.EndShaderRegion();
     }
 
     public override void Activated(LevelRenderData data)
     {
         base.Activated(data);
-        BGTiles.Active = false;
         BGTiles.Visible = false;
+        if (Level.Background != null)
+            Level.Background.Visible = false;
+
+        if (Level.Foreground != null)
+            Level.Foreground.Visible = false;
+    }
+
+    public override void Deactivated()
+    {
+        base.Deactivated();
+        BGTiles.Visible = true;
+        if (Level.Background != null)
+            Level.Background.Visible = true;
+
+        if (Level.Foreground != null)
+            Level.Foreground.Visible = true;
     }
 }
 

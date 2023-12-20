@@ -10,13 +10,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Content/Atlas/**/*">
+    <Content Include="Content/**/*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
+  <!-- <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="7.0.3" />
-  </ItemGroup>
+  </ItemGroup> -->
+
+
+  <Target Name="ClutterPacker" BeforeTargets="CoreCompile">
+    <Exec Command="cluttered config -i Content/Atlas/packer/packer-config.toml"/> 
+  </Target>
 </Project>
 

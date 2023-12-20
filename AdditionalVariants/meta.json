@@ -1,7 +1,0 @@
-{
-	"name": "AdditionalVariants",
-	"version": "1.2.0",
-	"author": "Terria",
-	"description": "Adds more variants to the game.",
-	"dll": "AdditionalVariants.dll"
-}

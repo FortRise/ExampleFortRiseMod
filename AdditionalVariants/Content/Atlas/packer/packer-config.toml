@@ -3,7 +3,8 @@ output_path = "../"
 output_type = "Json"
 folders = [
     "variants",
-    "chest"
+    "chest",
+    "misc"
 ]
 
 [image_options]
