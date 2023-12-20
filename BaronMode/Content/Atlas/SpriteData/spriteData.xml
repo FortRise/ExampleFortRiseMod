@@ -1,0 +1,12 @@
+<SpriteData>
+  <sprite_int id="TeleporterOrb">
+    <Texture>pickups/teleporterOrb</Texture>
+    <FrameWidth>16</FrameWidth>
+    <FrameHeight>16</FrameHeight>
+    <OriginX>8</OriginX>
+    <OriginY>8</OriginY>
+    <Animations>
+      <Anim id="0" delay=".08" frames="0, 1, 2, 3, 4, 5, 6" />
+    </Animations>
+  </sprite_int>
+</SpriteData>

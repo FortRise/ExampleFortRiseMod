@@ -1,0 +1,17 @@
+{
+  "sheet_path": "Content/Atlas/packer/../atlas/png",
+  "frames": {
+    "pickups/gemCoin": {
+      "x": 0,
+      "y": 82,
+      "width": 96,
+      "height": 10
+    },
+    "gameModes/baron": {
+      "x": 0,
+      "y": 0,
+      "width": 184,
+      "height": 82
+    }
+  }
+}
