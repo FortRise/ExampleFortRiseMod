@@ -83,7 +83,7 @@ public class AdditionalVariantsModule : FortModule
         );
         var atomicInfo = new CustomVariantInfo(
             "AtomicArrow", TextureRegistry.AtomicArrow,
-            description: "Arrow explodes when stucked".ToUpperInvariant(),
+            description: "Arrows explode when they hit a wall".ToUpperInvariant(),
             CustomVariantFlags.PerPlayer | CustomVariantFlags.CanRandom
         );
         var annoyanceInfo = new CustomVariantInfo(
@@ -93,17 +93,17 @@ public class AdditionalVariantsModule : FortModule
         );
         var shockInfo = new CustomVariantInfo(
             "ShockDeath", TextureRegistry.ShockDeath,
-            description: "Summons a shockwave when a player died".ToUpperInvariant(),
+            description: "Summons a shockwave when a player dies".ToUpperInvariant(),
             CustomVariantFlags.PerPlayer | CustomVariantFlags.CanRandom
         );
         var chestInfo = new CustomVariantInfo(
             "ChestDeath", TextureRegistry.ChestDeath,
-            description: "Spawns a chest when a player died".ToUpperInvariant(),
+            description: "Spawns a chest when a player dies".ToUpperInvariant(),
             CustomVariantFlags.PerPlayer | CustomVariantFlags.CanRandom
         );
         var jestInfo = new CustomVariantInfo(
             "JestersHat", TextureRegistry.JesterHat,
-            description: "Allows player to teleport by dashing".ToUpperInvariant(),
+            description: "Allows players to teleport by dashing".ToUpperInvariant(),
             CustomVariantFlags.PerPlayer | CustomVariantFlags.CanRandom
         );
         var darkInfo = new CustomVariantInfo(
@@ -113,7 +113,7 @@ public class AdditionalVariantsModule : FortModule
         );
         var lavaInfo = new CustomVariantInfo(
             "LavaOverload", TextureRegistry.LavaOverload,
-            description: "Four sides lava will appear".ToUpperInvariant(),
+            description: "Lava will appear on all four sides".ToUpperInvariant(),
             CustomVariantFlags.CanRandom
         );
         var rollInfo = new CustomVariantInfo(
@@ -132,7 +132,7 @@ public class AdditionalVariantsModule : FortModule
         );
         var fadingInfo = new CustomVariantInfo(
             "FadingArrow", TextureRegistry.FadingArrow,
-            description: "Arrow will start fading when stucked".ToUpperInvariant(),
+            description: "Arrow will start fading when stuck to a wall".ToUpperInvariant(),
             CustomVariantFlags.CanRandom | CustomVariantFlags.PerPlayer
         );
         var neonInfo = new CustomVariantInfo(
@@ -142,7 +142,7 @@ public class AdditionalVariantsModule : FortModule
         );
         var staminaInfo = new CustomVariantInfo(
             "DashStamina", TextureRegistry.DashStamina,
-            description: "Unleashes the stamina mechanic for dashes".ToUpperInvariant(),
+            description: "Adds a stamina mechanic for dashes".ToUpperInvariant(),
             CustomVariantFlags.CanRandom
         );
         // var arrowFallingUp = new CustomVariantInfo(
