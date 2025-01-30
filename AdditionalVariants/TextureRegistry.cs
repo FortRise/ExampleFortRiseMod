@@ -22,6 +22,7 @@ public static class TextureRegistry
     public static Subtexture NeonWorld => TFGame.Atlas["AdditionalVariants/variants/neonWorld"];
     public static Subtexture DashStamina => TFGame.Atlas["AdditionalVariants/variants/dashStamina"];
     public static Subtexture KingsWrath => TFGame.Atlas["AdditionalVariants/variants/kingsWrath"];
+    public static Subtexture NoArrowTinks => TFGame.Atlas["AdditionalVariants/variants/noArrowTinks"];
 
     // Chest
     public static Subtexture GrayChest => TFGame.Atlas["AdditionalVariants/chest/graychest"];

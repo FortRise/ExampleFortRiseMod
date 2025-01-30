@@ -30,6 +30,7 @@ public class AdditionalVariantsModule : FortModule
         FadingArrow.Load();
         PlayerStaminaHooks.Load();
         KingsWrath.Load();
+        NoArrowTinks.Load();
         // ArrowFallingUp.Load();
         FortRise.RiseCore.Events.OnPreInitialize += OnPreInitialize;
     }
@@ -59,6 +60,7 @@ public class AdditionalVariantsModule : FortModule
         FadingArrow.Unload();
         PlayerStaminaHooks.Unload();
         KingsWrath.Unload();
+        NoArrowTinks.Unload();
         // ArrowFallingUp.Unload();
         FortRise.RiseCore.Events.OnPreInitialize -= OnPreInitialize;
     }
@@ -152,6 +154,11 @@ public class AdditionalVariantsModule : FortModule
             description: "Crown drops on the floor will spawn Lethal Ghost".ToUpperInvariant(),
             CustomVariantFlags.CanRandom | CustomVariantFlags.PerPlayer
         );
+        var noArrowTinksInfo = new CustomVariantInfo(
+            "NoArrowTinks", TextureRegistry.NoArrowTinks,
+            description: "Disabled collision of an arrow to arrow".ToUpperInvariant(),
+            CustomVariantFlags.CanRandom
+        );
         // var arrowFallingUp = new CustomVariantInfo(
         //     "ArrowFallingUp", AVAtlas["variants/arrowFallingUp"],
         //     description: "Arrow will fall upwards".ToUpperInvariant(),
@@ -173,6 +180,7 @@ public class AdditionalVariantsModule : FortModule
         var neonWorld = manager.AddVariant(neonInfo);
         var staminaDash = manager.AddVariant(staminaInfo);
         manager.AddVariant(kingsWrathInfo);
+        manager.AddVariant(noArrowTinksInfo);
         // manager.AddVariant(arrowFallingUp);
 
         manager.CreateLinks(bottomlessQuiver, manager.MatchVariants.NoQuivers);
