@@ -39,6 +39,7 @@ public static class JesterHat
             warpPoints.AddRange(spawner);
             warpPoints.AddRange(treasureChest);
             DynamicData.For(self).Set("warpPoints", warpPoints);
+            DynamicData.For(self).Set("lastWarpPoint", new Vector2(0, 0));
         }
     }
 
@@ -53,18 +54,21 @@ public static class JesterHat
             lightFade.Init(self, null);
             self.Level.Add(lightFade);
             warpPoints.Sort((x, y) => WarpSorter(self, x, y));
-            self.Position = warpPoints[1];
+            var warp = warpPoints[1];
+            var lastWarpPoint = dynSelf.Get<Vector2>("lastWarpPoint");
+            if (warp == lastWarpPoint) 
+            {
+                warp = warpPoints[0];
+            }
+            self.Position = warp;
             self.Level.Particles.Emit(Particles.PlayerDust[self.CharacterIndex], 12, self.Position, new Vector2(5f, 8f));
+            dynSelf.Set("lastWarpPoint", warp);
         }
         orig(self);
     }
 
-    private static int WarpSorter(Player player, Vector2 a, Vector2 b)
+    private static int WarpSorter(Player player, Vector2 a, Vector2 b) 
     {
-        if (VisionCone(player.Facing, 1.7453293f, a)) 
-        {
-            return 1;
-        }
         if (Vector2.DistanceSquared(a, player.Position) <= 400f)
         {
             return 1;
@@ -73,12 +77,8 @@ public static class JesterHat
         {
             return -1;
         }
-        return 0;
 
-		bool VisionCone(Facing facing, float range, Vector2 check)
-		{
-			return Calc.AbsAngleDiff((facing == Facing.Left) ? 3.1415927f : 0f, WrapMath.WrapAngle(player.Position, check)) <= range;
-		}
+        return (int)(WrapMath.WrapDistanceSquared(a, player.Position) - WrapMath.WrapDistanceSquared(b, player.Position));
     }
 
     private static void DoExplodeEffect(Player player)

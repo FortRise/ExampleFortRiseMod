@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    <OutputPath>..\..\..\Mods\AddtionalVariants</OutputPath>
+    <OutputPath>..\..\..\Mods\AdditionalVariants</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,13 +15,8 @@
     </Content>
   </ItemGroup>
 
-  <!-- <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="7.0.3" />
-  </ItemGroup> -->
-
-
-  <Target Name="ClutterPacker" BeforeTargets="CoreCompile">
-    <Exec Command="cluttered config -i Content/Atlas/packer/packer-config.toml"/> 
-  </Target>
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="9.0.1" IncludeAssets="compile"/>
+  </ItemGroup>
 </Project>
 

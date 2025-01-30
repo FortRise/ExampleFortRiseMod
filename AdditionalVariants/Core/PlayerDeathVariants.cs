@@ -143,16 +143,18 @@ public static class PlayerDeathVariants
         }
         if (VariantManager.GetCustomVariant("ChestDeath")[self.PlayerIndex]) 
         {
-            var posY = self.Position with { Y = self.Position.Y - 5 };
+            var x = (float)(Math.Floor(self.Position.X / 10.0f) * 10.0f);
+            var y = (float)(Math.Floor((self.Position.Y - 5) / 10.0f) * 10.0f);
+            var position = new Vector2(x + 5, y);
             TreasureChest chest;
             if (self.Level.Session.MatchSettings.Variants.BombChests) 
             {
-                chest = new TreasureChest(posY, TreasureChest.Types.Normal, TreasureChest.AppearModes.Normal, Pickups.Bomb, 0);
+                chest = new TreasureChest(position, TreasureChest.Types.Normal, TreasureChest.AppearModes.Normal, Pickups.Bomb, 0);
             }
             else 
             {
                 var treasureSpawns = self.Level.Session.TreasureSpawner.GetTreasureSpawn();
-                chest = new TreasureChest(posY, TreasureChest.Types.AutoOpen, TreasureChest.AppearModes.Time, treasureSpawns, 30);
+                chest = new TreasureChest(position, TreasureChest.Types.AutoOpen, TreasureChest.AppearModes.Time, treasureSpawns, 30);
             }
             var texture = self.TeamColor switch
             {

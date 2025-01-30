@@ -1,5 +1,5 @@
-﻿// using AdditionalVariants.EX;
-// using AdditionalVariants.EX.JesterHat;
+﻿using AdditionalVariants.EX;
+using AdditionalVariants.EX.JesterHat;
 using FortRise;
 using Monocle;
 
@@ -29,6 +29,7 @@ public class AdditionalVariantsModule : FortModule
         ChaoticRoll.Load();
         FadingArrow.Load();
         PlayerStaminaHooks.Load();
+        KingsWrath.Load();
         // ArrowFallingUp.Load();
         FortRise.RiseCore.Events.OnPreInitialize += OnPreInitialize;
     }
@@ -57,14 +58,15 @@ public class AdditionalVariantsModule : FortModule
         ChaoticRoll.Unload();
         FadingArrow.Unload();
         PlayerStaminaHooks.Unload();
+        KingsWrath.Unload();
         // ArrowFallingUp.Unload();
         FortRise.RiseCore.Events.OnPreInitialize -= OnPreInitialize;
     }
 
     private void OnPreInitialize()
     {
-        // TfExAPIModImports.RegisterVariantStateEvents?.Invoke
-        //     (this, "JestersHat", JesterHatStateEvents.OnSaveState, JesterHatStateEvents.OnLoadState);
+        TfExAPIModImports.RegisterVariantStateEvents?.Invoke
+            (this, "JestersHat", JesterHatStateEvents.OnSaveState, JesterHatStateEvents.OnLoadState);
     }
 
     private void BottomlessQuiver(On.TowerFall.Player.orig_Added orig, TowerFall.Player self)
@@ -145,6 +147,11 @@ public class AdditionalVariantsModule : FortModule
             description: "Adds a stamina mechanic for dashes".ToUpperInvariant(),
             CustomVariantFlags.CanRandom
         );
+        var kingsWrathInfo = new CustomVariantInfo(
+            "KingsWrath", TextureRegistry.KingsWrath,
+            description: "Crown drops on the floor will spawn Lethal Ghost".ToUpperInvariant(),
+            CustomVariantFlags.CanRandom | CustomVariantFlags.PerPlayer
+        );
         // var arrowFallingUp = new CustomVariantInfo(
         //     "ArrowFallingUp", AVAtlas["variants/arrowFallingUp"],
         //     description: "Arrow will fall upwards".ToUpperInvariant(),
@@ -165,6 +172,7 @@ public class AdditionalVariantsModule : FortModule
         manager.AddVariant(fadingInfo);
         var neonWorld = manager.AddVariant(neonInfo);
         var staminaDash = manager.AddVariant(staminaInfo);
+        manager.AddVariant(kingsWrathInfo);
         // manager.AddVariant(arrowFallingUp);
 
         manager.CreateLinks(bottomlessQuiver, manager.MatchVariants.NoQuivers);
