@@ -1,7 +1,13 @@
 {
 	"name": "BaronMode",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"author": "Terria",
 	"description": "A Quest-Like gamemode on versus that utilized lives and elimination",
-	"dll": "BaronMode.dll"
+	"dll": "BaronMode.dll",
+	"dependencies": [
+		{
+			"name": "FortRise",
+			"version": "5.0.0"
+		}
+	]
 }
