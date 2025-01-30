@@ -9,9 +9,9 @@ namespace BartizanMod;
 
 public class MyPlayer 
 {
-    private static IDetour hook_CanGrabLedge;
-    private static IDetour hook_GetDodgeExitState;
-    private static IDetour hook_ShootArrow;
+    private static Hook hook_CanGrabLedge;
+    private static Hook hook_GetDodgeExitState;
+    private static Hook hook_ShootArrow;
 
     internal static void Load() 
     {

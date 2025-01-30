@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using FortRise;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
@@ -9,24 +10,62 @@ using TowerFall;
 
 namespace BartizanMod;
 
+public class Respawn : CustomGameMode
+{
+    public override RoundLogic CreateRoundLogic(Session session)
+    {
+        return new RespawnRoundLogic(session);
+    }
 
-[CustomRoundLogic("RespawnRoundLogic")]
-public class RespawnRoundLogic : CustomVersusRoundLogic
+    public override void Initialize()
+    {
+        Icon = BartizanModModule.BartizanAtlas["gamemodes/respawn"];
+        NameColor = Color.Yellow;
+    }
+
+    public override void InitializeSounds()
+    {
+        EarnedCoinSound = Sounds.sfx_multiSkullEarned;
+    }
+
+    public override Sprite<int> CoinSprite()
+    {
+        return UseSkullSprite();
+    }
+}
+
+public class Crawl : CustomGameMode
+{
+    public override RoundLogic CreateRoundLogic(Session session)
+    {
+        return new MobRoundLogic(session);
+    }
+
+    public override void Initialize()
+    {
+        Icon = BartizanModModule.BartizanAtlas["gamemodes/crawl"];
+        NameColor = Color.Purple;
+    }
+
+    public override void InitializeSounds()
+    {
+        EarnedCoinSound = Sounds.sfx_multiSkullEarned;
+    }
+
+    public override Sprite<int> CoinSprite()
+    {
+        return UseSkullSprite();
+    }
+}
+
+
+public class RespawnRoundLogic : RoundLogic
 {
     private KillCountHUD[] killCountHUDs;
     private bool wasFinalKill;
     private Counter endDelay;
     private float[] autoReviveCounters;
 
-
-    public static RoundLogicInfo Create()
-    {
-        return new RoundLogicInfo {
-            Name = "Respawn",
-            Icon = BartizanModModule.BartizanAtlas["gamemodes/respawn"],
-            RoundType = RoundLogicType.HeadHunters
-        };
-    }
 
     internal static void Load() 
     {
@@ -46,7 +85,7 @@ public class RespawnRoundLogic : CustomVersusRoundLogic
     }
 
 
-    public RespawnRoundLogic(Session session) : base(session, false)
+    public RespawnRoundLogic(Session session) :base(session, false)
     {
         var playerCount = EightPlayerUtils.GetPlayerCount();
         killCountHUDs = new KillCountHUD[playerCount];
@@ -168,7 +207,6 @@ public class RespawnRoundLogic : CustomVersusRoundLogic
 }
 
 
-[CustomRoundLogic("MobRoundLogic", "CreateForThis")]
 public class MobRoundLogic : RespawnRoundLogic
 {
     private PlayerGhost[] activeGhosts;
@@ -241,17 +279,6 @@ public class MobRoundLogic : RespawnRoundLogic
             val.Active = true;
         }
         // this.Session.CurrentLevel.Add(activeGhosts[playerIndex] = new PlayerGhost(corpse));
-
-    }
-
-    public static RoundLogicInfo CreateForThis()
-    {
-        return new RoundLogicInfo 
-        {
-            Name = "Crawl",
-            Icon = BartizanModModule.BartizanAtlas["gamemodes/crawl"],
-            RoundType = RoundLogicType.HeadHunters
-        };
     }
 }
 
@@ -357,7 +384,7 @@ public static class MyPlayerCorpse
     {
         orig(self, corpseSpriteID, teamColor, position, facing, playerIndex, killerIndex);
         var level = Engine.Instance.Scene as Level;
-        if (level.Session.MatchSettings.CurrentModeName == "MobRoundLogic") 
+        if (level.Session.MatchSettings.Mode == ModRegisters.GameModeType<Crawl>()) 
         {
             var dynSelf = DynamicData.For(self);
             var coroutine = new Coroutine();
