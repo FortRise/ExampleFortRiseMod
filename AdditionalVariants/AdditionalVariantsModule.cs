@@ -28,7 +28,7 @@ public class AdditionalVariantsModule : FortModule
         NoDodgeCancel.Load();
         ChaoticRoll.Load();
         FadingArrow.Load();
-        PlayerStaminaHooks.Load();
+        PlayerStamina.Load();
         KingsWrath.Load();
         NoArrowTinks.Load();
         // ArrowFallingUp.Load();
@@ -58,7 +58,7 @@ public class AdditionalVariantsModule : FortModule
         LavaOverload.Unload();
         ChaoticRoll.Unload();
         FadingArrow.Unload();
-        PlayerStaminaHooks.Unload();
+        PlayerStamina.Unload();
         KingsWrath.Unload();
         NoArrowTinks.Unload();
         // ArrowFallingUp.Unload();
