@@ -31,6 +31,7 @@ public class AdditionalVariantsModule : FortModule
         PlayerStamina.Load();
         KingsWrath.Load();
         NoArrowTinks.Load();
+        DrillingArrow.Load();
         // ArrowFallingUp.Load();
         FortRise.RiseCore.Events.OnPreInitialize += OnPreInitialize;
     }
@@ -61,6 +62,7 @@ public class AdditionalVariantsModule : FortModule
         PlayerStamina.Unload();
         KingsWrath.Unload();
         NoArrowTinks.Unload();
+        DrillingArrow.Unload();
         // ArrowFallingUp.Unload();
         FortRise.RiseCore.Events.OnPreInitialize -= OnPreInitialize;
     }
@@ -159,6 +161,11 @@ public class AdditionalVariantsModule : FortModule
             description: "Disabled collision of an arrow to arrow".ToUpperInvariant(),
             CustomVariantFlags.CanRandom
         );
+        var drillingArrowInfo = new CustomVariantInfo(
+            "DrillingArrow", TextureRegistry.DrillingArrow,
+            description: "Make all arrows act like a Drill Arrow".ToUpperInvariant(),
+            CustomVariantFlags.CanRandom | CustomVariantFlags.PerPlayer
+        );
         // var arrowFallingUp = new CustomVariantInfo(
         //     "ArrowFallingUp", AVAtlas["variants/arrowFallingUp"],
         //     description: "Arrow will fall upwards".ToUpperInvariant(),
@@ -166,7 +173,8 @@ public class AdditionalVariantsModule : FortModule
         // );
 
         var bottomlessQuiver = manager.AddVariant(blQuiverInfo);
-        manager.AddVariant(atomicInfo);
+        var atomicArrow = manager.AddVariant(atomicInfo);
+        var drillingArrow = manager.AddVariant(drillingArrowInfo);
         var annoyingMage = manager.AddVariant(annoyanceInfo);
         manager.AddVariant(shockInfo);
         manager.AddVariant(chestInfo);
@@ -183,6 +191,7 @@ public class AdditionalVariantsModule : FortModule
         manager.AddVariant(noArrowTinksInfo);
         // manager.AddVariant(arrowFallingUp);
 
+        manager.CreateLinks(atomicArrow, drillingArrow);
         manager.CreateLinks(bottomlessQuiver, manager.MatchVariants.NoQuivers);
         manager.CreateLinks(bottomlessQuiver, manager.MatchVariants.SmallQuivers);
         manager.CreateLinks(annoyingMage, manager.MatchVariants.DarkPortals);
