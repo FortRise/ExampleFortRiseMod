@@ -1,13 +1,13 @@
 {
-    "Name": "AdditionalVariants",
-    "Version": "2.0.0",
-    "Author": "Terria",
-    "Description": "Adds more variants to the game.",
-    "DLL": "AdditionalVariants.dll",
-	"Dependencies": [
+    "name": "AdditionalVariants",
+    "version": "2.0.0",
+    "author": "Terria",
+    "description": "Adds more variants to the game.",
+    "dll": "AdditionalVariants.dll",
+	"dependencies": [
 		{
-			"Name": "FortRise",
-			"Version": "5.0.0"
+			"name": "FortRise",
+			"version": "5.0.0"
 		}
 	]
 }
