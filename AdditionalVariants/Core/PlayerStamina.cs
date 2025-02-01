@@ -1,6 +1,7 @@
 using FortRise;
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.Utils;
 using TowerFall;
 
 namespace AdditionalVariants;
@@ -50,11 +51,11 @@ public static class PlayerStamina
     private static void AddStamina(On.TowerFall.Player.orig_Added orig, Player self)
     {
         orig(self);
-        if (VariantManager.GetCustomVariant("DashStamina")) 
+        if (VariantManager.GetCustomVariant("DashStamina")[self.PlayerIndex]) 
         {
             var dashStamina = new DashStamina(true, true);
             self.Add(dashStamina);
-            self.DynSetData("dashStamina", dashStamina);
+            DynamicData.For(self).Set("dashStamina", dashStamina);
         }
     }
 }
@@ -93,12 +94,7 @@ public class DashStamina : Component
         if (staminaBar >= 1) 
         {
             staminaBar = 1;
-            if (alpha > 0) 
-            {
-                alpha -= Engine.TimeMult * 0.01f;
-                return;
-            }
-            alpha = 0;
+            alpha -= Math.Max(0, Engine.TimeMult * 0.01f);
             return;
         }
         staminaBar += Engine.TimeMult * 0.005f;

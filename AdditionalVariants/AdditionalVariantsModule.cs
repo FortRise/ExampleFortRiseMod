@@ -149,7 +149,7 @@ public class AdditionalVariantsModule : FortModule
         var staminaInfo = new CustomVariantInfo(
             "DashStamina", TextureRegistry.DashStamina,
             description: "Adds a stamina mechanic for dashes".ToUpperInvariant(),
-            CustomVariantFlags.CanRandom
+            CustomVariantFlags.CanRandom | CustomVariantFlags.PerPlayer
         );
         var kingsWrathInfo = new CustomVariantInfo(
             "KingsWrath", TextureRegistry.KingsWrath,
