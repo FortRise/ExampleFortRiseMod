@@ -32,7 +32,7 @@ public class AdditionalVariantsModule : FortModule
         KingsWrath.Load();
         NoArrowTinks.Load();
         DrillingArrow.Load();
-        // ArrowFallingUp.Load();
+        ArrowFallingUp.Load();
         FortRise.RiseCore.Events.OnPreInitialize += OnPreInitialize;
     }
 
@@ -63,7 +63,7 @@ public class AdditionalVariantsModule : FortModule
         KingsWrath.Unload();
         NoArrowTinks.Unload();
         DrillingArrow.Unload();
-        // ArrowFallingUp.Unload();
+        ArrowFallingUp.Unload();
         FortRise.RiseCore.Events.OnPreInitialize -= OnPreInitialize;
     }
 
@@ -166,11 +166,11 @@ public class AdditionalVariantsModule : FortModule
             description: "Make all arrows act like a Drill Arrow".ToUpperInvariant(),
             CustomVariantFlags.CanRandom | CustomVariantFlags.PerPlayer
         );
-        // var arrowFallingUp = new CustomVariantInfo(
-        //     "ArrowFallingUp", AVAtlas["variants/arrowFallingUp"],
-        //     description: "Arrow will fall upwards".ToUpperInvariant(),
-        //     CustomVariantFlags.CanRandom | CustomVariantFlags.PerPlayer
-        // );
+        var arrowFallingUp = new CustomVariantInfo(
+            "ArrowFallingUp", TextureRegistry.ArrowFallingUp,
+            description: "Arrow will fall upwards".ToUpperInvariant(),
+            CustomVariantFlags.CanRandom | CustomVariantFlags.PerPlayer
+        );
 
         var bottomlessQuiver = manager.AddVariant(blQuiverInfo);
         var atomicArrow = manager.AddVariant(atomicInfo);
@@ -189,7 +189,7 @@ public class AdditionalVariantsModule : FortModule
         var staminaDash = manager.AddVariant(staminaInfo);
         manager.AddVariant(kingsWrathInfo);
         manager.AddVariant(noArrowTinksInfo);
-        // manager.AddVariant(arrowFallingUp);
+        manager.AddVariant(arrowFallingUp);
 
         manager.CreateLinks(atomicArrow, drillingArrow);
         manager.CreateLinks(bottomlessQuiver, manager.MatchVariants.NoQuivers);

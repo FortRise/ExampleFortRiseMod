@@ -51,10 +51,16 @@ public static class ArrowFallingUp
                 return gravity;
             });
         }
+
+        if (cursor.TryGotoNext(MoveType.Before, instr => instr.MatchClt()))
+        {
+            cursor.Next.OpCode = OpCodes.Cgt;
+        }
+        // TODO, makes clt, cge
         if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdloc(1)))
         {
             cursor.Emit(OpCodes.Ldarg_0);
-            cursor.EmitDelegate<Func<float, Arrow, float>>((gravity, self) => {
+            cursor.EmitDelegate<Func<int, Arrow, int>>((gravity, self) => {
                 if (VariantManager.GetCustomVariant("ArrowFallingUp")[self.PlayerIndex]) 
                 {
                     return -gravity;
@@ -72,7 +78,7 @@ public static class ArrowFallingUp
                 }
                 return gravity;
             });
-            cursor.Next.OpCode = OpCodes.Bge;
+            // cursor.Next.OpCode = OpCodes.Bge;
         }
         if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(-0.06981317f))) 
         {
