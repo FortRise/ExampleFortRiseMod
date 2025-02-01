@@ -20,19 +20,21 @@ public static class DrillingArrow
 
     private static void OnCollidedH(On.TowerFall.Arrow.orig_OnCollideH orig, Arrow self, TowerFall.Platform platform)
     {
-        if (self.PlayerIndex >= 0 && VariantManager.GetCustomVariant("DrillingArrow")[self.PlayerIndex] && 
-            !self.HasDrilled && 
-            self.State < Arrow.ArrowStates.Falling 
-            && platform is not GraniteBlock)
+        if (!CheckDrilled(self, platform))
         {
-            var dynSelf = DynamicData.For(self);
-            dynSelf.Invoke("StartDrilling");
-            return;
+            orig(self, platform);
         }
-        orig(self, platform);
     }
 
     private static void OnCollidedV(On.TowerFall.Arrow.orig_OnCollideV orig, Arrow self, TowerFall.Platform platform)
+    {
+        if (!CheckDrilled(self, platform))
+        {
+            orig(self, platform);
+        }
+    }
+
+    private static bool CheckDrilled(Arrow self, TowerFall.Platform platform) 
     {
         if (self.PlayerIndex >= 0 && VariantManager.GetCustomVariant("DrillingArrow")[self.PlayerIndex] && 
             !self.HasDrilled && 
@@ -41,8 +43,8 @@ public static class DrillingArrow
         {
             var dynSelf = DynamicData.For(self);
             dynSelf.Invoke("StartDrilling");
-            return;
+            return true;
         }
-        orig(self, platform);
+        return false;
     }
 }
