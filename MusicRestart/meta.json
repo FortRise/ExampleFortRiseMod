@@ -3,5 +3,11 @@
 	"version": "1.0.0",
 	"author": "Terria",
 	"description": "Restart music after restart",
-	"dll": "MusicRestart.dll"
+	"dll": "MusicRestart.dll",
+	"dependencies": [
+		{
+			"name": "FortRise",
+			"version": "5.0.0"
+		}
+	]
 }
