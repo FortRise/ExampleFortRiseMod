@@ -1,4 +1,0 @@
-<TextureAtlas imagePath="Content/Atlas/packer/../atlas/png">
-  <SubTexture name="gameModes/baron" x="0" y="0" width="184" height="82"/>
-  <SubTexture name="pickups/gemCoin" x="0" y="82" width="96" height="10"/>
-</TextureAtlas>

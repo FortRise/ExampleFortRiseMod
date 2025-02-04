@@ -233,6 +233,15 @@ public class BaronRoundLogic : RoundLogic
         }
     }
 
+    public void AddLife(int playerIndex)
+    {
+        AddScore(playerIndex, 1);
+        Lives[playerIndex] = Math.Max(3, Lives[playerIndex] + 1);
+        totalLives[playerIndex] += 1;
+
+        PlayerHUDs[playerIndex].GainLives(this);
+    }
+
     private IEnumerator SpawnTreasure() 
     {
         var listToRemove = new List<Entity>();

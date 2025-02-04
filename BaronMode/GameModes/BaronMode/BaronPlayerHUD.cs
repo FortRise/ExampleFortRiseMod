@@ -72,6 +72,34 @@ public class BaronPlayerHUD : Entity
         base.Render();
     }
 
+    public void GainLives(BaronRoundLogic logic) 
+    {
+        foreach (var gem in gems)
+        {
+            Remove(gem);
+        }
+        gems.Clear();
+
+        var width = EightPlayerUtils.GetScreenWidth() - 8;
+
+        for (int i = 0; i < logic.Lives[PlayerIndex]; i++)
+        {
+            Sprite<int> spriteInt = TFGame.SpriteData.GetSpriteInt(archerData.Gems.Gameplay);
+            if (Side == Facing.Left)
+            {
+                spriteInt.X = 8 + 10 * i;
+            }
+            else
+            {
+                spriteInt.X = width - 10 * i;
+            }
+            spriteInt.Y = GetHeight(PlayerIndex);
+            spriteInt.Play(0);
+            gems.Add(spriteInt);
+            Add(spriteInt);
+        }
+    }
+
     public void LoseLives()
     {
         for (int i = 0; i < gems.Count; i++)
