@@ -95,31 +95,66 @@ public class GemLives : Pickup
         DoCollectStats(player.PlayerIndex);
         if (Level.Session.RoundLogic is BaronRoundLogic logic)
         {
-            logic.AddLife(player.PlayerIndex);
-            Level.Add<FloatText>(new FloatText(
-                Position, "+1 LIFE", 
-                player.ArcherData.ColorA,
-                player.ArcherData.ColorB,
-                1f, 0.5f, false));
+            if (logic.Overtime)
+            {
+                Sounds.pu_darkOrbCollect.Play(X);
+                Level.Add<FloatText>(new FloatText(
+                    Position, "IT BROKE!", 
+                    player.ArcherData.ColorA,
+                    player.ArcherData.ColorB,
+                    1f, 0.5f, false));
+                Level.Particles.Emit(new ParticleType
+                {
+                    Color = player.ArcherData.ColorA,
+                    Color2 = player.ArcherData.ColorB,
+                    ColorSwitch = 4,
+                    Size = 2f,
+                    SizeRange = 3f,
+                    Speed = 1f,
+                    SpeedRange = 0.7f,
+                    SpeedMultiplier = 0.91f,
+                    DirectionRange = 6.2831855f,
+                    Life = 26,
+                    LifeRange = 12
+                }, 12, Position, Vector2.One * 4f);
+                
+            }
+            else 
+            {
+                logic.AddLife(player.PlayerIndex);
+                Level.Add<FloatText>(new FloatText(
+                    Position, "+1 LIFE", 
+                    player.ArcherData.ColorA,
+                    player.ArcherData.ColorB,
+                    1f, 0.5f, false));
+                Sounds.sfx_gemCollect.Play(X);
+            }
         }
         else 
         {
-            player.HasShield = true;
-            player.HasWings = true;
-            ShockCircle shockCircle = Cache.Create<ShockCircle>();
-            shockCircle.Init(player.Position, player.PlayerIndex, player, ShockCircle.ShockTypes.BoltCatch);
-            Level.Add<ShockCircle>(shockCircle);
-
-			Sounds.sfx_reviveRedteamFinish.Play(player.Position.X);
+            Sounds.pu_darkOrbCollect.Play(X);
             Level.Add<FloatText>(new FloatText(
-                Position, "ULTIMATE POWERUP", 
+                Position, "IT BROKE!", 
                 player.ArcherData.ColorA,
                 player.ArcherData.ColorB,
                 1f, 0.5f, false));
+            Level.Particles.Emit(new ParticleType
+            {
+                Color = player.ArcherData.ColorA,
+                Color2 = player.ArcherData.ColorB,
+                ColorSwitch = 4,
+                Size = 2f,
+                SizeRange = 3f,
+                Speed = 1f,
+                SpeedRange = 0.7f,
+                SpeedMultiplier = 0.91f,
+                DirectionRange = 6.2831855f,
+                Life = 26,
+                LifeRange = 12
+            }, 12, Position, Vector2.One * 4f);
         }
 
         Level.Add<LightFade>(Cache.Create<LightFade>().Init(this));
-        Sounds.sfx_gemCollect.Play(X);
         RemoveSelf();
     }
 

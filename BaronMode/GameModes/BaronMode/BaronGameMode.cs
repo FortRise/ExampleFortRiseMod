@@ -72,6 +72,7 @@ public class BaronRoundLogic : RoundLogic
     private bool wasFinalKill;
     private int[] totalLives;
     public int[] Lives;
+    public bool Overtime;
 
     public BaronRoundLogic(Session session, int[] totalLives) : base(session, false) 
     {
@@ -208,7 +209,7 @@ public class BaronRoundLogic : RoundLogic
             }
             base.Session.EndRound();
         }
-        if (!Session.CurrentLevel.Ending) 
+        if (!Session.CurrentLevel.Ending && !Overtime) 
         {
             if (anotherTreasureSpawn > 0f) 
             {
@@ -235,6 +236,10 @@ public class BaronRoundLogic : RoundLogic
 
     public void AddLife(int playerIndex)
     {
+        if (Overtime)
+        {
+            return;
+        }
         AddScore(playerIndex, 1);
         Lives[playerIndex] = Math.Min(BaronModeModule.Instance.Settings.BaronLivesCount, Lives[playerIndex] + 1);
         totalLives[playerIndex] += 1;
@@ -333,6 +338,18 @@ public class BaronRoundLogic : RoundLogic
                     autoReviveCounters[i] = 60f;
                 }
             }
+            if (Session.MatchSettings.LevelSystem.Theme.World == TowerTheme.Worlds.Dark)
+            {
+                Music.Play("DarkBoss");
+            }
+            else
+            {
+                Music.Play("Boss");
+            }
+            Session.CurrentLevel.Add<FloatText>(
+                new FloatText(corpse.Position + new Vector2(0f, -8f), "OVERTIME", 
+                Color.Red, Color.White, 1f, 1f, false));
+            Overtime = true;
             return;
         }
 
@@ -349,11 +366,13 @@ public class BaronRoundLogic : RoundLogic
             return;
         }
         if (totalLives[playerIndex] == 0)
+        {
             totalLives[playerIndex]--;
+        }
         Lives[playerIndex] = -1;
-            Session.CurrentLevel.Add<FloatText>(
-                new FloatText(corpse.Position + new Vector2(0f, -3f), "DEAD", 
-                ArcherData.GetColorA(playerIndex), Color.DarkRed, 1f, 1f, false));
+        Session.CurrentLevel.Add<FloatText>(
+            new FloatText(corpse.Position + new Vector2(0f, -3f), "DEAD", 
+            ArcherData.GetColorA(playerIndex), Color.DarkRed, 1f, 1f, false));
 
         int alive = 0;
 
