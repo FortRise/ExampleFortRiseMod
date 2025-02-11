@@ -209,17 +209,21 @@ public class BaronRoundLogic : RoundLogic
             }
             base.Session.EndRound();
         }
-        if (!Session.CurrentLevel.Ending && !Overtime) 
+        if (!Session.CurrentLevel.Ending) 
         {
-            if (anotherTreasureSpawn > 0f) 
+            if (!Overtime)
             {
-                anotherTreasureSpawn -= Engine.TimeMult;
+                if (anotherTreasureSpawn > 0f) 
+                {
+                    anotherTreasureSpawn -= Engine.TimeMult;
+                }
+                else 
+                {
+                    anotherTreasureSpawn = 1200;
+                    coroutineHolder.Add(new Coroutine(SpawnTreasure()));
+                }
             }
-            else 
-            {
-                anotherTreasureSpawn = 1200;
-                coroutineHolder.Add(new Coroutine(SpawnTreasure()));
-            }
+
             for (int i = 0; i < autoReviveCounters.Length; i++) 
             {
                 if (autoReviveCounters[i] > 0f)
@@ -244,7 +248,7 @@ public class BaronRoundLogic : RoundLogic
         Lives[playerIndex] = Math.Min(BaronModeModule.Instance.Settings.BaronLivesCount, Lives[playerIndex] + 1);
         totalLives[playerIndex] += 1;
 
-        PlayerHUDs[playerIndex].GainLives(this);
+        PlayerHUDs[playerIndex].GainLife(this);
     }
 
     private IEnumerator SpawnTreasure() 

@@ -72,7 +72,7 @@ public class BaronPlayerHUD : Entity
         base.Render();
     }
 
-    public void GainLives(BaronRoundLogic logic) 
+    public void GainLife(BaronRoundLogic logic) 
     {
         foreach (var gem in gems)
         {
@@ -98,37 +98,6 @@ public class BaronPlayerHUD : Entity
             gems.Add(spriteInt);
             Add(spriteInt);
         }
-    }
-
-    public void LoseLives()
-    {
-        for (int i = 0; i < gems.Count; i++)
-        {
-            Sprite<int> sprite = gems[gems.Count - 1 - i];
-            Vector2 end;
-            Vector2 control;
-            if (Side == Facing.Left)
-            {
-                end = sprite.Position + new Vector2(-60f, 40f);
-                control = sprite.Position + new Vector2(40f, 10f);
-            }
-            else
-            {
-                end = sprite.Position + new Vector2(60f, 40f);
-                control = sprite.Position + new Vector2(-40f, 10f);
-            }
-            Bezier bezier = new Bezier(sprite.Position, end, control);
-            bezier.Begin = sprite.Position;
-
-            var tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.SineIn, 30 + i * 4, start: true);
-            tween.OnUpdate = (t) =>
-            {
-                sprite.Position = bezier.GetPoint(t.Eased);
-                sprite.Rotation = MathHelper.Pi * 4f * (float)Side * Ease.SineOut(t.Percent);
-            };
-            Add(tween);
-        }
-        gems.Clear();
     }
 
     public void SpendLife(TeamReviver reviver)
