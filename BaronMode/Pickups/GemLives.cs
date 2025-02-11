@@ -32,8 +32,14 @@ public class GemLives : Pickup
             firstPlayerAlive = player;
             break;
         }
-        SetGemSprite(firstPlayerAlive.PlayerIndex);
-
+        if (firstPlayerAlive != null)
+        {
+            SetGemSprite(firstPlayerAlive.PlayerIndex);
+        }
+        else 
+        {
+            SetGemSprite(-1);
+        }
     }
 
     public void SetGemSprite(int playerIndex) 
@@ -41,6 +47,7 @@ public class GemLives : Pickup
         if (playerIndex == -1)
         {
             sprite = new Sprite<int>(TFGame.Atlas["BaronMode/pickups/gemCoin"], 12, 10);
+            sprite.Add(0, 0.1f, new int[] { 0, 0, 0, 1, 2, 3, 4, 5, 6, 7});
         }
         else 
         {
@@ -71,7 +78,11 @@ public class GemLives : Pickup
 
             
             Remove(sprite);
-            SetGemSprite(Level.GetPlayer(count).PlayerIndex);
+            var player = Level.GetPlayer(count);
+            if (player != null)
+            {
+                SetGemSprite(player.PlayerIndex);
+            }
             count += 1;
 
             if (count > rangeCount)
