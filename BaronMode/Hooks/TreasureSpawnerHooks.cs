@@ -19,7 +19,7 @@ public static class TreasureSpawnerHooks
     private static void PutLivesTreasure(On.TowerFall.TreasureSpawner.orig_ctor_Session_VersusTowerData orig, TowerFall.TreasureSpawner self, TowerFall.Session session, TowerFall.VersusTowerData versusTowerData)
     {
         orig(self, session, versusTowerData);
-        if (session.MatchSettings.Variants.GetCustomVariant("TreasureLives"))
+        if (session.MatchSettings.Variants.GetCustomVariant("BaronMode/TreasureLives"))
         {
             self.TreasureRates[(int)ModRegisters.PickupType<GemLives>()] = 1f;
         }
