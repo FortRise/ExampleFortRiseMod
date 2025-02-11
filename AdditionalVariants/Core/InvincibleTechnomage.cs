@@ -49,7 +49,7 @@ public class InvincibleTechnomageVariantSequence : Entity
     private static void SpawnThisSequence(On.TowerFall.Session.orig_OnLevelLoadFinish orig, Session self)
     {
         orig(self);
-        if (self.MatchSettings.Variants.GetCustomVariant("AnnoyingMage"))
+        if (self.MatchSettings.Variants.GetCustomVariant("AdditionalVariants/AnnoyingMage"))
             self.CurrentLevel.Add(new InvincibleTechnomageVariantSequence());
     }
 

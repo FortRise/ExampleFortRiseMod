@@ -25,7 +25,7 @@ public static class NoDodgeCancel
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<bool, Player, bool>>((jumpPressed, self) => {
-                if (VariantManager.GetCustomVariant("NoDodgeCancel")[self.PlayerIndex]) 
+                if (VariantManager.GetCustomVariant("AdditionalVariants/NoDodgeCancel")[self.PlayerIndex]) 
                     return false;
                 
                 return jumpPressed;
@@ -38,7 +38,7 @@ public static class NoDodgeCancel
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<bool, Player, bool>>((dodgePressed, self) => {
-                if (VariantManager.GetCustomVariant("NoDodgeCancel")[self.PlayerIndex]) 
+                if (VariantManager.GetCustomVariant("AdditionalVariants/NoDodgeCancel")[self.PlayerIndex]) 
                     return false;
                 
                 return dodgePressed;
@@ -49,7 +49,7 @@ public static class NoDodgeCancel
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<float, Player, float>>((speed, self) => {
-                var canActive = VariantManager.GetCustomVariant("NoHypers")[self.PlayerIndex];
+                var canActive = VariantManager.GetCustomVariant("AdditionalVariants/NoHypers")[self.PlayerIndex];
                 if (canActive) 
                     return 1f;
                 return speed;
@@ -60,8 +60,8 @@ public static class NoDodgeCancel
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<bool, Player, bool>>((dodgePressed, self) => {
-                var canActive = VariantManager.GetCustomVariant("NoDodgeCancel")[self.PlayerIndex] || 
-                    VariantManager.GetCustomVariant("NoHypers")[self.PlayerIndex];
+                var canActive = VariantManager.GetCustomVariant("AdditionalVariants/NoDodgeCancel")[self.PlayerIndex] || 
+                    VariantManager.GetCustomVariant("AdditionalVariants/NoHypers")[self.PlayerIndex];
                 if (canActive) 
                     return false;
                 

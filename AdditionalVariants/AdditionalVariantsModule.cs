@@ -39,7 +39,7 @@ public class AdditionalVariantsModule : FortModule
     private void Begin_patch(On.TowerFall.Level.orig_Begin orig, TowerFall.Level self)
     {
         orig(self);
-        if (self.Session.MatchSettings.Variants.GetCustomVariant("NeonWorld")) 
+        if (self.Session.MatchSettings.Variants.GetCustomVariant("AdditionalVariants/NeonWorld")) 
         {
             var filter = new NeonFilter();
             self.Activate(filter);
@@ -76,7 +76,7 @@ public class AdditionalVariantsModule : FortModule
     private void BottomlessQuiver(On.TowerFall.Player.orig_Added orig, TowerFall.Player self)
     {
         orig(self);
-        if (self.Level.Session.MatchSettings.Variants.GetCustomVariant("BottomlessQuiver")[self.PlayerIndex])
+        if (self.Level.Session.MatchSettings.Variants.GetCustomVariant("AdditionalVariants/BottomlessQuiver")[self.PlayerIndex])
             self.Arrows.SetMaxArrows(int.MaxValue);
     }
 

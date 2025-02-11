@@ -27,7 +27,7 @@ public static class ArrowFallingUp
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<int, Arrow, int>>((gravity, self) => {
-                if (VariantManager.GetCustomVariant("ArrowFallingUp")[self.PlayerIndex]) 
+                if (VariantManager.GetCustomVariant("AdditionalVariants/ArrowFallingUp")[self.PlayerIndex]) 
                 {
                     return -gravity;
                 }
@@ -44,7 +44,7 @@ public static class ArrowFallingUp
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<float, Arrow, float>>((gravity, self) => {
-                if (VariantManager.GetCustomVariant("ArrowFallingUp")[self.PlayerIndex]) 
+                if (VariantManager.GetCustomVariant("AdditionalVariants/ArrowFallingUp")[self.PlayerIndex]) 
                 {
                     return -gravity;
                 }
@@ -61,7 +61,7 @@ public static class ArrowFallingUp
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<int, Arrow, int>>((gravity, self) => {
-                if (VariantManager.GetCustomVariant("ArrowFallingUp")[self.PlayerIndex]) 
+                if (VariantManager.GetCustomVariant("AdditionalVariants/ArrowFallingUp")[self.PlayerIndex]) 
                 {
                     return -gravity;
                 }
@@ -72,7 +72,7 @@ public static class ArrowFallingUp
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<float, Arrow, float>>((gravity, self) => {
-                if (VariantManager.GetCustomVariant("ArrowFallingUp")[self.PlayerIndex]) 
+                if (VariantManager.GetCustomVariant("AdditionalVariants/ArrowFallingUp")[self.PlayerIndex]) 
                 {
                     return -gravity;
                 }
@@ -84,7 +84,7 @@ public static class ArrowFallingUp
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<float, Arrow, float>>((gravity, self) => {
-                if (VariantManager.GetCustomVariant("ArrowFallingUp")[self.PlayerIndex]) 
+                if (VariantManager.GetCustomVariant("AdditionalVariants/ArrowFallingUp")[self.PlayerIndex]) 
                 {
                     return -3.07178f;
                 }
@@ -96,7 +96,7 @@ public static class ArrowFallingUp
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<float, Arrow, float>>((gravity, self) => {
-                if (VariantManager.GetCustomVariant("ArrowFallingUp")[self.PlayerIndex]) 
+                if (VariantManager.GetCustomVariant("AdditionalVariants/ArrowFallingUp")[self.PlayerIndex]) 
                 {
                     return 3.07178f;
                 }

@@ -23,7 +23,7 @@ public static class AtomicArrow
         if (DynamicData.For(self).Get<bool>("squished"))
             return;
         orig(self, platform);
-        if (VariantManager.GetCustomVariant("AtomicArrow")[self.PlayerIndex]) 
+        if (VariantManager.GetCustomVariant("AdditionalVariants/AtomicArrow")[self.PlayerIndex]) 
         {
             if (self is SuperBombArrow) 
             {

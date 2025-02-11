@@ -23,7 +23,7 @@ public static class JesterHat
     private static void JesterHatAdded(On.TowerFall.Player.orig_Added orig, Player self)
     {
         orig(self);
-        if (VariantManager.GetCustomVariant("JestersHat")[self.PlayerIndex]) 
+        if (VariantManager.GetCustomVariant("AdditionalVariants/JestersHat")[self.PlayerIndex]) 
         {
             var warpPoints = new List<Vector2>();
             var playerSpawn = self.Level.GetXMLPositions("PlayerSpawn");

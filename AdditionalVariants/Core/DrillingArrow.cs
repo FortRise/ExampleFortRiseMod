@@ -36,7 +36,7 @@ public static class DrillingArrow
 
     private static bool CheckDrilled(Arrow self, TowerFall.Platform platform) 
     {
-        if (self.PlayerIndex >= 0 && VariantManager.GetCustomVariant("DrillingArrow")[self.PlayerIndex] && 
+        if (self.PlayerIndex >= 0 && VariantManager.GetCustomVariant("AdditionalVariants/DrillingArrow")[self.PlayerIndex] && 
             !self.HasDrilled && 
             self.State < Arrow.ArrowStates.Falling && 
             platform is not GraniteBlock)

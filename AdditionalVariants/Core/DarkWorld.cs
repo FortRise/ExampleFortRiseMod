@@ -18,7 +18,7 @@ public static class DarkWorld
 
     private static void DarkerRender(On.TowerFall.Background.orig_Render orig, TowerFall.Background self)
     {
-        if (VariantManager.GetCustomVariant("DarkWorld")) 
+        if (VariantManager.GetCustomVariant("AdditionalVariants/DarkWorld")) 
         {
             var level = DynamicData.For(self).Get<Level>("level");
             var darkened = DynamicData.For(level.OrbLogic).Get<bool>("darkened");

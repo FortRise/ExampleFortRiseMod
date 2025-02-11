@@ -51,7 +51,7 @@ public static class PlayerStamina
     private static void AddStamina(On.TowerFall.Player.orig_Added orig, Player self)
     {
         orig(self);
-        if (VariantManager.GetCustomVariant("DashStamina")[self.PlayerIndex]) 
+        if (VariantManager.GetCustomVariant("AdditionalVariants/DashStamina")[self.PlayerIndex]) 
         {
             var dashStamina = new DashStamina(true, true);
             self.Add(dashStamina);

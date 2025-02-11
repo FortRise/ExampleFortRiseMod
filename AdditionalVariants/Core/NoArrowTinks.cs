@@ -26,7 +26,7 @@ public static class NoArrowTinks
             instr => instr.MatchLdloc(ldlocIndex),
             instr => instr.MatchCallOrCallvirt<Arrow>("get_Dangerous")))
         {
-            cursor.EmitDelegate((bool isDangerous) => isDangerous && !VariantManager.GetCustomVariant("NoArrowTinks"));
+            cursor.EmitDelegate((bool isDangerous) => isDangerous && !VariantManager.GetCustomVariant("AdditionalVariants/NoArrowTinks"));
         }
     }
 }

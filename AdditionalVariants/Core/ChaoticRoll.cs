@@ -17,7 +17,7 @@ public static class ChaoticRoll
     private static void ctor_patch(On.TowerFall.RoundLogic.orig_ctor orig, TowerFall.RoundLogic self, TowerFall.Session session, bool canHaveMiasma)
     {
         orig(self, session, canHaveMiasma);
-        if (session.MatchSettings.Variants.GetCustomVariant("ChaoticRoll")) 
+        if (session.MatchSettings.Variants.GetCustomVariant("AdditionalVariants/ChaoticRoll")) 
             session.MatchSettings.Variants.Randomize();
     }
 }

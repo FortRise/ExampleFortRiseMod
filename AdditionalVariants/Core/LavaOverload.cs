@@ -23,7 +23,7 @@ public static class LavaOverload
 
     private static void LavaOverloadVariant(On.TowerFall.LavaControl.orig_Added orig, TowerFall.LavaControl self)
     {
-        if (VariantManager.GetCustomVariant("LavaOverload")) 
+        if (VariantManager.GetCustomVariant("AdditionalVariants/LavaOverload")) 
         {
             base_Added(self);
             Sounds.sfx_lavaLoop.SetVolume(0f);

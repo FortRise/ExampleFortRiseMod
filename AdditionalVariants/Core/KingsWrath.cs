@@ -19,7 +19,7 @@ public static class KingsWrath
 
     private static void Update_ctor(On.TowerFall.Crown.orig_Update orig, TowerFall.Crown self)
     {
-        if (self.OwnerIndex >= 0 && VariantManager.GetCustomVariant("KingsWrath")[self.OwnerIndex])
+        if (self.OwnerIndex >= 0 && VariantManager.GetCustomVariant("AdditionalVariants/KingsWrath")[self.OwnerIndex])
         {
             if (self.CheckBelow())
             {
