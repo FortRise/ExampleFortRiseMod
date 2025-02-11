@@ -32,6 +32,7 @@ public class AdditionalVariantsModule : FortModule
         KingsWrath.Load();
         NoArrowTinks.Load();
         DrillingArrow.Load();
+        UnfairAutobalance.Load();
         // ArrowFallingUp.Load();
         FortRise.RiseCore.Events.OnPreInitialize += OnPreInitialize;
     }
@@ -63,6 +64,7 @@ public class AdditionalVariantsModule : FortModule
         KingsWrath.Unload();
         NoArrowTinks.Unload();
         DrillingArrow.Unload();
+        UnfairAutobalance.Unload();
         // ArrowFallingUp.Unload();
         FortRise.RiseCore.Events.OnPreInitialize -= OnPreInitialize;
     }
@@ -166,6 +168,11 @@ public class AdditionalVariantsModule : FortModule
             description: "Make all arrows act like a Drill Arrow".ToUpperInvariant(),
             CustomVariantFlags.CanRandom | CustomVariantFlags.PerPlayer
         );
+        var unfairAutobalanceInfo = new CustomVariantInfo(
+            "UnfairAutobalance", TextureRegistry.UnfairAutobalance,
+            description: "Top players always get an advantage".ToUpperInvariant(),
+            CustomVariantFlags.CanRandom
+        );
         // var arrowFallingUp = new CustomVariantInfo(
         //     "ArrowFallingUp", TextureRegistry.ArrowFallingUp,
         //     description: "Arrow will fall upwards".ToUpperInvariant(),
@@ -189,9 +196,10 @@ public class AdditionalVariantsModule : FortModule
         var staminaDash = manager.AddVariant(staminaInfo);
         manager.AddVariant(kingsWrathInfo);
         manager.AddVariant(noArrowTinksInfo);
+        var unfairAutobalance = manager.AddVariant(unfairAutobalanceInfo);
         // manager.AddVariant(arrowFallingUp);
 
-        manager.CreateLinks(atomicArrow, drillingArrow);
+        // manager.CreateLinks(atomicArrow, drillingArrow);
         manager.CreateLinks(bottomlessQuiver, manager.MatchVariants.NoQuivers);
         manager.CreateLinks(bottomlessQuiver, manager.MatchVariants.SmallQuivers);
         manager.CreateLinks(annoyingMage, manager.MatchVariants.DarkPortals);
@@ -200,5 +208,7 @@ public class AdditionalVariantsModule : FortModule
         manager.CreateLinks(staminaDash, manager.MatchVariants.NoDodging);
         manager.CreateLinks(noHyper, noDodgeCancel);
         manager.CreateLinks(neonWorld, manager.MatchVariants.AlwaysDark);
+        manager.CreateLinks(unfairAutobalance, manager.MatchVariants.NoAutobalance);
+        manager.CreateLinks(unfairAutobalance, manager.MatchVariants.WeakAutobalance);
     }
 }
