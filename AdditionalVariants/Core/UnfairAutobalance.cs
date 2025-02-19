@@ -100,7 +100,7 @@ public static class UnfairAutobalance
         }
     }
 
-    public static bool HasOnePlayerCrown(Session session)
+    private static bool HasOnePlayerCrown(Session session)
     {
         var amount = TFGame.PlayerAmount;
 

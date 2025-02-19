@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdditionalVariants", "Addit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaronMode", "BaronMode\BaronMode.csproj", "{49EB7057-D949-43BA-9B16-FEB73F028FC3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColoredDrillArrows", "ColoredDrillArrows\ColoredDrillArrows.csproj", "{CFF25A4B-2CA6-440A-ABD2-C886AD4641F0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{49EB7057-D949-43BA-9B16-FEB73F028FC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49EB7057-D949-43BA-9B16-FEB73F028FC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49EB7057-D949-43BA-9B16-FEB73F028FC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFF25A4B-2CA6-440A-ABD2-C886AD4641F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFF25A4B-2CA6-440A-ABD2-C886AD4641F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFF25A4B-2CA6-440A-ABD2-C886AD4641F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFF25A4B-2CA6-440A-ABD2-C886AD4641F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

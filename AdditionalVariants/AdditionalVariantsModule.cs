@@ -199,7 +199,6 @@ public class AdditionalVariantsModule : FortModule
         var unfairAutobalance = manager.AddVariant(unfairAutobalanceInfo);
         // manager.AddVariant(arrowFallingUp);
 
-        // manager.CreateLinks(atomicArrow, drillingArrow);
         manager.CreateLinks(bottomlessQuiver, manager.MatchVariants.NoQuivers);
         manager.CreateLinks(bottomlessQuiver, manager.MatchVariants.SmallQuivers);
         manager.CreateLinks(annoyingMage, manager.MatchVariants.DarkPortals);
