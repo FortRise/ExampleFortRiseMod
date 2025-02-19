@@ -1,7 +1,13 @@
 {
 	"name": "ColoredDrillArrows",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"author": "Teuria",
 	"description": "Add colors to the Drill Arrows by player index",
-	"dll": "ColoredDrillArrows.dll"
+	"dll": "ColoredDrillArrows.dll",
+	"dependencies": [
+		{
+			"name": "FortRise",
+			"version": "5.0.0"
+		}
+	]
 }
