@@ -28,6 +28,7 @@ public static class TextureRegistry
     public static Subtexture ArrowFallingUp => TFGame.Atlas["AdditionalVariants/variants/arrowFallingUp"];
     public static Subtexture AutoOpenChest => TFGame.Atlas["AdditionalVariants/variants/autoOpenChest"];
     public static Subtexture ExplodingShield => TFGame.Atlas["AdditionalVariants/variants/explodingShield"];
+    public static Subtexture ClumsySwap => TFGame.Atlas["AdditionalVariants/variants/clumsySwap"];
 
     // Chest
     public static Subtexture GrayChest => TFGame.Atlas["AdditionalVariants/chest/graychest"];

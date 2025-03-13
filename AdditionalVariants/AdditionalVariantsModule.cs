@@ -35,6 +35,7 @@ public class AdditionalVariantsModule : FortModule
         UnfairAutobalance.Load();
         AutoOpenChest.Load();
         ExplodingShield.Load();
+        ClumsySwap.Load();
         // ArrowFallingUp.Load();
         FortRise.RiseCore.Events.OnPreInitialize += OnPreInitialize;
     }
@@ -69,6 +70,7 @@ public class AdditionalVariantsModule : FortModule
         UnfairAutobalance.Unload();
         AutoOpenChest.Unload();
         ExplodingShield.Unload();
+        ClumsySwap.Unload();
         // ArrowFallingUp.Unload();
         FortRise.RiseCore.Events.OnPreInitialize -= OnPreInitialize;
     }
@@ -187,6 +189,11 @@ public class AdditionalVariantsModule : FortModule
             description: "Shield explodes on break".ToUpperInvariant(),
             CustomVariantFlags.CanRandom | CustomVariantFlags.PerPlayer
         );
+        var clumsySwap = new CustomVariantInfo(
+            "ClumsySwap", TextureRegistry.ClumsySwap,
+            description: "Swapping causes arrows to drop".ToUpperInvariant(),
+            CustomVariantFlags.CanRandom | CustomVariantFlags.PerPlayer
+        );
 
         // var arrowFallingUp = new CustomVariantInfo(
         //     "ArrowFallingUp", TextureRegistry.ArrowFallingUp,
@@ -214,6 +221,7 @@ public class AdditionalVariantsModule : FortModule
         var unfairAutobalance = manager.AddVariant(unfairAutobalanceInfo);
         var autoOpenChest = manager.AddVariant(autoOpenChestInfo);
         manager.AddVariant(explodingShield);
+        manager.AddVariant(clumsySwap);
         // manager.AddVariant(arrowFallingUp);
 
         manager.CreateLinks(bottomlessQuiver, manager.MatchVariants.NoQuivers);

@@ -9,5 +9,11 @@
 			"name": "FortRise",
 			"version": "5.1.0"
 		}
+	],
+	"optionalDependencies": [
+		{
+			"name": "TF.EX",
+			"version": "0.9.5"
+		}
 	]
 }
