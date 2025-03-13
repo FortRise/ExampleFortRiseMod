@@ -26,11 +26,14 @@ public static class TextureRegistry
     public static Subtexture DrillingArrow => TFGame.Atlas["AdditionalVariants/variants/drillingArrow"];
     public static Subtexture UnfairAutobalance => TFGame.Atlas["AdditionalVariants/variants/unfairAutobalance"];
     public static Subtexture ArrowFallingUp => TFGame.Atlas["AdditionalVariants/variants/arrowFallingUp"];
+    public static Subtexture AutoOpenChest => TFGame.Atlas["AdditionalVariants/variants/autoOpenChest"];
+    public static Subtexture ExplodingShield => TFGame.Atlas["AdditionalVariants/variants/explodingShield"];
 
     // Chest
     public static Subtexture GrayChest => TFGame.Atlas["AdditionalVariants/chest/graychest"];
     public static Subtexture BlueChest => TFGame.Atlas["AdditionalVariants/chest/bluechest"];
     public static Subtexture RedChest => TFGame.Atlas["AdditionalVariants/chest/redchest"];
+
 
     // Misc
     public static Subtexture StaminaBar => TFGame.Atlas["AdditionalVariants/misc/staminabar"];

@@ -33,6 +33,8 @@ public class AdditionalVariantsModule : FortModule
         NoArrowTinks.Load();
         DrillingArrow.Load();
         UnfairAutobalance.Load();
+        AutoOpenChest.Load();
+        ExplodingShield.Load();
         // ArrowFallingUp.Load();
         FortRise.RiseCore.Events.OnPreInitialize += OnPreInitialize;
     }
@@ -65,6 +67,8 @@ public class AdditionalVariantsModule : FortModule
         NoArrowTinks.Unload();
         DrillingArrow.Unload();
         UnfairAutobalance.Unload();
+        AutoOpenChest.Unload();
+        ExplodingShield.Unload();
         // ArrowFallingUp.Unload();
         FortRise.RiseCore.Events.OnPreInitialize -= OnPreInitialize;
     }
@@ -171,8 +175,19 @@ public class AdditionalVariantsModule : FortModule
         var unfairAutobalanceInfo = new CustomVariantInfo(
             "UnfairAutobalance", TextureRegistry.UnfairAutobalance,
             description: "Top players always get an advantage".ToUpperInvariant(),
+            CustomVariantFlags.CanRandom 
+        );
+        var autoOpenChestInfo = new CustomVariantInfo(
+            "AutoOpenChest", TextureRegistry.AutoOpenChest,
+            description: "Automatically open chest".ToUpperInvariant(),
             CustomVariantFlags.CanRandom
         );
+        var explodingShield = new CustomVariantInfo(
+            "ExplodingShield", TextureRegistry.ExplodingShield,
+            description: "Shield explodes on break".ToUpperInvariant(),
+            CustomVariantFlags.CanRandom | CustomVariantFlags.PerPlayer
+        );
+
         // var arrowFallingUp = new CustomVariantInfo(
         //     "ArrowFallingUp", TextureRegistry.ArrowFallingUp,
         //     description: "Arrow will fall upwards".ToUpperInvariant(),
@@ -197,6 +212,8 @@ public class AdditionalVariantsModule : FortModule
         manager.AddVariant(kingsWrathInfo);
         manager.AddVariant(noArrowTinksInfo);
         var unfairAutobalance = manager.AddVariant(unfairAutobalanceInfo);
+        var autoOpenChest = manager.AddVariant(autoOpenChestInfo);
+        manager.AddVariant(explodingShield);
         // manager.AddVariant(arrowFallingUp);
 
         manager.CreateLinks(bottomlessQuiver, manager.MatchVariants.NoQuivers);
@@ -209,5 +226,7 @@ public class AdditionalVariantsModule : FortModule
         manager.CreateLinks(neonWorld, manager.MatchVariants.AlwaysDark);
         manager.CreateLinks(unfairAutobalance, manager.MatchVariants.NoAutobalance);
         manager.CreateLinks(unfairAutobalance, manager.MatchVariants.WeakAutobalance);
+        manager.CreateLinks(autoOpenChest, manager.MatchVariants.BombChests);
+        manager.CreateLinks(autoOpenChest, manager.MatchVariants.NoTreasure);
     }
 }
