@@ -1,3 +1,4 @@
+using FortRise;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.Utils;
@@ -25,7 +26,10 @@ public static class ClumsySwap
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate((Player player) => {
-                DynamicData.For(player).Invoke("DropArrow");
+                if (VariantManager.GetCustomVariant("AdditionalVariants/ClumsySwap")[player.PlayerIndex])
+                {
+                    DynamicData.For(player).Invoke("DropArrow");
+                }
             });
         }
     }
