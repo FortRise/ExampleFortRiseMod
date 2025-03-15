@@ -3,5 +3,17 @@
 	"version": "1.0.0",
 	"author": "Terria",
 	"description": "A mod that changes miasma colors in different level with different colors.",
-	"dll": "MiasmaColors.dll"
+	"dll": "MiasmaColors.dll",
+	"dependencies": [
+		{
+			"name": "FortRise",
+			"version": "5.0.0"
+		}
+	],
+	"update": {
+		"github": {
+			"repository": "FortRise/ExampleFortRiseMod",
+			"tagRegex": "^MiasmaColors\\-(.*)"
+		}
+	}
 }

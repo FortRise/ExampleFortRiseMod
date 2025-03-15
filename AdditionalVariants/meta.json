@@ -15,5 +15,11 @@
 			"name": "TF.EX",
 			"version": "0.9.5"
 		}
-	]
+	],
+	"update": {
+		"github": {
+			"repository": "FortRise/ExampleFortRiseMod",
+			"tagRegex": "^AdditionalVariants\\-(.*)"
+		}
+	}
 }
