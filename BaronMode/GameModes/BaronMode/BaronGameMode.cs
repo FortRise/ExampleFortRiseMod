@@ -354,6 +354,10 @@ public class BaronRoundLogic : RoundLogic
                 new FloatText(corpse.Position + new Vector2(0f, -8f), "OVERTIME", 
                 Color.Red, Color.White, 1f, 1f, false));
             Overtime = true;
+            for (int i = 0; i < Lives.Length; i++) 
+            {
+                Lives[i] = 0;
+            }
             return;
         }
 
