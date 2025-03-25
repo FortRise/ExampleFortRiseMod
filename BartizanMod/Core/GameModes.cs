@@ -19,7 +19,7 @@ public class Respawn : CustomGameMode
 
     public override void Initialize()
     {
-        Icon = BartizanModModule.BartizanAtlas["gamemodes/respawn"];
+        Icon = TFGame.MenuAtlas["Bartizan/gamemodes/respawn"];
         NameColor = Color.Yellow;
     }
 
@@ -43,7 +43,7 @@ public class Crawl : CustomGameMode
 
     public override void Initialize()
     {
-        Icon = BartizanModModule.BartizanAtlas["gamemodes/crawl"];
+        Icon = TFGame.MenuAtlas["Bartizan/gamemodes/crawl"];
         NameColor = Color.Purple;
     }
 

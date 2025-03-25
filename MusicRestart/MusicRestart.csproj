@@ -1,48 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\Fortrise.targets" />
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-    <LangVersion>11</LangVersion>
+    <TargetFramework>net9.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <OutputPath>..\..\..\Mods\MusicRestart</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MonoMod" Version="22.5.1.1">
-      <IncludeAssets>compile</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="MonoMod.RuntimeDetour" Version="22.5.1.1">
-      <IncludeAssets>compile</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="TeuJson" Version="3.1.2">
-      <IncludeAssets>compile</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="meta.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="TowerFall">
-      <HintPath>..\..\..\TowerFall.exe</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MMHOOK_TowerFall">
-      <HintPath>..\..\..\MMHOOK_TowerFall.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  
-    <ItemGroup>
-      <Reference Include="FNA" >
-        <HintPath>..\..\..\FNA.dll</HintPath>
-        <Private>False</Private>
-      </Reference>
-    </ItemGroup>
     
 </Project>
 

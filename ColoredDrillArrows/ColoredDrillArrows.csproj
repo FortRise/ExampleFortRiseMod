@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\Fortrise.targets" />
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-    <LangVersion>11</LangVersion>
+    <TargetFramework>net9.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <OutputPath>..\..\..\Mods\ColoredDrillArrows</OutputPath>
