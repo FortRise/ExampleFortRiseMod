@@ -5,3 +5,5 @@ EightPlayerMod
 .vs/
 Properties/
 *.user
+
+.vscode/
