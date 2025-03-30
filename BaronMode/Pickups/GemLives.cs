@@ -15,14 +15,16 @@ public class GemLives : Pickup
 
     public GemLives(Vector2 position, Vector2 targetPosition) : base(position, targetPosition)
     {
-        base.Collider = new Hitbox(16f, 16f, -8f, -8f);
-        base.Tag(GameTags.PlayerCollectible);
+        Collider = new Hitbox(16f, 16f, -8f, -8f);
+        Tag(GameTags.PlayerCollectible);
+        sprite = new Sprite<int>(TFGame.Atlas["BaronMode/pickups/gemCoin"], 12, 10);
+        sprite.Add(0, 0.1f, [0, 0, 0, 1, 2, 3, 4, 5, 6, 7]);
     }
 
     public override void Added()
     {
         base.Added();
-        Player firstPlayerAlive = null;
+        Player? firstPlayerAlive = null;
         foreach (Player player in Level.Players)
         {
             if (player.Dead)
@@ -47,7 +49,7 @@ public class GemLives : Pickup
         if (playerIndex == -1)
         {
             sprite = new Sprite<int>(TFGame.Atlas["BaronMode/pickups/gemCoin"], 12, 10);
-            sprite.Add(0, 0.1f, new int[] { 0, 0, 0, 1, 2, 3, 4, 5, 6, 7});
+            sprite.Add(0, 0.1f, [0, 0, 0, 1, 2, 3, 4, 5, 6, 7]);
         }
         else 
         {
@@ -109,7 +111,7 @@ public class GemLives : Pickup
             if (logic.Overtime)
             {
                 Sounds.pu_darkOrbCollect.Play(X);
-                Level.Add<FloatText>(new FloatText(
+                Level.Add(new FloatText(
                     Position, "IT BROKE!", 
                     player.ArcherData.ColorA,
                     player.ArcherData.ColorB,
@@ -133,7 +135,7 @@ public class GemLives : Pickup
             else 
             {
                 logic.AddLife(player.PlayerIndex);
-                Level.Add<FloatText>(new FloatText(
+                Level.Add(new FloatText(
                     Position, "+1 LIFE", 
                     player.ArcherData.ColorA,
                     player.ArcherData.ColorB,
@@ -144,7 +146,7 @@ public class GemLives : Pickup
         else 
         {
             Sounds.pu_darkOrbCollect.Play(X);
-            Level.Add<FloatText>(new FloatText(
+            Level.Add(new FloatText(
                 Position, "IT BROKE!", 
                 player.ArcherData.ColorA,
                 player.ArcherData.ColorB,
@@ -165,11 +167,11 @@ public class GemLives : Pickup
             }, 12, Position, Vector2.One * 4f);
         }
 
-        Level.Add<LightFade>(Cache.Create<LightFade>().Init(this));
+        Level.Add(Cache.Create<LightFade>().Init(this));
         RemoveSelf();
     }
 
-    private int GetPlayerRangeCount() 
+    private static int GetPlayerRangeCount() 
     {
         int range = 0;
         for (int i = 0; i < TFGame.Players.Length; i++)

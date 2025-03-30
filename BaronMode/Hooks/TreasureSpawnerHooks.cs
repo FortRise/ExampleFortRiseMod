@@ -1,4 +1,3 @@
-using System;
 using BaronMode.Pickups;
 using FortRise;
 
