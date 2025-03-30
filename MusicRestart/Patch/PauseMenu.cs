@@ -1,5 +1,3 @@
-using System;
-using FortRise;
 using Monocle;
 using MonoMod.Utils;
 using TowerFall;
