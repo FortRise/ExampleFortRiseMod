@@ -1,4 +1,6 @@
-﻿namespace AdditionalVariants.EX.JesterHat
+﻿using System.Collections.Generic;
+
+namespace AdditionalVariants.EX.JesterHat
 {
     internal class JesterHatState
     {

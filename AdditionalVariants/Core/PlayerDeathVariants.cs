@@ -1,3 +1,4 @@
+using System;
 using FortRise;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -50,7 +51,7 @@ public static class PlayerDeathVariants
                 Allegiance.Red => TextureRegistry.RedChest,
                 _ => TFGame.Atlas["treasureChestSpecial"],
             };
-            DynamicData.For(chest).Get<Sprite<int>>("sprite").SwapSubtexture(texture);
+            DynamicData.For(chest).Get<Sprite<int>>("sprite")!.SwapSubtexture(texture);
 
             self.Level.Add(chest);
         }

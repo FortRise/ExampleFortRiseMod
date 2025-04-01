@@ -1,6 +1,7 @@
-﻿using FortRise;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using MonoMod.Utils;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using TowerFall;
 
@@ -11,9 +12,9 @@ namespace AdditionalVariants.EX.JesterHat
     {
         public static void OnLoadState(string toLoad)
         {
-            var state = JsonSerializer.Deserialize<JesterHatState>(toLoad);
-            var players = (Monocle.Engine.Instance.Scene as Level).Players.Select(p => p as Player).ToList();
-            foreach (var player in players)
+            var state = JsonSerializer.Deserialize<JesterHatState>(toLoad)!;
+            var players = (Monocle.Engine.Instance.Scene as Level)!.Players.Select(p => p as Player).ToList();
+            foreach (Player player in players!)
             {
                 var dynPlayer = DynamicData.For(player);
                 if (state.JesterHatsWarpPoints.TryGetValue(player.PlayerIndex, out var warpPoints))
@@ -33,11 +34,11 @@ namespace AdditionalVariants.EX.JesterHat
         {
             var state = new JesterHatState();
 
-            var players = (Monocle.Engine.Instance.Scene as Level).Players.Select(p => p as Player).ToList();
+            var players = (Monocle.Engine.Instance.Scene as Level)!.Players.Select(p => p as Player).ToList();
 
             ICollection<(int, IEnumerable<Vector2f>)> jesterHatWarpPoints = new List<(int, IEnumerable<Vector2f>)>();
 
-            foreach (var player in players)
+            foreach (Player player in players!)
             {
                 var dynPlayer = DynamicData.For(player);
                 if (dynPlayer.TryGet<List<Vector2>>("warpPoints", out var warpPoints))

@@ -37,7 +37,7 @@ public class MyRollcallElement
 
 public class MyVersusPlayerMatchResults 
 {
-    public static int[] PlayerWins;
+    public static int[] PlayerWins = null!;
 
 
     internal static void Load() 
@@ -56,7 +56,7 @@ public class MyVersusPlayerMatchResults
     {
         orig(self, session, matchResults, playerIndex, tweenFrom, tweenTo, awards);
         var dynData = DynamicData.For(self);
-        var gem = dynData.Get<Sprite<string>>("gem");
+        var gem = dynData.Get<Sprite<string>>("gem")!;
         if (session.MatchStats[playerIndex].Won)
             PlayerWins[playerIndex]++;
 

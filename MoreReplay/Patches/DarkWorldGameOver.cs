@@ -1,7 +1,4 @@
-using System;
-using Monocle;
 using MonoMod.Utils;
-using TowerFall;
 
 namespace MoreReplay;
 

@@ -14,7 +14,7 @@ namespace BartizanMod;
 [Fort("com.kha.BartizanMod", "BartizanMod")]
 public class BartizanModModule : FortModule
 {
-    public static BartizanModModule Instance;
+    public static BartizanModModule Instance = null!;
 
     public override Type SettingsType => typeof(BartizanModSettings);
     public BartizanModSettings Settings => (BartizanModSettings)Instance.InternalSettings;

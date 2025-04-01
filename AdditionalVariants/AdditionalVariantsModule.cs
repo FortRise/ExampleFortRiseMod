@@ -1,14 +1,13 @@
 ﻿using AdditionalVariants.EX;
 using AdditionalVariants.EX.JesterHat;
 using FortRise;
-using Monocle;
 
 namespace AdditionalVariants;
 
 [Fort("com.terria.additionalvariants", "Additional Variants")]
 public class AdditionalVariantsModule : FortModule
 {
-    public static NeonShaderResource NeonShader;
+    public static NeonShaderResource NeonShader = null!;
 
     public override void LoadContent()
     {

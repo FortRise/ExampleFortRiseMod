@@ -1,11 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\Fortrise.targets" />
-
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    <OutputPath>..\..\..\Mods\BartizanMod</OutputPath>
+    <Nullable>enable</Nullable>
+    <ModName>BartizanMod</ModName>
+    <ModVersion>2.0.0</ModVersion>
+
+    <!-- If Steam path cannot be found, try specifying the path. -->
+    <ModLoaderPath>..\..\..\</ModLoaderPath>
+    <ModZipPath>..\release\$(ModName).zip</ModZipPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,4 +15,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FortRise.Configuration" Version="1.0.8" />
+  </ItemGroup>
 </Project>
+

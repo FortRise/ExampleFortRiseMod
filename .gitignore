@@ -7,3 +7,4 @@ Properties/
 *.user
 
 .vscode/
+release/

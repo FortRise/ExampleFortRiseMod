@@ -21,7 +21,7 @@ public static class PauseMenuPatch
 
     private static void UsePatch(PauseMenu self) 
     {
-        var level = DynamicData.For(self).Get<Level>("level");
+        var level = DynamicData.For(self).Get<Level>("level")!;
         Music.Stop();
         Music.Play(level.Session.MatchSettings.LevelSystem.Theme.Music);
     }

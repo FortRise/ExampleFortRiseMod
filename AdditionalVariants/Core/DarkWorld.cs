@@ -20,7 +20,7 @@ public static class DarkWorld
     {
         if (VariantManager.GetCustomVariant("AdditionalVariants/DarkWorld")) 
         {
-            var level = DynamicData.For(self).Get<Level>("level");
+            var level = DynamicData.For(self).Get<Level>("level")!;
             var darkened = DynamicData.For(level.OrbLogic).Get<bool>("darkened");
             if (darkened)
                 return;

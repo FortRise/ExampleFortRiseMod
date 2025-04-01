@@ -7,8 +7,8 @@ namespace BartizanMod;
 [ModImportName("com.fortrise.EightPlayerMod")]
 public class EightPlayerImport
 {
-    public static Func<bool> IsEightPlayer;
-    public static Func<bool> LaunchedEightPlayer;
+    public static Func<bool> IsEightPlayer = null!;
+    public static Func<bool> LaunchedEightPlayer = null!;
 }
 
 public static class EightPlayerUtils 

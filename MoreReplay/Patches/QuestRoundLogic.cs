@@ -21,9 +21,9 @@ public static class QuestRoundLogicPatch
 
     private static void OnPlayerDeath_patch(ILContext ctx)
     {
-        var get_Session = typeof(TowerFall.RoundLogic).GetProperty("Session").GetGetMethod();
-        var CurrentLevel = typeof(TowerFall.Session).GetField("CurrentLevel");
-        var get_ReplayRecorder = typeof(TowerFall.Level).GetProperty("ReplayRecorder").GetGetMethod();
+        var get_Session = typeof(TowerFall.RoundLogic).GetProperty("Session")!.GetGetMethod()!;
+        var CurrentLevel = typeof(TowerFall.Session).GetField("CurrentLevel")!;
+        var get_ReplayRecorder = typeof(TowerFall.Level).GetProperty("ReplayRecorder")!.GetGetMethod()!;
 
         var cursor = new ILCursor(ctx);
         var br_Replay = cursor.DefineLabel();

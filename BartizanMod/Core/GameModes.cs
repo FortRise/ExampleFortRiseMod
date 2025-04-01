@@ -139,7 +139,7 @@ public class RespawnRoundLogic : RoundLogic
 
     private void DoAutoRevive(int playerIndex)
     {
-        TeamReviver selectedTeamReviver = null;
+        TeamReviver? selectedTeamReviver = null;
         foreach (TeamReviver teamReviver in base.Session.CurrentLevel[GameTags.TeamReviver])
         {
             if (teamReviver.Corpse.PlayerIndex == playerIndex)
@@ -259,7 +259,7 @@ public class MobRoundLogic : RespawnRoundLogic
             if (this.Session.CurrentLevel.LivingPlayers == 0) 
             {
                 var otherPlayers = TFGame.Players.Select((playing, idx) => playing && idx != playerIndex ? (int?)idx : null).Where(idx => idx != null).ToList();
-                var randomPlayer = new Random().Choose(otherPlayers).Value;
+                var randomPlayer = new Random().Choose(otherPlayers)!.Value;
                 RemoveGhostAndRespawn(randomPlayer);
             }
         } 
@@ -361,7 +361,7 @@ public static class MyPlayerGhost
         var mobLogic = self.Level.Session.RoundLogic as MobRoundLogic;
         if (mobLogic != null && DynamicData.For(self).TryGet<PlayerCorpse>("corpse", out var corpse)) 
         {
-            mobLogic.OnPlayerDeath(null, corpse, self.PlayerIndex, DeathCause.Arrow, self.Position, killerIndex);
+            mobLogic.OnPlayerDeath(null!, corpse, self.PlayerIndex, DeathCause.Arrow, self.Position, killerIndex);
         }
     }
 }
@@ -383,7 +383,7 @@ public static class MyPlayerCorpse
     private static void ctor_patch(On.TowerFall.PlayerCorpse.orig_ctor_string_Allegiance_Vector2_Facing_int_int orig, PlayerCorpse self, string corpseSpriteID, Allegiance teamColor, Vector2 position, Facing facing, int playerIndex, int killerIndex)
     {
         orig(self, corpseSpriteID, teamColor, position, facing, playerIndex, killerIndex);
-        var level = Engine.Instance.Scene as Level;
+        var level = (Engine.Instance.Scene as Level)!;
         if (level.Session.MatchSettings.Mode == ModRegisters.GameModeType<Crawl>()) 
         {
             var dynSelf = DynamicData.For(self);

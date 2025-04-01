@@ -1,6 +1,4 @@
 {
-    "name": "MusicRestart",
-	"version": "2.0.0",
 	"author": "Terria",
 	"description": "Restart music after restart",
 	"dll": "MusicRestart.dll",

@@ -32,17 +32,17 @@ public class ReplayMenuComponent : Component
 
     private void GotoReplay()
     {
-        var level = Scene as Level;
+        var level = (Scene as Level)!;
         if (level.ReplayRecorder != null)
         {
-            Entity.Visible = (Entity.Active = false);
+            Entity.Visible = Entity.Active = false;
             level.ReplayViewer.Watch(level.ReplayRecorder, ReplayViewer.ReplayType.Rewind, ReplayFinish);
         }
     }
 
     private void SaveReplay()
     {
-        var level = Scene as Level;
+        var level = (Scene as Level)!;
         saving = true;
         var pauseMenu = level.Layers[4].GetFirst<PauseMenu>();
         if (pauseMenu == null)
@@ -65,7 +65,7 @@ public class ReplayMenuComponent : Component
         }
         saving = false;
 
-        var level = Scene as Level;
+        var level = (Scene as Level)!;
         Alarm.Set(Entity, 20, () => {
             var pauseMenu = level.Layers[4].GetFirst<PauseMenu>();
             pauseMenu.Active = true;
@@ -76,7 +76,7 @@ public class ReplayMenuComponent : Component
     private void ReplayFinish()
     {
         ScreenEffects.Reset();
-        (Scene as Level).Frozen = false;
+        (Scene as Level)!.Frozen = false;
         Entity.Visible = (Entity.Active = true);
     }
 }

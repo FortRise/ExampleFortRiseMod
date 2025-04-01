@@ -22,8 +22,8 @@ public static class DrillArrow
     {
         orig(self);
         var dynSelf = DynamicData.For(self);
-        var normalSprite = dynSelf.Get<Sprite<int>>("normalSprite");
-        var buriedImage = dynSelf.Get<Image>("buriedImage");
+        var normalSprite = dynSelf.Get<Sprite<int>>("normalSprite")!;
+        var buriedImage = dynSelf.Get<Image>("buriedImage")!;
         if (self.CharacterIndex != -1)
         {
             normalSprite.Color = ArcherData.Archers[self.CharacterIndex].ColorB;

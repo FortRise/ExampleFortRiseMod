@@ -1,17 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\Fortrise.targets" />
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    <OutputPath>..\..\..\Mods\BaronMode</OutputPath>
     <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <ModName>BaronMode</ModName>
+    <ModVersion>2.1.0</ModVersion>
 
+    <!-- If Steam path cannot be found, try specifying the path. -->
+    <ModLoaderPath>..\..\..\</ModLoaderPath>
+    <ModZipPath>..\release\$(ModName).zip</ModZipPath>
+  </PropertyGroup>
 
   <ItemGroup>
     <Content Include="Content/Atlas/**/*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FortRise.Configuration" Version="1.0.8" />
   </ItemGroup>
 </Project>

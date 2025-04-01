@@ -1,4 +1,4 @@
-
+using System;
 using FortRise;
 using Monocle;
 using MonoMod.Utils;
@@ -8,7 +8,7 @@ namespace AdditionalVariants;
 
 public static class LavaOverload 
 {
-    private static Action<LavaControl> base_Added;
+    private static Action<LavaControl> base_Added = null!;
 
     public static void Load()
     {

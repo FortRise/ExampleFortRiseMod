@@ -1,7 +1,6 @@
 using System.Reflection;
 using FortRise;
 using Monocle;
-using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
 using TowerFall;
 
@@ -68,12 +67,12 @@ public class MyPlayer
 
 public class MyArrow 
 {
-    private static PropertyInfo Comp_TimeMult;
+    private static PropertyInfo Comp_TimeMult = null!;
 
     internal static void Load() 
     {
         On.TowerFall.Arrow.ArrowUpdate += ArrowUpdate_patch;
-        Comp_TimeMult = typeof(Engine).GetProperty("TimeMult");
+        Comp_TimeMult = typeof(Engine).GetProperty("TimeMult")!;
     }
 
     internal static void Unload() 

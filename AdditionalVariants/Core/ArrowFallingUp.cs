@@ -1,3 +1,4 @@
+using System;
 using FortRise;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -54,7 +55,7 @@ public static class ArrowFallingUp
 
         if (cursor.TryGotoNext(MoveType.Before, instr => instr.MatchClt()))
         {
-            cursor.Next.OpCode = OpCodes.Cgt;
+            cursor.Next!.OpCode = OpCodes.Cgt;
         }
         // TODO, makes clt, cge
         if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdloc(1)))

@@ -1,18 +1,17 @@
+using System;
 using FortRise;
-using Microsoft.Xna.Framework;
 using MonoMod.RuntimeDetour;
-using MonoMod.Utils;
 using TowerFall;
 
 namespace AdditionalVariants;
 
 public static class ExplodingShield
 {
-    private static Hook Player_set_HasShield;
+    private static Hook Player_set_HasShield = null!;
     public static void Load()
     {
         Player_set_HasShield = new Hook(
-            typeof(Player).GetProperty("HasShield").GetSetMethod(),
+            typeof(Player).GetProperty("HasShield")!.GetSetMethod()!,
             set_HasShield_patch
         );
     }

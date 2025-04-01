@@ -1,6 +1,4 @@
 {
-	"name": "ColoredDrillArrows",
-	"version": "1.1.0",
 	"author": "Teuria",
 	"description": "Add colors to the Drill Arrows by player index",
 	"dll": "ColoredDrillArrows.dll",

@@ -1,4 +1,3 @@
-
 using FortRise;
 using Microsoft.Xna.Framework;
 using TowerFall;

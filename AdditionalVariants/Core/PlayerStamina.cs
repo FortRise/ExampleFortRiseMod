@@ -1,3 +1,4 @@
+using System;
 using FortRise;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -68,6 +69,7 @@ public class DashStamina : Component
     private float alpha;
     public DashStamina(bool active, bool visible) : base(active, visible)
     {
+        staminaImage = TextureRegistry.StaminaBar;
     }
 
     public bool UseSmallStamina() 
@@ -78,12 +80,6 @@ public class DashStamina : Component
             return true;
         }
         return false;
-    }
-
-    public override void Added()
-    {
-        base.Added();
-        staminaImage = TextureRegistry.StaminaBar;
     }
 
     public override void Update()

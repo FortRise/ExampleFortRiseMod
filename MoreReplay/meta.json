@@ -1,6 +1,4 @@
 {
-	"name": "MoreReplay",
-	"version": "2.1.0",
 	"author": "Terria",
 	"description": "Replay your death moment in Co-Op and Dark World",
 	"dll": "MoreReplay.dll",

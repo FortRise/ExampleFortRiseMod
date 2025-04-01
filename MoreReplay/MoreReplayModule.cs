@@ -1,4 +1,3 @@
-using System;
 using FortRise;
 
 namespace MoreReplay;
@@ -6,7 +5,7 @@ namespace MoreReplay;
 [Fort("com.terria.morereplay", "More Replay")]
 public sealed class MoreReplayModule : FortModule
 {
-    public static MoreReplayModule Instance;
+    public static MoreReplayModule Instance = null!;
 
 
     public MoreReplayModule() 

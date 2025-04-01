@@ -1,6 +1,4 @@
 {
-	"name": "BaronMode",
-	"version": "2.1.0",
 	"author": "Terria",
 	"description": "A Quest-Like gamemode on versus that utilized lives and elimination",
 	"dll": "BaronMode.dll",

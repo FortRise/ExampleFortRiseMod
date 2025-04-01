@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using FortRise;
 using Microsoft.Xna.Framework;
@@ -24,10 +25,10 @@ public class InvincibleTechnomage : TechnoMage
         return true;
     }
 
-    public override void Hurt(Vector2 force, int damage, int killerIndex, Arrow arrow = null, Explosion explosion = null, ShockCircle shock = null)
+    public override void Hurt(Vector2 force, int damage, int killerIndex, Arrow? arrow = null, Explosion? explosion = null, ShockCircle? shock = null)
     {
         Speed = force;
-        if (arrow)
+        if (arrow is not null)
         {
             arrow.EnterFallMode(true, false, true);
         }
@@ -53,7 +54,7 @@ public class InvincibleTechnomageVariantSequence : Entity
             self.CurrentLevel.Add(new InvincibleTechnomageVariantSequence());
     }
 
-    private Level level;
+    private Level level = null!;
 
     public InvincibleTechnomageVariantSequence()
         : base(0)
@@ -64,7 +65,7 @@ public class InvincibleTechnomageVariantSequence : Entity
     public override void Added()
     {
         base.Added();
-        level = Scene as Level;
+        level = (Scene as Level)!;
     }
 
     private IEnumerator Sequence()

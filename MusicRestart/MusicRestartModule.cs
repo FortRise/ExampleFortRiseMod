@@ -6,7 +6,7 @@ namespace MusicRestart;
 [Fort("com.terria.musicrestart", "Music Restart")]
 public sealed class MusicRestartModule : FortModule
 {
-    public static MusicRestartModule Instance;
+    public static MusicRestartModule Instance = null!;
 
     public override Type SettingsType => typeof(MusicRestartSettings);
     public static MusicRestartSettings Settings => (MusicRestartSettings)Instance.InternalSettings;
