@@ -3,9 +3,9 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-public static class UnfairAutobalance 
+public class UnfairAutobalance : IHookable
 {
     public static void Load()
     {
@@ -27,7 +27,7 @@ public static class UnfairAutobalance
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<int, Session, int>>((arrows, session) => {
-                if (session.MatchSettings.Variants.GetCustomVariant("AdditionalVariants/UnfairAutobalance") && HasOnePlayerCrown(session))
+                if (Variants.UnfairAutobalance.IsActive() && HasOnePlayerCrown(session))
                 {
                     return 4;
                 }
@@ -40,7 +40,7 @@ public static class UnfairAutobalance
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<int, Session, int>>((arrows, session) => {
-                if (session.MatchSettings.Variants.GetCustomVariant("AdditionalVariants/UnfairAutobalance"))
+                if (Variants.UnfairAutobalance.IsActive())
                 {
                     return 6;
                 }
@@ -53,7 +53,7 @@ public static class UnfairAutobalance
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<int, Session, int>>((arrows, session) => {
-                if (session.MatchSettings.Variants.GetCustomVariant("AdditionalVariants/UnfairAutobalance") && HasOnePlayerCrown(session))
+                if (Variants.UnfairAutobalance.IsActive() && HasOnePlayerCrown(session))
                 {
                     return 2;
                 }
@@ -66,7 +66,7 @@ public static class UnfairAutobalance
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<int, Session, int>>((arrows, session) => {
-                if (session.MatchSettings.Variants.GetCustomVariant("AdditionalVariants/UnfairAutobalance"))
+                if (Variants.UnfairAutobalance.IsActive())
                 {
                     return 3;
                 }
@@ -85,7 +85,7 @@ public static class UnfairAutobalance
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.Emit(OpCodes.Ldarg_1);
             cursor.EmitDelegate<Func<bool, Session, int, bool>>((isLosing, session, playerIndex) => {
-                if (session.MatchSettings.Variants.GetCustomVariant("AdditionalVariants/UnfairAutobalance") && HasOnePlayerCrown(session))
+                if (Variants.UnfairAutobalance.IsActive() && HasOnePlayerCrown(session))
                 {
                     if (session.GetSpawnHatState(playerIndex) == Player.HatStates.Crown)
                     {

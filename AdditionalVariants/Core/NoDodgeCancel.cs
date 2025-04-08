@@ -1,12 +1,11 @@
 using System;
-using FortRise;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-public static class NoDodgeCancel 
+public class NoDodgeCancel : IHookable
 {
     public static void Load() 
     {
@@ -26,8 +25,10 @@ public static class NoDodgeCancel
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<bool, Player, bool>>((jumpPressed, self) => {
-                if (VariantManager.GetCustomVariant("AdditionalVariants/NoDodgeCancel")[self.PlayerIndex]) 
+                if (Variants.NoDodgeCancel.IsActive(self.PlayerIndex)) 
+                {
                     return false;
+                }
                 
                 return jumpPressed;
             });
@@ -39,8 +40,10 @@ public static class NoDodgeCancel
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<bool, Player, bool>>((dodgePressed, self) => {
-                if (VariantManager.GetCustomVariant("AdditionalVariants/NoDodgeCancel")[self.PlayerIndex]) 
+                if (Variants.NoDodgeCancel.IsActive(self.PlayerIndex)) 
+                {
                     return false;
+                }
                 
                 return dodgePressed;
             });
@@ -50,7 +53,7 @@ public static class NoDodgeCancel
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<float, Player, float>>((speed, self) => {
-                var canActive = VariantManager.GetCustomVariant("AdditionalVariants/NoHypers")[self.PlayerIndex];
+                var canActive = Variants.NoHypers.IsActive(self.PlayerIndex);
                 if (canActive) 
                     return 1f;
                 return speed;
@@ -61,8 +64,8 @@ public static class NoDodgeCancel
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<bool, Player, bool>>((dodgePressed, self) => {
-                var canActive = VariantManager.GetCustomVariant("AdditionalVariants/NoDodgeCancel")[self.PlayerIndex] || 
-                    VariantManager.GetCustomVariant("AdditionalVariants/NoHypers")[self.PlayerIndex];
+                var canActive = Variants.NoDodgeCancel.IsActive(self.PlayerIndex) || 
+                    Variants.NoHypers.IsActive(self.PlayerIndex);
                 if (canActive) 
                     return false;
                 

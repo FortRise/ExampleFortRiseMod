@@ -4,9 +4,9 @@ using MonoMod.Cil;
 using MonoMod.Utils;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-public static class ClumsySwap
+public class ClumsySwap : IHookable
 {
     public static void Load()
     {
@@ -26,7 +26,7 @@ public static class ClumsySwap
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate((Player player) => {
-                if (VariantManager.GetCustomVariant("AdditionalVariants/ClumsySwap")[player.PlayerIndex])
+                if (Variants.ClumsySwap.IsActive(player.PlayerIndex))
                 {
                     DynamicData.For(player).Invoke("DropArrow");
                 }

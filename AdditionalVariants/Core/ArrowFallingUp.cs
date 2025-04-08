@@ -4,7 +4,7 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
 public static class ArrowFallingUp 
 {

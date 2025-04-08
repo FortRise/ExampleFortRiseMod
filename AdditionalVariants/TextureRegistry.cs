@@ -1,42 +1,43 @@
 using Monocle;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
 // Optional way to use textures
 public static class TextureRegistry 
 {
+    public const string MetaName = "Teuria.AdditionalVariants";
     // Variants
-    public static Subtexture BottomlessQuiver => TFGame.Atlas["AdditionalVariants/variants/bottomlessQuiver"];
-    public static Subtexture AtomicArrow => TFGame.Atlas["AdditionalVariants/variants/atomicArrow"];
-    public static Subtexture AnnoyingMage => TFGame.Atlas["AdditionalVariants/variants/annoyingMage"];
-    public static Subtexture ShockDeath => TFGame.Atlas["AdditionalVariants/variants/shockDeath"];
-    public static Subtexture ChestDeath => TFGame.Atlas["AdditionalVariants/variants/chestDeath"];
-    public static Subtexture JesterHat => TFGame.Atlas["AdditionalVariants/variants/jesterHat"];
-    public static Subtexture DarkWorld => TFGame.Atlas["AdditionalVariants/variants/darkWorld"];
-    public static Subtexture LavaOverload => TFGame.Atlas["AdditionalVariants/variants/lavaOverload"];
-    public static Subtexture ChaoticRoll => TFGame.Atlas["AdditionalVariants/variants/chaoticroll"];
-    public static Subtexture NoHypers => TFGame.Atlas["AdditionalVariants/variants/noHypers"];
-    public static Subtexture NoDodgeCancel => TFGame.Atlas["AdditionalVariants/variants/noDodgeCancel"];
-    public static Subtexture FadingArrow => TFGame.Atlas["AdditionalVariants/variants/fadingArrow"];
-    public static Subtexture NeonWorld => TFGame.Atlas["AdditionalVariants/variants/neonWorld"];
-    public static Subtexture DashStamina => TFGame.Atlas["AdditionalVariants/variants/dashStamina"];
-    public static Subtexture KingsWrath => TFGame.Atlas["AdditionalVariants/variants/kingsWrath"];
-    public static Subtexture NoArrowTinks => TFGame.Atlas["AdditionalVariants/variants/noArrowTinks"];
-    public static Subtexture DrillingArrow => TFGame.Atlas["AdditionalVariants/variants/drillingArrow"];
-    public static Subtexture UnfairAutobalance => TFGame.Atlas["AdditionalVariants/variants/unfairAutobalance"];
-    public static Subtexture ArrowFallingUp => TFGame.Atlas["AdditionalVariants/variants/arrowFallingUp"];
-    public static Subtexture AutoOpenChest => TFGame.Atlas["AdditionalVariants/variants/autoOpenChest"];
-    public static Subtexture ExplodingShield => TFGame.Atlas["AdditionalVariants/variants/explodingShield"];
-    public static Subtexture ClumsySwap => TFGame.Atlas["AdditionalVariants/variants/clumsySwap"];
-    public static Subtexture NoExplosionDamage => TFGame.Atlas["AdditionalVariants/variants/noExplosionDamage"];
+    public static Subtexture BottomlessQuiver => TFGame.Atlas["Teuria.AdditionalVariants/variants/bottomlessQuiver"];
+    public static Subtexture AtomicArrow => TFGame.Atlas["Teuria.AdditionalVariants/variants/atomicArrow"];
+    public static Subtexture AnnoyingMage => TFGame.Atlas["Teuria.AdditionalVariants/variants/annoyingMage"];
+    public static Subtexture ShockDeath => TFGame.Atlas["Teuria.AdditionalVariants/variants/shockDeath"];
+    public static Subtexture ChestDeath => TFGame.Atlas["Teuria.AdditionalVariants/variants/chestDeath"];
+    public static Subtexture JesterHat => TFGame.Atlas["Teuria.AdditionalVariants/variants/jesterHat"];
+    public static Subtexture DarkWorld => TFGame.Atlas["Teuria.AdditionalVariants/variants/darkWorld"];
+    public static Subtexture LavaOverload => TFGame.Atlas["Teuria.AdditionalVariants/variants/lavaOverload"];
+    public static Subtexture ChaoticRoll => TFGame.Atlas["Teuria.AdditionalVariants/variants/chaoticroll"];
+    public static Subtexture NoHypers => TFGame.Atlas["Teuria.AdditionalVariants/variants/noHypers"];
+    public static Subtexture NoDodgeCancel => TFGame.Atlas["Teuria.AdditionalVariants/variants/noDodgeCancel"];
+    public static Subtexture FadingArrow => TFGame.Atlas["Teuria.AdditionalVariants/variants/fadingArrow"];
+    public static Subtexture NeonWorld => TFGame.Atlas["Teuria.AdditionalVariants/variants/neonWorld"];
+    public static Subtexture DashStamina => TFGame.Atlas["Teuria.AdditionalVariants/variants/dashStamina"];
+    public static Subtexture KingsWrath => TFGame.Atlas["Teuria.AdditionalVariants/variants/kingsWrath"];
+    public static Subtexture NoArrowTinks => TFGame.Atlas["Teuria.AdditionalVariants/variants/noArrowTinks"];
+    public static Subtexture DrillingArrow => TFGame.Atlas["Teuria.AdditionalVariants/variants/drillingArrow"];
+    public static Subtexture UnfairAutobalance => TFGame.Atlas["Teuria.AdditionalVariants/variants/unfairAutobalance"];
+    public static Subtexture ArrowFallingUp => TFGame.Atlas["Teuria.AdditionalVariants/variants/arrowFallingUp"];
+    public static Subtexture AutoOpenChest => TFGame.Atlas["Teuria.AdditionalVariants/variants/autoOpenChest"];
+    public static Subtexture ExplodingShield => TFGame.Atlas["Teuria.AdditionalVariants/variants/explodingShield"];
+    public static Subtexture ClumsySwap => TFGame.Atlas["Teuria.AdditionalVariants/variants/clumsySwap"];
+    public static Subtexture NoExplosionDamage => TFGame.Atlas["Teuria.AdditionalVariants/variants/noExplosionDamage"];
 
     // Chest
-    public static Subtexture GrayChest => TFGame.Atlas["AdditionalVariants/chest/graychest"];
-    public static Subtexture BlueChest => TFGame.Atlas["AdditionalVariants/chest/bluechest"];
-    public static Subtexture RedChest => TFGame.Atlas["AdditionalVariants/chest/redchest"];
+    public static Subtexture GrayChest => TFGame.Atlas["Teuria.AdditionalVariants/chest/graychest"];
+    public static Subtexture BlueChest => TFGame.Atlas["Teuria.AdditionalVariants/chest/bluechest"];
+    public static Subtexture RedChest => TFGame.Atlas["Teuria.AdditionalVariants/chest/redchest"];
 
 
     // Misc
-    public static Subtexture StaminaBar => TFGame.Atlas["AdditionalVariants/misc/staminabar"];
+    public static Subtexture StaminaBar => TFGame.Atlas["Teuria.AdditionalVariants/misc/staminabar"];
 }

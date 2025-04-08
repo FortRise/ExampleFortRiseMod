@@ -1,10 +1,9 @@
-using FortRise;
 using MonoMod.Utils;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-public static class DrillingArrow 
+public class DrillingArrow : IHookable
 {
     public static void Load()
     {
@@ -36,7 +35,7 @@ public static class DrillingArrow
 
     private static bool CheckDrilled(Arrow self, TowerFall.Platform platform) 
     {
-        if (self.PlayerIndex >= 0 && VariantManager.GetCustomVariant("AdditionalVariants/DrillingArrow")[self.PlayerIndex] && 
+        if (self.PlayerIndex >= 0 && Variants.DrillingArrow.IsActive(self.PlayerIndex) && 
             !self.HasDrilled && 
             self.State < Arrow.ArrowStates.Falling && 
             platform is not GraniteBlock)

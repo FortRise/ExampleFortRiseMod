@@ -2,9 +2,9 @@ using FortRise;
 using MonoMod.Cil;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-public static class NoArrowTinks 
+public class NoArrowTinks : IHookable
 {
     public static void Load()
     {
@@ -26,7 +26,8 @@ public static class NoArrowTinks
             instr => instr.MatchLdloc(ldlocIndex),
             instr => instr.MatchCallOrCallvirt<Arrow>("get_Dangerous")))
         {
-            cursor.EmitDelegate((bool isDangerous) => isDangerous && !VariantManager.GetCustomVariant("AdditionalVariants/NoArrowTinks"));
+            cursor.EmitDelegate((bool isDangerous) => isDangerous && 
+                !Variants.NoArrowTinks.IsActive());
         }
     }
 }

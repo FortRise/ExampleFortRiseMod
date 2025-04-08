@@ -1,11 +1,10 @@
 using System;
-using FortRise;
 using MonoMod.RuntimeDetour;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-public static class ExplodingShield
+public class ExplodingShield : IHookable
 {
     private static Hook Player_set_HasShield = null!;
     public static void Load()
@@ -23,7 +22,7 @@ public static class ExplodingShield
 
     private static void set_HasShield_patch(Action<Player, bool> orig, Player self, bool value)
     {
-        if (VariantManager.GetCustomVariant("AdditionalVariants/ExplodingShield")[self.PlayerIndex])
+        if (Variants.ExplodingShield.IsActive(self.PlayerIndex))
         {
             if (!value)
             {

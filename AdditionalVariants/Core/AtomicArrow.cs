@@ -1,12 +1,11 @@
-using FortRise;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-public static class AtomicArrow 
+public class AtomicArrow : IHookable
 {
     public static void Load() 
     {
@@ -23,7 +22,7 @@ public static class AtomicArrow
         if (DynamicData.For(self).Get<bool>("squished"))
             return;
         orig(self, platform);
-        if (VariantManager.GetCustomVariant("AdditionalVariants/AtomicArrow")[self.PlayerIndex]) 
+        if (Variants.AtomicArrow.IsActive(self.PlayerIndex))
         {
             if (self is SuperBombArrow) 
             {

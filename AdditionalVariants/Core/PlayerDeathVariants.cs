@@ -1,14 +1,13 @@
 using System;
-using FortRise;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
 
-public static class PlayerDeathVariants 
+public class PlayerDeathVariants : IHookable
 {
     public static void Load() 
     {
@@ -22,14 +21,14 @@ public static class PlayerDeathVariants
 
     private static TowerFall.PlayerCorpse DeathVariants(On.TowerFall.Player.orig_Die_DeathCause_int_bool_bool orig, TowerFall.Player self, DeathCause deathCause, int killerIndex, bool brambled, bool laser)
     {
-        if (VariantManager.GetCustomVariant("AdditionalVariants/ShockDeath")[self.PlayerIndex]) 
+        if (Variants.ShockDeath.IsActive(self.PlayerIndex)) 
         {
             ShockCircle shockCircle = Cache.Create<ShockCircle>();
             shockCircle.Init(self.Position, self.PlayerIndex, self, ShockCircle.ShockTypes.BoltCatch);
             self.Level.Add(shockCircle);
             Sounds.sfx_reviveRedteamFinish.Play(self.X, 1f);
         }
-        if (VariantManager.GetCustomVariant("AdditionalVariants/ChestDeath")[self.PlayerIndex]) 
+        if (Variants.ChestDeath.IsActive(self.PlayerIndex)) 
         {
             var x = (float)(Math.Floor(self.Position.X / 10.0f) * 10.0f);
             var y = (float)(Math.Floor((self.Position.Y - 5) / 10.0f) * 10.0f);

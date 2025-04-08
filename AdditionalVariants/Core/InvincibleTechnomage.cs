@@ -5,18 +5,22 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-[CustomEnemy("InvincibleMage = InvincibleMage")]
-public class InvincibleTechnomage : TechnoMage
+public class InvincibleTechnomage : TechnoMage, IRegisterable
 {
-    public InvincibleTechnomage(Vector2 position, Facing facing) : base(position, facing)
+    public static IEnemy Metadata = null!;
+    public static void Register(IModRegistry registry)
     {
+        Metadata = registry.Enemies.RegisterEnemy("InvincibleMage", new() 
+        {
+            Name = "Invincible Mage",
+            Loader = (position, facing, _) => new InvincibleTechnomage(position, facing)
+        });
     }
 
-    public static TechnoMage InvincibleMage(Vector2 position, Facing facing) 
+    public InvincibleTechnomage(Vector2 position, Facing facing) : base(position, facing)
     {
-        return new InvincibleTechnomage(position, facing);
     }
 
     public override bool OnArrowHit(Arrow arrow)
@@ -35,7 +39,7 @@ public class InvincibleTechnomage : TechnoMage
     }
 }
 
-public class InvincibleTechnomageVariantSequence : Entity
+public class InvincibleTechnomageVariantSequence : Entity, IHookable
 {
     public static void Load() 
     {
@@ -50,8 +54,10 @@ public class InvincibleTechnomageVariantSequence : Entity
     private static void SpawnThisSequence(On.TowerFall.Session.orig_OnLevelLoadFinish orig, Session self)
     {
         orig(self);
-        if (self.MatchSettings.Variants.GetCustomVariant("AdditionalVariants/AnnoyingMage"))
+        if (Variants.AnnoyingMage.IsActive())
+        {
             self.CurrentLevel.Add(new InvincibleTechnomageVariantSequence());
+        }
     }
 
     private Level level = null!;
@@ -86,7 +92,7 @@ public class InvincibleTechnomageVariantSequence : Entity
         level.Add(portal);
         portal.Appear();
         yield return 20;
-        portal.SpawnEnemy("InvincibleMage");
+        portal.SpawnEnemy(InvincibleTechnomage.Metadata.Name);
         yield return 10;
         portal.ForceDisappear();
     }

@@ -1,9 +1,8 @@
-using FortRise;
 using Microsoft.Xna.Framework;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-public static class NoExplosionDamage 
+public class NoExplosionDamage : IHookable
 {
     public static void Load()
     {
@@ -17,7 +16,7 @@ public static class NoExplosionDamage
 
     private static void Hurt_Explosion(On.TowerFall.Player.orig_Hurt_Explosion_Vector2 orig, TowerFall.Player self, TowerFall.Explosion explosion, Vector2 normal)
     {
-        if (VariantManager.GetCustomVariant("AdditionalVariants/NoExplosionDamage")[self.PlayerIndex])
+        if (Variants.NoExplosionDamage.IsActive(self.PlayerIndex)) 
         {
             return;
         }

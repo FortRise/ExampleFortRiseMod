@@ -1,13 +1,12 @@
 using System.Collections.Generic;
-using FortRise;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-public static class JesterHat 
+public class JesterHat : IHookable
 {
     public static void Load() 
     {
@@ -24,7 +23,7 @@ public static class JesterHat
     private static void JesterHatAdded(On.TowerFall.Player.orig_Added orig, Player self)
     {
         orig(self);
-        if (VariantManager.GetCustomVariant("AdditionalVariants/JestersHat")[self.PlayerIndex]) 
+        if (Variants.JestersHat.IsActive(self.PlayerIndex))
         {
             var warpPoints = new List<Vector2>();
             var playerSpawn = self.Level.GetXMLPositions("PlayerSpawn");

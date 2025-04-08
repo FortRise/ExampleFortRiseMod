@@ -4,9 +4,9 @@ using Monocle;
 using MonoMod.Utils;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-public static class LavaOverload 
+public class LavaOverload : IHookable
 {
     private static Action<LavaControl> base_Added = null!;
 
@@ -23,7 +23,7 @@ public static class LavaOverload
 
     private static void LavaOverloadVariant(On.TowerFall.LavaControl.orig_Added orig, TowerFall.LavaControl self)
     {
-        if (VariantManager.GetCustomVariant("AdditionalVariants/LavaOverload")) 
+        if (Variants.LavaOverload.IsActive())
         {
             base_Added(self);
             Sounds.sfx_lavaLoop.SetVolume(0f);

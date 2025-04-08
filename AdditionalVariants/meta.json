@@ -1,5 +1,6 @@
 {
-    "author": "Terria",
+	"displayName": "Additional Variants",
+	"author": "Terria",
     "description": "Adds more variants to the game.",
     "dll": "AdditionalVariants.dll",
 	"dependencies": [

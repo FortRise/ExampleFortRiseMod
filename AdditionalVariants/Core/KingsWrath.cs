@@ -1,10 +1,9 @@
-using FortRise;
 using Microsoft.Xna.Framework;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-public static class KingsWrath 
+public class KingsWrath : IHookable
 {
     public static void Load()
     {
@@ -18,7 +17,7 @@ public static class KingsWrath
 
     private static void Update_ctor(On.TowerFall.Crown.orig_Update orig, TowerFall.Crown self)
     {
-        if (self.OwnerIndex >= 0 && VariantManager.GetCustomVariant("AdditionalVariants/KingsWrath")[self.OwnerIndex])
+        if (self.OwnerIndex >= 0 && Variants.KingsWrath.IsActive(self.OwnerIndex))
         {
             if (self.CheckBelow())
             {

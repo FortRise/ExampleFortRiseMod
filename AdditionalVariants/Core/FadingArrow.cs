@@ -1,13 +1,12 @@
 using System;
-using FortRise;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-public static class FadingArrow 
+public class FadingArrow : IHookable
 {
     public static void Load() 
     {
@@ -38,8 +37,10 @@ public static class FadingArrow
         {
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.EmitDelegate<Func<bool, Arrow, bool>>((flashing, self) => {
-                if (VariantManager.GetCustomVariant("AdditionalVariants/FadingArrow")[self.PlayerIndex])
+                if (Variants.FadingArrow.IsActive(self.PlayerIndex))
+                {
                     return false;
+                }
                 return flashing;
             });
         }
@@ -48,8 +49,10 @@ public static class FadingArrow
     private static void Update_patch(On.TowerFall.Arrow.orig_Update orig, TowerFall.Arrow self)
     {
         orig(self);
-        if (self is LaserArrow || !VariantManager.GetCustomVariant("AdditionalVariants/FadingArrow")[self.PlayerIndex]) 
+        if (self is LaserArrow || !Variants.FadingArrow.IsActive(self.PlayerIndex)) 
+        {
             return;
+        }
         
         if (!self.Flashing && self.State >= TowerFall.Arrow.ArrowStates.Stuck) 
         {

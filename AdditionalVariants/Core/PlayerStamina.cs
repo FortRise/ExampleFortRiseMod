@@ -5,9 +5,9 @@ using Monocle;
 using MonoMod.Utils;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-public static class PlayerStamina 
+public class PlayerStamina : IHookable
 {
     public static void Load() 
     {
@@ -52,7 +52,7 @@ public static class PlayerStamina
     private static void AddStamina(On.TowerFall.Player.orig_Added orig, Player self)
     {
         orig(self);
-        if (VariantManager.GetCustomVariant("AdditionalVariants/DashStamina")[self.PlayerIndex]) 
+        if (Variants.DashStamina.IsActive(self.PlayerIndex))
         {
             var dashStamina = new DashStamina(true, true);
             self.Add(dashStamina);

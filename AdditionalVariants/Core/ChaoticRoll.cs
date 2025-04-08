@@ -1,6 +1,6 @@
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-public static class ChaoticRoll 
+public class ChaoticRoll : IHookable
 {
     public static void Load() 
     {
@@ -15,7 +15,9 @@ public static class ChaoticRoll
     private static void ctor_patch(On.TowerFall.RoundLogic.orig_ctor orig, TowerFall.RoundLogic self, TowerFall.Session session, bool canHaveMiasma)
     {
         orig(self, session, canHaveMiasma);
-        if (session.MatchSettings.Variants.GetCustomVariant("AdditionalVariants/ChaoticRoll")) 
+        if (Variants.ChaoticRoll.IsActive()) 
+        {
             session.MatchSettings.Variants.Randomize();
+        }
     }
 }

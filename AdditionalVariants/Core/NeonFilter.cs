@@ -3,9 +3,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-public class NeonFilter : ShaderFilter
+public class NeonFilter : ShaderFilter, IHookable
 {
     public NeonFilter() 
     {
@@ -53,6 +53,26 @@ public class NeonFilter : ShaderFilter
 
         if (Level.Foreground != null)
             Level.Foreground.Visible = true;
+    }
+
+    public static void Load()
+    {
+        On.TowerFall.Level.Begin += Begin_patch;
+    }
+
+    public static void Unload()
+    {
+        On.TowerFall.Level.Begin -= Begin_patch;
+    }
+
+    private static void Begin_patch(On.TowerFall.Level.orig_Begin orig, TowerFall.Level self)
+    {
+        orig(self);
+        if (Variants.NeonWorld.IsActive())
+        {
+            var filter = new NeonFilter();
+            self.Activate(filter);
+        }
     }
 }
 

@@ -1,10 +1,9 @@
-using FortRise;
 using MonoMod.Utils;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-public static class DarkWorld 
+public class DarkWorld : IHookable
 {
     public static void Load() 
     {
@@ -18,7 +17,7 @@ public static class DarkWorld
 
     private static void DarkerRender(On.TowerFall.Background.orig_Render orig, TowerFall.Background self)
     {
-        if (VariantManager.GetCustomVariant("AdditionalVariants/DarkWorld")) 
+        if (Variants.DarkWorld.IsActive())
         {
             var level = DynamicData.For(self).Get<Level>("level")!;
             var darkened = DynamicData.For(level.OrbLogic).Get<bool>("darkened");

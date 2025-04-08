@@ -2,9 +2,9 @@ using FortRise;
 using MonoMod.Utils;
 using TowerFall;
 
-namespace AdditionalVariants;
+namespace Teuria.AdditionalVariants;
 
-public static class AutoOpenChest
+public class AutoOpenChest : IHookable
 {
     public static void Load()
     {
@@ -18,7 +18,7 @@ public static class AutoOpenChest
 
     private static void Added_patch(On.TowerFall.TreasureChest.orig_Added orig, TowerFall.TreasureChest self)
     {
-        if (VariantManager.GetCustomVariant("AdditionalVariants/AutoOpenChest"))
+        if (Variants.AutoOpenChest.IsActive())
         {
             DynamicData.For(self).Set("type", TreasureChest.Types.AutoOpen);
         }
