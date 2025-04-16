@@ -9,7 +9,7 @@ namespace Teuria.AdditionalVariants;
 
 public class InvincibleTechnomage : TechnoMage, IRegisterable
 {
-    public static IEnemy Metadata = null!;
+    public static IEnemyEntry Metadata = null!;
     public static void Register(IModRegistry registry)
     {
         Metadata = registry.Enemies.RegisterEnemy("InvincibleMage", new() 

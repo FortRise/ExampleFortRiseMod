@@ -4,28 +4,28 @@ namespace Teuria.AdditionalVariants;
 
 public class Variants : IRegisterable
 {
-    public static IVariant BottomlessQuiver { get; internal set; } = null!;
-    public static IVariant AtomicArrow { get; internal set; } = null!;
-    public static IVariant AnnoyingMage { get; internal set; } = null!;
-    public static IVariant ShockDeath { get; internal set; } = null!;
-    public static IVariant ChestDeath { get; internal set; } = null!;
-    public static IVariant JestersHat { get; internal set; } = null!;
-    public static IVariant DarkWorld { get; internal set; } = null!;
-    public static IVariant LavaOverload { get; internal set; } = null!;
-    public static IVariant ChaoticRoll { get; internal set; } = null!;
-    public static IVariant NoHypers { get; internal set; } = null!;
-    public static IVariant NoDodgeCancel { get; internal set; } = null!;
-    public static IVariant FadingArrow { get; internal set; } = null!;
-    public static IVariant NeonWorld { get; internal set; } = null!;
-    public static IVariant DashStamina { get; internal set; } = null!;
-    public static IVariant KingsWrath { get; internal set; } = null!;
-    public static IVariant NoArrowTinks { get; internal set; } = null!;
-    public static IVariant DrillingArrow { get; internal set; } = null!;
-    public static IVariant UnfairAutobalance { get; internal set; } = null!;
-    public static IVariant AutoOpenChest { get; internal set; } = null!;
-    public static IVariant ExplodingShield { get; internal set; } = null!;
-    public static IVariant ClumsySwap { get; internal set; } = null!;
-    public static IVariant NoExplosionDamage { get; internal set; } = null!;
+    public static IVariantEntry BottomlessQuiver { get; internal set; } = null!;
+    public static IVariantEntry AtomicArrow { get; internal set; } = null!;
+    public static IVariantEntry AnnoyingMage { get; internal set; } = null!;
+    public static IVariantEntry ShockDeath { get; internal set; } = null!;
+    public static IVariantEntry ChestDeath { get; internal set; } = null!;
+    public static IVariantEntry JestersHat { get; internal set; } = null!;
+    public static IVariantEntry DarkWorld { get; internal set; } = null!;
+    public static IVariantEntry LavaOverload { get; internal set; } = null!;
+    public static IVariantEntry ChaoticRoll { get; internal set; } = null!;
+    public static IVariantEntry NoHypers { get; internal set; } = null!;
+    public static IVariantEntry NoDodgeCancel { get; internal set; } = null!;
+    public static IVariantEntry FadingArrow { get; internal set; } = null!;
+    public static IVariantEntry NeonWorld { get; internal set; } = null!;
+    public static IVariantEntry DashStamina { get; internal set; } = null!;
+    public static IVariantEntry KingsWrath { get; internal set; } = null!;
+    public static IVariantEntry NoArrowTinks { get; internal set; } = null!;
+    public static IVariantEntry DrillingArrow { get; internal set; } = null!;
+    public static IVariantEntry UnfairAutobalance { get; internal set; } = null!;
+    public static IVariantEntry AutoOpenChest { get; internal set; } = null!;
+    public static IVariantEntry ExplodingShield { get; internal set; } = null!;
+    public static IVariantEntry ClumsySwap { get; internal set; } = null!;
+    public static IVariantEntry NoExplosionDamage { get; internal set; } = null!;
 
 
     public static void Register(IModRegistry registry)
