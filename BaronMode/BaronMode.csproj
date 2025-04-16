@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <ModName>BaronMode</ModName>
+    <ModName>Teuria.BaronMode</ModName>
     <ModVersion>2.1.0</ModVersion>
 
     <!-- If Steam path cannot be found, try specifying the path. -->
@@ -17,6 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FortRise.Configuration" Version="1.0.8" />
+    <PackageReference Include="FortRise.Configuration" Version="1.0.9" />
   </ItemGroup>
 </Project>

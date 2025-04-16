@@ -1,14 +1,23 @@
-using BaronMode.GameModes;
+using Teuria.BaronMode.GameModes;
 using FortRise;
 using Microsoft.Xna.Framework;
 using Monocle;
 using TowerFall;
 
-namespace BaronMode.Pickups;
+namespace Teuria.BaronMode.Pickups;
 
-[CustomPickup("BaronMode/Lives", Chance = 0.6f)]
-public class GemLives : Pickup
+public class GemLives : Pickup, IRegisterable
 {
+    public static IPickupEntry GemLivesMeta = null!;
+    public static void Register(IModRegistry registry)
+    {
+        GemLivesMeta = registry.Pickups.RegisterPickups("GemLives", new() 
+        {
+            Name = "Gem Lives",
+            PickupType = typeof(GemLives)
+        });
+    }
+
     private Sprite<int> sprite;
     private float time;
     private int count;
@@ -17,7 +26,7 @@ public class GemLives : Pickup
     {
         Collider = new Hitbox(16f, 16f, -8f, -8f);
         Tag(GameTags.PlayerCollectible);
-        sprite = new Sprite<int>(TFGame.Atlas["BaronMode/pickups/gemCoin"], 12, 10);
+        sprite = new Sprite<int>(TFGame.Atlas["Teuria.BaronMode/pickups/gemCoin"], 12, 10);
         sprite.Add(0, 0.1f, [0, 0, 0, 1, 2, 3, 4, 5, 6, 7]);
     }
 
@@ -48,7 +57,7 @@ public class GemLives : Pickup
     {
         if (playerIndex == -1)
         {
-            sprite = new Sprite<int>(TFGame.Atlas["BaronMode/pickups/gemCoin"], 12, 10);
+            sprite = new Sprite<int>(TFGame.Atlas["Teuria.BaronMode/pickups/gemCoin"], 12, 10);
             sprite.Add(0, 0.1f, [0, 0, 0, 1, 2, 3, 4, 5, 6, 7]);
         }
         else 

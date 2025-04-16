@@ -1,9 +1,8 @@
-using BaronMode.Pickups;
-using FortRise;
+using Teuria.BaronMode.Pickups;
 
-namespace BaronMode.Hooks;
+namespace Teuria.BaronMode.Hooks;
 
-public static class TreasureSpawnerHooks 
+public class TreasureSpawnerHooks : IHookable
 {
     public static void Load()
     {
@@ -18,14 +17,16 @@ public static class TreasureSpawnerHooks
     private static void PutLivesTreasure(On.TowerFall.TreasureSpawner.orig_ctor_Session_VersusTowerData orig, TowerFall.TreasureSpawner self, TowerFall.Session session, TowerFall.VersusTowerData versusTowerData)
     {
         orig(self, session, versusTowerData);
-        if (session.MatchSettings.Variants.GetCustomVariant("BaronMode/TreasureLives"))
+        var gemLivesPickup = GemLives.GemLivesMeta.ToPickupType();
+
+        if (BaronMatchVariants.TreasureLivesInfo.IsActive(self.Session.MatchSettings.Variants))
         {
-            self.TreasureRates[(int)ModRegisters.PickupType<GemLives>()] = 1f;
+            self.TreasureRates[(int)gemLivesPickup] = 1f;
         }
         else 
         {
             // Let's make sure it won't spawn at all
-            self.TreasureRates[(int)ModRegisters.PickupType<GemLives>()] = 0f;
+            self.TreasureRates[(int)gemLivesPickup] = 0f;
         }
     }
 }

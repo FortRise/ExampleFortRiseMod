@@ -1,22 +1,34 @@
 using System;
-using BaronMode.GameModes;
-using BaronMode.Hooks;
-using BaronMode.Interop;
+using Teuria.BaronMode.Hooks;
+using Teuria.BaronMode.Interop;
+using Teuria.BaronMode.Pickups;
 using FortRise;
 using MonoMod.ModInterop;
-using TowerFall;
+using Teuria.BaronMode.GameModes;
 
-namespace BaronMode;
+namespace Teuria.BaronMode;
 
-[Fort("com.kha.BartizanMod", "BartizanMod")]
-public class BaronModeModule : FortModule
+internal class BaronModeModule : FortModule
 {
     public static BaronModeModule Instance = null!;
 
     public override Type SettingsType => typeof(BaronModeSettings);
     public BaronModeSettings Settings => (BaronModeSettings)Instance.InternalSettings;
 
-    public static bool EightPlayerMod;
+    public IWiderSetModApi? WiderSetApi { get; private set; }
+
+    private static Type[] Registerables = [
+        typeof(GemLives),
+        typeof(BaronMatchVariants),
+        typeof(Baron)
+    ];
+
+    private static Type[] Hookables = [
+        typeof(TreasureSpawnerHooks),
+        typeof(SessionHooks),
+        typeof(RoundLogicHooks),
+        typeof(PlayerCorpseHooks)
+    ];
 
     public BaronModeModule() 
     {
@@ -27,29 +39,26 @@ public class BaronModeModule : FortModule
 
     public override void Load()
     {
-        typeof(EightPlayerImport).ModInterop();
-        BaronRoundLogic.Load();
-        TreasureSpawnerHooks.Load();
+        foreach (var register in Hookables)
+        {
+            register.GetMethod(nameof(IHookable.Load))?.Invoke(null, []);
+        }
     }
 
     public override void Unload()
     {
-        BaronRoundLogic.Unload();
-        TreasureSpawnerHooks.Unload();
+        foreach (var register in Hookables)
+        {
+            register.GetMethod(nameof(IHookable.Unload))?.Invoke(null, []);
+        }
     }
 
     public override void Initialize()
     {
-        EightPlayerMod = IsModExists("WiderSetMod");
-    }
-
-    public override void OnVariantsRegister(VariantManager manager, bool noPerPlayer = false)
-    {
-        var treasureLivesInfo = new CustomVariantInfo(
-            "TreasureLives", 
-            TFGame.MenuAtlas["BaronMode/variants/treasureLives"],
-            "Spawns a treasure that adds a lives by one".ToUpperInvariant(),
-            CustomVariantFlags.None);
-        manager.AddVariant(treasureLivesInfo);
+        WiderSetApi = Interop.GetApi<IWiderSetModApi>("Teuria.WiderSetMod");
+        foreach (var register in Registerables)
+        {
+            register.GetMethod(nameof(IRegisterable.Register))?.Invoke(null, [Registry]);
+        }
     }
 }

@@ -1,14 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using BaronMode.GameModes.UI;
-using BaronMode.Interop;
+using Teuria.BaronMode.GameModes.UI;
+using Teuria.BaronMode.Interop;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
 using TowerFall;
 
-namespace BaronMode.GameModes;
+namespace Teuria.BaronMode.GameModes;
 
 public class BaronRoundLogic : RoundLogic
 {
@@ -20,7 +20,7 @@ public class BaronRoundLogic : RoundLogic
     private BaronPlayerHUD[] PlayerHUDs;
     private TeamReviver[] teamRevivers;
     private bool wasFinalKill;
-    private int[] totalLives;
+    public int[] TotalLives;
     public int[] Lives;
     public bool Overtime;
 
@@ -36,7 +36,7 @@ public class BaronRoundLogic : RoundLogic
         teamRevivers = new TeamReviver[playerCount];
         Lives = new int[playerCount];
         anotherTreasureSpawn = 1200;
-        this.totalLives = totalLives;
+        this.TotalLives = totalLives;
     }
 
     public override void OnLevelLoadFinish()
@@ -53,10 +53,10 @@ public class BaronRoundLogic : RoundLogic
         {
             if (TFGame.Players[k])
             {
-                if (totalLives[k] > BaronModeModule.Instance.Settings.BaronLivesCount)
+                if (TotalLives[k] > BaronModeModule.Instance.Settings.BaronLivesCount)
                     Lives[k] = BaronModeModule.Instance.Settings.BaronLivesCount;
                 else
-                    Lives[k] = totalLives[k];
+                    Lives[k] = TotalLives[k];
                 Session.CurrentLevel.Add(this.PlayerHUDs[k] = new BaronPlayerHUD(this, (k == 0) ? Facing.Left : Facing.Right, k));
             }
             else 
@@ -64,88 +64,6 @@ public class BaronRoundLogic : RoundLogic
                 Lives[k] = -1;
             }
         }
-    }
-
-    internal static void Load() 
-    {
-        On.TowerFall.RoundLogic.FFACheckForAllButOneDead += FFACheckForAllButOneDead_patch;
-        On.TowerFall.Session.GetWinner += GetWinner_patch;
-        On.TowerFall.Session.ShouldSpawn += ShouldSpawn_patch;
-        On.TowerFall.PlayerCorpse.CanDoPrismHit += CanDoPrismHit_patch;
-    }
-
-    internal static void Unload() 
-    {
-        On.TowerFall.RoundLogic.FFACheckForAllButOneDead -= FFACheckForAllButOneDead_patch;
-        On.TowerFall.Session.GetWinner -= GetWinner_patch;
-        On.TowerFall.Session.ShouldSpawn -= ShouldSpawn_patch;
-        On.TowerFall.PlayerCorpse.CanDoPrismHit -= CanDoPrismHit_patch;
-    }
-
-    private static bool CanDoPrismHit_patch(On.TowerFall.PlayerCorpse.orig_CanDoPrismHit orig, PlayerCorpse self, Arrow arrow)
-    {
-        // Do not remove the corpse as it prevents it from respawning
-        if (arrow.Level.Session.RoundLogic is BaronRoundLogic) 
-        {
-            return false;
-        }
-        return orig(self, arrow);
-    }
-
-    private static bool ShouldSpawn_patch(On.TowerFall.Session.orig_ShouldSpawn orig, Session self, int playerIndex)
-    {
-        if (self.RoundLogic is BaronRoundLogic logic) 
-        {
-            if (logic.totalLives[playerIndex] > -1) 
-            {
-                return true;
-            }
-            return false;
-        }
-        return orig(self, playerIndex);
-    }
-
-    private static int GetWinner_patch(On.TowerFall.Session.orig_GetWinner orig, Session self)
-    {
-        if (self.RoundLogic is BaronRoundLogic logic) 
-        {
-            int alive = 0;
-            int lastAlive = 0;
-            for (int i = 0; i < logic.totalLives.Length; i++) 
-            {
-                if (logic.totalLives[i] <= -1) 
-                    continue;
-                alive++;
-                lastAlive = i;
-            }
-            if (alive == 1) 
-            {
-                return lastAlive;
-            }
-            if (alive == 0) 
-            {
-                for (int i = 0; i < logic.totalLives.Length; i++) 
-                {
-                    foreach (Monocle.Entity entity in self.CurrentLevel[Monocle.GameTags.Player])
-                    {
-                        Player player2 = (Player)entity;
-                        if (!player2.Dead)
-                        {
-                            return player2.PlayerIndex;
-                        }
-                    }
-                }
-            }
-            return -1;
-        }
-        return orig(self);
-    }
-
-    private static bool FFACheckForAllButOneDead_patch(On.TowerFall.RoundLogic.orig_FFACheckForAllButOneDead orig, RoundLogic self)
-    {
-        if (self is BaronRoundLogic)
-            return false;
-        return orig(self);
     }
 
     public override void OnUpdate()
@@ -208,7 +126,7 @@ public class BaronRoundLogic : RoundLogic
         }
         AddScore(playerIndex, 1);
         Lives[playerIndex] = Math.Min(BaronModeModule.Instance.Settings.BaronLivesCount, Lives[playerIndex] + 1);
-        totalLives[playerIndex] += 1;
+        TotalLives[playerIndex] += 1;
 
         PlayerHUDs[playerIndex].GainLife(this);
     }
@@ -288,9 +206,9 @@ public class BaronRoundLogic : RoundLogic
 
         if (wasFinalKill && Session.CurrentLevel.LivingPlayers == 0) 
         {
-            if (totalLives[playerIndex] > 0) 
+            if (TotalLives[playerIndex] > 0) 
             {
-                totalLives[playerIndex]--;
+                TotalLives[playerIndex]--;
                 Lives[playerIndex]--;
                 AddScore(playerIndex, -1);
                 return;
@@ -329,7 +247,7 @@ public class BaronRoundLogic : RoundLogic
 
         if (Lives[playerIndex] > 0) 
         {
-            totalLives[playerIndex]--;
+            TotalLives[playerIndex]--;
             Lives[playerIndex]--;
             autoReviveCounters[playerIndex] = 60f;
             AddScore(playerIndex, -1);
@@ -338,9 +256,9 @@ public class BaronRoundLogic : RoundLogic
                 ArcherData.GetColorA(playerIndex), Color.Red, 1f, 1f, false));
             return;
         }
-        if (totalLives[playerIndex] == 0)
+        if (TotalLives[playerIndex] == 0)
         {
-            totalLives[playerIndex]--;
+            TotalLives[playerIndex]--;
         }
         Lives[playerIndex] = -1;
         Session.CurrentLevel.Add<FloatText>(

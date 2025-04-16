@@ -1,16 +1,27 @@
-using BaronMode.Interop;
+using Teuria.BaronMode.Interop;
 using FortRise;
 using Microsoft.Xna.Framework;
 using Monocle;
 using TowerFall;
 
-namespace BaronMode.GameModes;
+namespace Teuria.BaronMode.GameModes;
 
-public class Baron : CustomGameMode
+public class Baron : IVersusGameMode, IRegisterable
 {
-    private int[] totalLives = null!;
+    public static void Register(IModRegistry registry)
+    {
+        registry.GameModes.RegisterVersusGameMode(new Baron());
+    }
 
-    public override void StartGame(Session session) 
+    private int[] totalLives = null!;
+    public string Name => "Baron";
+    public Color NameColor => Color.LightPink;
+
+    public Subtexture Icon => TFGame.Atlas["Teuria.BaronMode/gameModes/baron"];
+
+    public bool IsTeamMode => false;
+
+    public void OnStartGame(Session session) 
     {
         var playerCount = EightPlayerUtils.GetMenuPlayerCount();
         totalLives = new int[playerCount];
@@ -31,27 +42,23 @@ public class Baron : CustomGameMode
         }
     }
 
-    public override RoundLogic CreateRoundLogic(Session session)
+    public RoundLogic OnCreateRoundLogic(Session session)
     {
         return new BaronRoundLogic(session, totalLives);
     }
 
-    public override void Initialize()
+    public Sprite<int> OverrideCoinSprite(Session session)
     {
-        Icon = TFGame.Atlas["BaronMode/gameModes/baron"];
-        NameColor = Color.LightPink;
-        CoinOffset = 12;
-    }
+        var sprite = new Sprite<int>(TFGame.Atlas["Teuria.BaronMode/pickups/gemCoin"], 12, 10);
 
-    public override void InitializeSounds() {}
-
-    public override Sprite<int> CoinSprite()
-    {
-        var sprite = new Sprite<int>(TFGame.Atlas["BaronMode/pickups/gemCoin"], 12, 10);
-
-        sprite.Add(0, 0.1f, new int[] { 0, 0, 0, 1, 2, 3, 4, 5, 6, 7});
+        sprite.Add(0, 0.1f, [0, 0, 0, 1, 2, 3, 4, 5, 6, 7]);
         sprite.Play(0);
         sprite.CenterOrigin();
         return sprite;
+    }
+
+    public int OverrideCoinOffset(Session? session)
+    {
+        return 12;
     }
 }

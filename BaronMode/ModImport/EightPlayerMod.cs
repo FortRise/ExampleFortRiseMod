@@ -1,30 +1,40 @@
-using System;
-using MonoMod.ModInterop;
+namespace Teuria.BaronMode.Interop;
 
-namespace BaronMode.Interop;
-
-
-[ModImportName("com.fortrise.EightPlayerMod")]
-public class EightPlayerImport
+public interface IWiderSetModApi 
 {
-    public static Func<bool> IsEightPlayer = null!;
-    public static Func<bool> LaunchedEightPlayer = null!;
+    bool IsEightPlayer { get; }
+    bool LaunchedEightPlayer { get; }
 }
 
 public static class EightPlayerUtils 
 {
     public static int GetScreenWidth() 
     {
-        return BaronModeModule.EightPlayerMod ? EightPlayerImport.IsEightPlayer() ? 420 : 320 : 320;
+        var widerSetApi = BaronModeModule.Instance.WiderSetApi;
+        if (widerSetApi is null)
+        {
+            return 320;
+        }
+        return widerSetApi.IsEightPlayer ? 420 : 320;
     }
 
     public static int GetPlayerCount() 
     {
-        return BaronModeModule.EightPlayerMod ? EightPlayerImport.IsEightPlayer() ? 8 : 4 : 4;
+        var widerSetApi = BaronModeModule.Instance.WiderSetApi;
+        if (widerSetApi is null)
+        {
+            return 4;
+        }
+        return widerSetApi.IsEightPlayer ? 8: 4;
     }
 
     public static int GetMenuPlayerCount() 
     {
-        return BaronModeModule.EightPlayerMod ? EightPlayerImport.LaunchedEightPlayer() ? 8 : 4 : 4;
+        var widerSetApi = BaronModeModule.Instance.WiderSetApi;
+        if (widerSetApi is null)
+        {
+            return 4;
+        }
+        return widerSetApi.LaunchedEightPlayer ? 8: 4;
     }
 }

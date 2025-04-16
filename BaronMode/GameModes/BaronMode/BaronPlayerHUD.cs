@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using BaronMode.Interop;
+using Teuria.BaronMode.Interop;
 using Microsoft.Xna.Framework;
 using Monocle;
 using TowerFall;
 
-namespace BaronMode.GameModes.UI;
+namespace Teuria.BaronMode.GameModes.UI;
 
 public class BaronPlayerHUD : Entity
 {

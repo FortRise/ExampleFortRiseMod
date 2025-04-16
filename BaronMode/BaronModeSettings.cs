@@ -1,6 +1,6 @@
 using FortRise;
 
-namespace BaronMode;
+namespace Teuria.BaronMode;
 
 public class BaronModeSettings : ModuleSettings 
 {
