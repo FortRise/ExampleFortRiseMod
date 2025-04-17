@@ -6,30 +6,26 @@ using MonoMod;
 using MonoMod.Utils;
 using TowerFall;
 
-namespace ExampleMod;
+namespace Teuria.NewExampleMod;
 
-[CustomArrows("TriggerBrambleArrows", "CreateGraphicPickup")]
 public class TriggerBrambleArrow : TriggerArrow
 {
     // This is automatically been set by the mod loader
     public override ArrowTypes ArrowType { get; set; }
     private bool used, canDie;
-    private static Action<TriggerArrow, LevelEntity, Vector2, float> BaseInit;
 
-
-    public static ArrowInfo CreateGraphicPickup() 
-    {
-        var graphic = new Sprite<int>(TFGame.Atlas["pickups/bombArrows"], 12, 12, 0);
-        graphic.Add(0, 0.3f, new int[2] { 0, 1 });
-        graphic.Play(0, false);
-        graphic.CenterOrigin();
-        var arrowInfo = ArrowInfo.Create(graphic, TFGame.Atlas["player/arrowHUD/brambleArrow"]);
-        arrowInfo.Name = "Trigger Bramble Arrows";
-        return arrowInfo;
-    }
 
     public TriggerBrambleArrow() : base()
     {
+    }
+
+    public static void Register(IModRegistry registry)
+    {
+        registry.Arrows.RegisterArrows("TriggerBrambleArrow", new()
+        {
+            ArrowType = typeof(TriggerBrambleArrow),
+            HUD = TFGame.Atlas["player/arrowHUD/brambleArrow"]
+        });
     }
 
     protected override bool CheckForTargetCollisions()
@@ -81,7 +77,6 @@ public class TriggerBrambleArrow : TriggerArrow
 
     public static void Load() 
     {
-        BaseInit = CallHelper.CallBaseGen<Arrow, TriggerArrow, LevelEntity, Vector2, float>("Init", BindingFlags.NonPublic | BindingFlags.Instance);
         On.TowerFall.TriggerArrow.SetDetonator_Player += SetDetonatorPlayerPatch;
         On.TowerFall.TriggerArrow.SetDetonator_Enemy += SetDetonatorEnemyPatch;
         On.TowerFall.TriggerArrow.Detonate += DetonatePatch;
@@ -102,7 +97,7 @@ public class TriggerBrambleArrow : TriggerArrow
         {
             self.LightVisible = false;
             var dynData = DynamicData.For(self);
-            Player player = dynData.Get<Player>("playerDetonator");
+            Player? player = dynData.Get<Player>("playerDetonator");
             dynData.Set("playerDetonator", null);
             if (player != null) 
             {
@@ -124,11 +119,11 @@ public class TriggerBrambleArrow : TriggerArrow
     {
         base_Init(owner, position, direction);
         LightVisible = true;
-        Player playerDetonator = null;
-        Enemy enemyDetonator = null;
+        Player? playerDetonator = null;
+        Enemy? enemyDetonator = null;
         var dynData = DynamicData.For(this);
-        dynData.Get<Alarm>("primed").Start();
-        dynData.Get<Alarm>("enemyDetonateCheck").Stop();
+        dynData.Get<Alarm>("primed")!.Start();
+        dynData.Get<Alarm>("enemyDetonateCheck")!.Stop();
         dynData.Set("playerDetonator", playerDetonator);
         dynData.Set("enemyDetonator", enemyDetonator);
         if (owner is Enemy)
@@ -186,7 +181,7 @@ public class TriggerBrambleArrow : TriggerArrow
         if (self is TriggerBrambleArrow) 
         {
             DynamicData.For(self).Set("enemyDetonator", enemy);
-            DynamicData.For(self).Get<Alarm>("enemyDetonateCheck").Start();
+            DynamicData.For(self).Get<Alarm>("enemyDetonateCheck")!.Start();
             return;
         }
         orig(self, enemy);

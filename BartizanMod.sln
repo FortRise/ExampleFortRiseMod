@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicRestart", "MusicRestar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreReplay", "MoreReplay\MoreReplay.csproj", "{02C43C67-3AD1-4F77-8634-518A53906CF6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleNewMod", "ExampleNewMod\ExampleNewMod.csproj", "{11BAEF02-7491-4AB2-812C-6B4EF69034FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +99,18 @@ Global
 		{02C43C67-3AD1-4F77-8634-518A53906CF6}.Release|x64.Build.0 = Release|Any CPU
 		{02C43C67-3AD1-4F77-8634-518A53906CF6}.Release|x86.ActiveCfg = Release|Any CPU
 		{02C43C67-3AD1-4F77-8634-518A53906CF6}.Release|x86.Build.0 = Release|Any CPU
+		{11BAEF02-7491-4AB2-812C-6B4EF69034FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11BAEF02-7491-4AB2-812C-6B4EF69034FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11BAEF02-7491-4AB2-812C-6B4EF69034FE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{11BAEF02-7491-4AB2-812C-6B4EF69034FE}.Debug|x64.Build.0 = Debug|Any CPU
+		{11BAEF02-7491-4AB2-812C-6B4EF69034FE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{11BAEF02-7491-4AB2-812C-6B4EF69034FE}.Debug|x86.Build.0 = Debug|Any CPU
+		{11BAEF02-7491-4AB2-812C-6B4EF69034FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11BAEF02-7491-4AB2-812C-6B4EF69034FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11BAEF02-7491-4AB2-812C-6B4EF69034FE}.Release|x64.ActiveCfg = Release|Any CPU
+		{11BAEF02-7491-4AB2-812C-6B4EF69034FE}.Release|x64.Build.0 = Release|Any CPU
+		{11BAEF02-7491-4AB2-812C-6B4EF69034FE}.Release|x86.ActiveCfg = Release|Any CPU
+		{11BAEF02-7491-4AB2-812C-6B4EF69034FE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
