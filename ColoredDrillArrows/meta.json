@@ -1,4 +1,5 @@
 {
+	"displayName": "Colored Drill Arrows",
 	"author": "Teuria",
 	"description": "Add colors to the Drill Arrows by player index",
 	"dll": "ColoredDrillArrows.dll",
