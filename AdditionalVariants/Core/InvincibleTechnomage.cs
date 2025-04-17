@@ -54,7 +54,7 @@ public class InvincibleTechnomageVariantSequence : Entity, IHookable
     private static void SpawnThisSequence(On.TowerFall.Session.orig_OnLevelLoadFinish orig, Session self)
     {
         orig(self);
-        if (Variants.AnnoyingMage.IsActive())
+        if (Variants.AnnoyingMage.IsActive() && self.MatchSettings == MainMenu.VersusMatchSettings)
         {
             self.CurrentLevel.Add(new InvincibleTechnomageVariantSequence());
         }
