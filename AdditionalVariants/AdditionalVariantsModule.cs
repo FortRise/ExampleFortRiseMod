@@ -71,6 +71,11 @@ public class AdditionalVariantsModule : FortModule
         }
     }
 
+    public override object? GetApi()
+    {
+        return new ApiImplementation();
+    }
+
     private void OnPreInitialize()
     {
         TfExAPIModImports.RegisterVariantStateEvents?.Invoke

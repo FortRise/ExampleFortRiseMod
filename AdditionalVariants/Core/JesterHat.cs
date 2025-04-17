@@ -38,6 +38,10 @@ public class JesterHat : IHookable
             warpPoints.AddRange(teamSpawnB);
             warpPoints.AddRange(spawner);
             warpPoints.AddRange(treasureChest);
+            foreach (var hook in JesterHatManager.Instance.Hooks)
+            {
+                hook.ModifyWarpPoints(new ApiImplementation.JesterHatImplementation.ModifyWarpPointsArgs(self, warpPoints));
+            }
             DynamicData.For(self).Set("warpPoints", warpPoints);
             DynamicData.For(self).Set("lastWarpPoint", new Vector2(0, 0));
         }
@@ -62,6 +66,12 @@ public class JesterHat : IHookable
             }
             self.Position = warp;
             self.Level.Particles.Emit(Particles.PlayerDust[self.CharacterIndex], 12, self.Position, new Vector2(5f, 8f));
+
+            foreach (var hook in JesterHatManager.Instance.Hooks)
+            {
+                hook.AfterTeleport(new ApiImplementation.JesterHatImplementation.AfterTeleportArgs(self, warp));
+            }
+
             dynSelf.Set("lastWarpPoint", warp);
         }
         orig(self);
