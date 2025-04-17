@@ -3,7 +3,6 @@ using Teuria.BaronMode.Hooks;
 using Teuria.BaronMode.Interop;
 using Teuria.BaronMode.Pickups;
 using FortRise;
-using MonoMod.ModInterop;
 using Teuria.BaronMode.GameModes;
 
 namespace Teuria.BaronMode;

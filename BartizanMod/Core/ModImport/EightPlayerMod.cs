@@ -3,28 +3,41 @@ using MonoMod.ModInterop;
 
 namespace BartizanMod;
 
-
-[ModImportName("com.fortrise.EightPlayerMod")]
-public class EightPlayerImport
+public interface IWiderSetModApi 
 {
-    public static Func<bool> IsEightPlayer = null!;
-    public static Func<bool> LaunchedEightPlayer = null!;
+    bool IsEightPlayer { get; }
+    bool LaunchedEightPlayer { get; }
 }
 
 public static class EightPlayerUtils 
 {
     public static int GetScreenWidth() 
     {
-        return BartizanModModule.EightPlayerMod ? EightPlayerImport.IsEightPlayer() ? 420 : 320 : 320;
+        var widerSetApi = BartizanModModule.Instance.WiderSetApi;
+        if (widerSetApi is null)
+        {
+            return 320;
+        }
+        return widerSetApi.IsEightPlayer ? 420 : 320;
     }
 
     public static int GetPlayerCount() 
     {
-        return BartizanModModule.EightPlayerMod ? EightPlayerImport.IsEightPlayer() ? 8 : 4 : 4;
+        var widerSetApi = BartizanModModule.Instance.WiderSetApi;
+        if (widerSetApi is null)
+        {
+            return 4;
+        }
+        return widerSetApi.IsEightPlayer ? 8: 4;
     }
 
     public static int GetMenuPlayerCount() 
     {
-        return BartizanModModule.EightPlayerMod ? EightPlayerImport.LaunchedEightPlayer() ? 8 : 4 : 4;
+        var widerSetApi = BartizanModModule.Instance.WiderSetApi;
+        if (widerSetApi is null)
+        {
+            return 4;
+        }
+        return widerSetApi.LaunchedEightPlayer ? 8: 4;
     }
 }

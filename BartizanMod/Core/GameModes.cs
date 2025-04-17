@@ -10,51 +10,74 @@ using TowerFall;
 
 namespace BartizanMod;
 
-public class Respawn : CustomGameMode
+public class Respawn : IVersusGameMode
 {
-    public override RoundLogic CreateRoundLogic(Session session)
+    public static IVersusGameModeEntry RespawnEntry { get; private set; } = null!; 
+    public string Name => "Respawn";
+    public Color NameColor => Color.Yellow;
+
+    public Subtexture Icon => TFGame.MenuAtlas["Bartizan/gamemodes/respawn"];
+
+    public bool IsTeamMode => false;
+
+    public static void Register(IModRegistry registry)
+    {
+        RespawnEntry = registry.GameModes.RegisterVersusGameMode(new Respawn());
+    }
+
+    public RoundLogic OnCreateRoundLogic(Session session)
     {
         return new RespawnRoundLogic(session);
     }
 
-    public override void Initialize()
+    public Sprite<int> OverrideCoinSprite(Session session)
     {
-        Icon = TFGame.MenuAtlas["Bartizan/gamemodes/respawn"];
-        NameColor = Color.Yellow;
+        return DeathSkull.GetSprite();
     }
 
-    public override void InitializeSounds()
+    public int OverrideCoinOffset(Session? session)
     {
-        EarnedCoinSound = Sounds.sfx_multiSkullEarned;
+        return 12;
     }
 
-    public override Sprite<int> CoinSprite()
+    public void OnStartGame(Session session)
     {
-        return UseSkullSprite();
     }
 }
 
-public class Crawl : CustomGameMode
+public class Crawl : IVersusGameMode
 {
-    public override RoundLogic CreateRoundLogic(Session session)
+    public static IVersusGameModeEntry CrawlEntry { get; private set; } = null!;
+
+    public string Name => "Crawl";
+    public Color NameColor => Color.Purple;
+
+    public Subtexture Icon => TFGame.MenuAtlas["Bartizan/gamemodes/crawl"];
+
+    public bool IsTeamMode => false;
+
+    public static void Register(IModRegistry registry)
+    {
+        CrawlEntry = registry.GameModes.RegisterVersusGameMode(new Crawl());
+    }
+
+    public RoundLogic OnCreateRoundLogic(Session session)
     {
         return new MobRoundLogic(session);
     }
 
-    public override void Initialize()
+    public Sprite<int> OverrideCoinSprite(Session session)
     {
-        Icon = TFGame.MenuAtlas["Bartizan/gamemodes/crawl"];
-        NameColor = Color.Purple;
+        return DeathSkull.GetSprite();
     }
 
-    public override void InitializeSounds()
+    public int OverrideCoinOffset(Session? session)
     {
-        EarnedCoinSound = Sounds.sfx_multiSkullEarned;
+        return 12;
     }
 
-    public override Sprite<int> CoinSprite()
+    public void OnStartGame(Session session)
     {
-        return UseSkullSprite();
     }
 }
 
@@ -384,7 +407,7 @@ public static class MyPlayerCorpse
     {
         orig(self, corpseSpriteID, teamColor, position, facing, playerIndex, killerIndex);
         var level = (Engine.Instance.Scene as Level)!;
-        if (level.Session.MatchSettings.Mode == ModRegisters.GameModeType<Crawl>()) 
+        if (level.Session.MatchSettings.CustomVersusModeName == Crawl.CrawlEntry.Name) 
         {
             var dynSelf = DynamicData.For(self);
             var coroutine = new Coroutine();

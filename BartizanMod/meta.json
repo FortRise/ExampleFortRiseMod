@@ -8,6 +8,12 @@
 			"version": "5.0.0-beta.1"
 		}
 	],
+	"optionalDependencies": [
+		{
+			"name": "Teuria.WiderSetMod",
+			"version": "5.0.0"
+		}
+	],
 	"update": {
 		"github": {
 			"repository": "FortRise/ExampleFortRiseMod",

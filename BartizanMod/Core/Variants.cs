@@ -8,6 +8,41 @@ namespace BartizanMod;
 
 public class MyPlayer 
 {
+    private static IVariantEntry NoHeadBounce { get; set; } = null!;
+    private static IVariantEntry NoDodgeCooldown { get; set; } = null!;
+    private static IVariantEntry NoLedgeGrab { get; set; } = null!;
+    private static IVariantEntry InfiniteArrows { get; set; } = null!;
+
+    internal static void Register(IModRegistry registry)
+    {
+        var showDodgeCooldown = registry.Variants.GetVariant("ShowDodgeCooldown")!;
+
+        NoHeadBounce = registry.Variants.RegisterVariant("NoHeadBounce", new() 
+        {
+            Title = "NO HEADBOUNCE",
+            Icon = TFGame.MenuAtlas["Bartizan/variants/noHeadBounce"]
+        });
+
+        NoDodgeCooldown = registry.Variants.RegisterVariant("NoDodgeCooldowns", new() 
+        {
+            Title = "NO DODGE COOLDOWNS",
+            Icon = TFGame.MenuAtlas["Bartizan/variants/noDodgeCooldowns"],
+            Links = [showDodgeCooldown]
+        });
+
+        NoLedgeGrab = registry.Variants.RegisterVariant("NoLedgeGrab", new() 
+        {
+            Title = "NO LEDGE GRAB",
+            Icon = TFGame.MenuAtlas["Bartizan/variants/noLedgeGrab"]
+        });
+
+        InfiniteArrows = registry.Variants.RegisterVariant("InfiniteArrows", new() 
+        {
+            Title = "INFINITE ARROWS",
+            Icon = TFGame.MenuAtlas["Bartizan/variants/infiniteArrows"],
+        });
+    }
+
     internal static void Load() 
     {
         On.TowerFall.Player.CanGrabLedge += Player_CanGrabLedge_patch;
@@ -26,15 +61,19 @@ public class MyPlayer
 
     private static void HurtBouncedOn_patch(On.TowerFall.Player.orig_HurtBouncedOn orig, Player self, int bouncerIndex)
     {
-        if (!VariantManager.GetCustomVariant("Bartizan/NoHeadBounce")[self.PlayerIndex])
-            orig(self, bouncerIndex);
+        if (NoHeadBounce.IsActive(self.PlayerIndex))
+        {
+            return;
+        }
+
+        orig(self, bouncerIndex);
     }
 
     public delegate bool orig_Player_CanGrabLedge(Player self, int targetY, int direction);
 
     public static bool Player_CanGrabLedge_patch(On.TowerFall.Player.orig_CanGrabLedge orig, Player self, int targetY, int direction) 
     {
-        if (VariantManager.GetCustomVariant("Bartizan/NoLedgeGrab")[self.PlayerIndex]) 
+        if (NoLedgeGrab.IsActive(self.PlayerIndex)) 
             return false;
         
         return orig(self, targetY, direction);
@@ -43,7 +82,7 @@ public class MyPlayer
     public static int Player_GetDodgeExitState(On.TowerFall.Player.orig_GetDodgeExitState orig, Player self) 
     {
         /* New */
-        if (VariantManager.GetCustomVariant("Bartizan/NoDodgeCooldowns")[self.PlayerIndex]) 
+        if (NoDodgeCooldown.IsActive(self.PlayerIndex)) 
         {
             var dynData = new DynData<Player>(self);
             dynData.Set("dodgeCooldown", false);
@@ -54,7 +93,7 @@ public class MyPlayer
 
     public static void Player_ShootArrow(On.TowerFall.Player.orig_ShootArrow orig, Player self) 
     {
-        if (VariantManager.GetCustomVariant("Bartizan/InfiniteArrows")[self.PlayerIndex]) 
+        if (InfiniteArrows.IsActive(self.PlayerIndex)) 
         {
             var arrow = self.Arrows.Arrows[0];
             orig(self);
@@ -69,6 +108,25 @@ public class MyArrow
 {
     private static PropertyInfo Comp_TimeMult = null!;
 
+    private static IVariantEntry AwfullyFastArrows { get; set; } = null!;
+    private static IVariantEntry AwfullySlowArrows { get; set; } = null!;
+
+    internal static void Register(IModRegistry registry)
+    {
+        AwfullyFastArrows = registry.Variants.RegisterVariant("AwfullyFastArrows", new() 
+        {
+            Title = "NO DODGE COOLDOWNS",
+            Icon = TFGame.MenuAtlas["Bartizan/variants/awfullyFastArrows"]
+        });
+
+        AwfullySlowArrows = registry.Variants.RegisterVariant("AwfullySlowArrows", new() 
+        {
+            Title = "NO DODGE COOLDOWNS",
+            Icon = TFGame.MenuAtlas["Bartizan/variants/awfullySlowArrows"],
+            Links = [AwfullyFastArrows]
+        });
+    }
+
     internal static void Load() 
     {
         On.TowerFall.Arrow.ArrowUpdate += ArrowUpdate_patch;
@@ -82,14 +140,14 @@ public class MyArrow
 
     private static void ArrowUpdate_patch(On.TowerFall.Arrow.orig_ArrowUpdate orig, Arrow self)
     {
-        if (VariantManager.GetCustomVariant("Bartizan/AwfullySlowArrows")[self.PlayerIndex]) 
+        if (AwfullySlowArrows.IsActive(self.PlayerIndex)) 
         {
             Comp_TimeMult.SetValue(null, Engine.TimeMult * 0.2f, null);
             orig(self);
             Comp_TimeMult.SetValue(null, Engine.TimeMult / 0.2f, null);
             return;
         }
-        if (VariantManager.GetCustomVariant("Bartizan/AwfullyFastArrows")[self.PlayerIndex]) 
+        if (AwfullyFastArrows.IsActive(self.PlayerIndex)) 
         {
             Comp_TimeMult.SetValue(null, Engine.TimeMult * 3.0f, null);
             orig(self);
