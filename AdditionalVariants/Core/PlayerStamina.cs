@@ -1,5 +1,4 @@
 using System;
-using FortRise;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
@@ -26,7 +25,7 @@ public class PlayerStamina : IHookable
     private static void HUDRender(On.TowerFall.Player.orig_HUDRender orig, Player self, bool wrapped)
     {
         orig(self, wrapped);
-        if (self.Dynamic().TryGet<DashStamina>("dashStamina", out var stamina)) 
+        if (DynamicData.For(self).TryGet<DashStamina>("dashStamina", out var stamina)) 
         {
             stamina.Render();
         }
@@ -34,7 +33,7 @@ public class PlayerStamina : IHookable
 
     private static void DodgeEnter(On.TowerFall.Player.orig_EnterDodge orig, Player self)
     {
-        if (self.Dynamic().TryGet<DashStamina>("dashStamina", out var stamina)) 
+        if (DynamicData.For(self).TryGet<DashStamina>("dashStamina", out var stamina)) 
         {
             if (stamina.UseSmallStamina()) 
             {
@@ -81,6 +80,8 @@ public class DashStamina : Component
         }
         return false;
     }
+
+    public bool CanUseStamina => staminaBar >= 0.5f;
 
     public override void Update()
     {
