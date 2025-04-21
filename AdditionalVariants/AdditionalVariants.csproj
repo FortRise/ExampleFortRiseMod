@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FortRise.Configuration" Version="1.0.9" />
+    <PackageReference Include="FortRise.Configuration" Version="1.2.2" />
   </ItemGroup>
 </Project>
 
