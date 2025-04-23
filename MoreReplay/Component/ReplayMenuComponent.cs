@@ -1,7 +1,7 @@
 using Monocle;
 using TowerFall;
 
-namespace MoreReplay;
+namespace Teuria.MoreReplay;
 
 public class ReplayMenuComponent : Component
 {

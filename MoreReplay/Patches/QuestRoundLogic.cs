@@ -4,9 +4,9 @@ using Monocle;
 using MonoMod.Cil;
 using TowerFall;
 
-namespace MoreReplay;
+namespace Teuria.MoreReplay;
 
-public static class QuestRoundLogicPatch 
+public class QuestRoundLogicPatch : IHookable
 {
     public static void Load() 
     {

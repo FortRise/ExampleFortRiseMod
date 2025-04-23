@@ -1,4 +1,6 @@
 {
+	"displayName": "More Replay",
+	"version": "2.0.0",
 	"author": "Terria",
 	"description": "Replay your death moment in Co-Op and Dark World",
 	"dll": "MoreReplay.dll",
@@ -9,9 +11,8 @@
 		}
 	],
 	"update": {
-		"github": {
-			"repository": "FortRise/ExampleFortRiseMod",
-			"tagRegex": "^MoreReplay\\-(.*)"
+		"gamebanana": {
+			"id": 463749
 		}
 	}
 }

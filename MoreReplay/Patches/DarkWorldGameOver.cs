@@ -1,8 +1,8 @@
 using MonoMod.Utils;
 
-namespace MoreReplay;
+namespace Teuria.MoreReplay;
 
-public static class DarkWorldGameOverPatch 
+public class DarkWorldGameOverPatch : IHookable 
 {
     public static void Load() 
     {

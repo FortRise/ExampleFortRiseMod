@@ -2,9 +2,9 @@ using System.Xml;
 using MonoMod.Utils;
 using TowerFall;
 
-namespace MoreReplay;
+namespace Teuria.MoreReplay;
 
-public static class LevelPatch 
+public class LevelPatch : IHookable
 {
     public static void Load() 
     {

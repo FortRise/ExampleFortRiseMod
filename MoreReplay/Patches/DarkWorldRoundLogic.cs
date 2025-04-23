@@ -4,9 +4,9 @@ using Monocle;
 using MonoMod.Cil;
 using TowerFall;
 
-namespace MoreReplay;
+namespace Teuria.MoreReplay;
 
-public static class DarkWorldRoundLogicPatch 
+public class DarkWorldRoundLogicPatch : IHookable
 {
     public static void Load() 
     {

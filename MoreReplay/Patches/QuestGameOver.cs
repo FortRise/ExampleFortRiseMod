@@ -1,11 +1,9 @@
-using System;
-using Monocle;
 using MonoMod.Utils;
 using TowerFall;
 
-namespace MoreReplay;
+namespace Teuria.MoreReplay;
 
-public static class QuestGameOverPatch
+public class QuestGameOverPatch : IHookable
 {
     public static void Load() 
     {

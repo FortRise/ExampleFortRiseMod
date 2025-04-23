@@ -1,11 +1,19 @@
+using System;
 using FortRise;
 
-namespace MoreReplay;
+namespace Teuria.MoreReplay;
 
-[Fort("com.terria.morereplay", "More Replay")]
 public sealed class MoreReplayModule : FortModule
 {
     public static MoreReplayModule Instance = null!;
+
+    internal Type[] Hookables = [
+        typeof(DarkWorldRoundLogicPatch),
+        typeof(DarkWorldGameOverPatch),
+        typeof(QuestGameOverPatch),
+        typeof(QuestRoundLogicPatch),
+        typeof(LevelPatch),
+    ];
 
 
     public MoreReplayModule() 
@@ -15,19 +23,17 @@ public sealed class MoreReplayModule : FortModule
 
     public override void Load()
     {
-        DarkWorldRoundLogicPatch.Load();
-        DarkWorldGameOverPatch.Load();
-        QuestGameOverPatch.Load();
-        QuestRoundLogicPatch.Load();
-        LevelPatch.Load();
+        foreach (var hookable in Hookables)
+        {
+            hookable.GetMethod(nameof(IHookable.Load))!.Invoke(null, []);
+        }
     }
 
     public override void Unload()
     {
-        DarkWorldRoundLogicPatch.Unload();
-        DarkWorldGameOverPatch.Unload();
-        QuestGameOverPatch.Unload();
-        QuestRoundLogicPatch.Unload();
-        LevelPatch.Unload();
+        foreach (var hookable in Hookables)
+        {
+            hookable.GetMethod(nameof(IHookable.Unload))!.Invoke(null, []);
+        }
     }
 }
