@@ -1,4 +1,5 @@
 {
+	"version": "1.1.0",
 	"displayName": "Colored Drill Arrows",
 	"author": "Teuria",
 	"description": "Add colors to the Drill Arrows by player index",
@@ -10,9 +11,8 @@
 		}
 	],
 	"update": {
-		"github": {
-			"repository": "FortRise/ExampleFortRiseMod",
-			"tagRegex": "^ColoredDrillArrows\\-(.*)"
+		"gamebanana": {
+			"id": 589965
 		}
 	}
 }

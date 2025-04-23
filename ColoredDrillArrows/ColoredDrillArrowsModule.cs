@@ -3,7 +3,6 @@ using FortRise;
 
 namespace ColoredDrillArrows;
 
-[Fort("com.teuria.ColoredDrillArrows", "ColoredDrillArrows")]
 public class ColoredDrillArrowsModule : FortModule
 {
     public static ColoredDrillArrowsModule Instance = null!;
