@@ -115,13 +115,13 @@ public class MyArrow
     {
         AwfullyFastArrows = registry.Variants.RegisterVariant("AwfullyFastArrows", new() 
         {
-            Title = "NO DODGE COOLDOWNS",
+            Title = "AWFULLY FAST ARROWS",
             Icon = TFGame.MenuAtlas["Kha.Bartizan/variants/awfullyFastArrows"]
         });
 
         AwfullySlowArrows = registry.Variants.RegisterVariant("AwfullySlowArrows", new() 
         {
-            Title = "NO DODGE COOLDOWNS",
+            Title = "AWFULLY SLOW ARROWS",
             Icon = TFGame.MenuAtlas["Kha.Bartizan/variants/awfullySlowArrows"],
             Links = [AwfullyFastArrows]
         });
