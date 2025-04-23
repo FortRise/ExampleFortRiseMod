@@ -7,7 +7,6 @@ using TowerFall;
 
 namespace MiasmaColors;
 
-[Fort("com.terria.miasmacolors", "MiasmaColors")]
 public class MiasmaColorsModule : FortModule
 {
     public override void Load()
