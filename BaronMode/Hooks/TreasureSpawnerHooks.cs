@@ -17,7 +17,7 @@ public class TreasureSpawnerHooks : IHookable
     private static void PutLivesTreasure(On.TowerFall.TreasureSpawner.orig_ctor_Session_VersusTowerData orig, TowerFall.TreasureSpawner self, TowerFall.Session session, TowerFall.VersusTowerData versusTowerData)
     {
         orig(self, session, versusTowerData);
-        var gemLivesPickup = GemLives.GemLivesMeta.ToPickupType();
+        var gemLivesPickup = GemLives.GemLivesMeta.Pickups;
 
         if (BaronMatchVariants.TreasureLivesInfo.IsActive(self.Session.MatchSettings.Variants))
         {
