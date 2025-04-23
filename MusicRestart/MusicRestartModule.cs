@@ -3,7 +3,6 @@ using FortRise;
 
 namespace MusicRestart;
 
-[Fort("com.terria.musicrestart", "Music Restart")]
 public sealed class MusicRestartModule : FortModule
 {
     public static MusicRestartModule Instance = null!;
