@@ -73,7 +73,6 @@ public class MyVersusPlayerMatchResults
     private static void Render_patch(On.TowerFall.VersusPlayerMatchResults.orig_Render orig, VersusPlayerMatchResults self)
     {
         orig(self);
-        var playerIndex = DynamicData.For(self).Get<int>("playerIndex");
         if (DynamicData.For(self).TryGet<OutlineText>("winText", out var text)) 
             text.Render();
     }

@@ -16,7 +16,7 @@ public class Respawn : IVersusGameMode
     public string Name => "Respawn";
     public Color NameColor => Color.Yellow;
 
-    public Subtexture Icon => TFGame.MenuAtlas["Bartizan/gamemodes/respawn"];
+    public Subtexture Icon => TFGame.MenuAtlas["Kha.Bartizan/gamemodes/respawn"];
 
     public bool IsTeamMode => false;
 
@@ -52,7 +52,7 @@ public class Crawl : IVersusGameMode
     public string Name => "Crawl";
     public Color NameColor => Color.Purple;
 
-    public Subtexture Icon => TFGame.MenuAtlas["Bartizan/gamemodes/crawl"];
+    public Subtexture Icon => TFGame.MenuAtlas["Kha.Bartizan/gamemodes/crawl"];
 
     public bool IsTeamMode => false;
 

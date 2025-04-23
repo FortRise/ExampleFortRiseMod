@@ -1,4 +1,5 @@
 {
+	"version": "2.0.0",
 	"author": "Kha",
 	"description": "BartizanMod rewritten in FortRise as a module",
 	"dll": "BartizanMod.dll",
@@ -15,9 +16,8 @@
 		}
 	],
 	"update": {
-		"github": {
-			"repository": "FortRise/ExampleFortRiseMod",
-			"tagRegex": "^BartizanMod\\-(.*)"
+		"gamebanana": {
+			"id": 590131
 		}
 	}
 }

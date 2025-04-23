@@ -47,7 +47,7 @@ public class BartizanModModule : FortModule
         MyPlayer.Register(Registry);
         MyArrow.Register(Registry);
 
-        Crawl.Register(Registry);
         Respawn.Register(Registry);
+        Crawl.Register(Registry);
     }
 }

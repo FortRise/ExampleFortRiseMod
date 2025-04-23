@@ -20,26 +20,26 @@ public class MyPlayer
         NoHeadBounce = registry.Variants.RegisterVariant("NoHeadBounce", new() 
         {
             Title = "NO HEADBOUNCE",
-            Icon = TFGame.MenuAtlas["Bartizan/variants/noHeadBounce"]
+            Icon = TFGame.MenuAtlas["Kha.Bartizan/variants/noHeadBounce"]
         });
 
         NoDodgeCooldown = registry.Variants.RegisterVariant("NoDodgeCooldowns", new() 
         {
             Title = "NO DODGE COOLDOWNS",
-            Icon = TFGame.MenuAtlas["Bartizan/variants/noDodgeCooldowns"],
+            Icon = TFGame.MenuAtlas["Kha.Bartizan/variants/noDodgeCooldowns"],
             Links = [showDodgeCooldown]
         });
 
         NoLedgeGrab = registry.Variants.RegisterVariant("NoLedgeGrab", new() 
         {
             Title = "NO LEDGE GRAB",
-            Icon = TFGame.MenuAtlas["Bartizan/variants/noLedgeGrab"]
+            Icon = TFGame.MenuAtlas["Kha.Bartizan/variants/noLedgeGrab"]
         });
 
         InfiniteArrows = registry.Variants.RegisterVariant("InfiniteArrows", new() 
         {
             Title = "INFINITE ARROWS",
-            Icon = TFGame.MenuAtlas["Bartizan/variants/infiniteArrows"],
+            Icon = TFGame.MenuAtlas["Kha.Bartizan/variants/infiniteArrows"],
         });
     }
 
@@ -116,13 +116,13 @@ public class MyArrow
         AwfullyFastArrows = registry.Variants.RegisterVariant("AwfullyFastArrows", new() 
         {
             Title = "NO DODGE COOLDOWNS",
-            Icon = TFGame.MenuAtlas["Bartizan/variants/awfullyFastArrows"]
+            Icon = TFGame.MenuAtlas["Kha.Bartizan/variants/awfullyFastArrows"]
         });
 
         AwfullySlowArrows = registry.Variants.RegisterVariant("AwfullySlowArrows", new() 
         {
             Title = "NO DODGE COOLDOWNS",
-            Icon = TFGame.MenuAtlas["Bartizan/variants/awfullySlowArrows"],
+            Icon = TFGame.MenuAtlas["Kha.Bartizan/variants/awfullySlowArrows"],
             Links = [AwfullyFastArrows]
         });
     }
