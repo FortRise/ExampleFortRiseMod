@@ -7,7 +7,7 @@
 
     <!-- If Steam path cannot be found, try specifying the path. -->
     <ModLoaderPath>..\..\..\</ModLoaderPath>
-    <ModZipPath>..\release\$(ModName).zip</ModZipPath>
+    <ModZipPath>..\release\$(ModName)-$(ModVersion).zip</ModZipPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FortRise.Configuration" Version="1.2.2" />
+    <PackageReference Include="FortRise.Configuration" Version="1.3.0" />
   </ItemGroup>
 </Project>
 
