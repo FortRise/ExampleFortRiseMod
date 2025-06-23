@@ -1,53 +1,31 @@
-﻿using System;
-using FortRise;
+﻿using FortRise;
+using Microsoft.Extensions.Logging;
 
 namespace BartizanMod;
 
-
-public class BartizanModModule : FortModule
+public class BartizanModModule : Mod
 {
     public static BartizanModModule Instance = null!;
     public IWiderSetModApi? WiderSetApi { get; private set; } = null!;
 
-    public override Type SettingsType => typeof(BartizanModSettings);
-    public BartizanModSettings Settings => (BartizanModSettings)Instance.InternalSettings;
+    public BartizanModSettings Settings => Instance.GetSettings<BartizanModSettings>()!;
+    public override ModuleSettings? CreateSettings() => new BartizanModSettings();
 
     public static bool EightPlayerMod;
 
-    public BartizanModModule() 
+    public BartizanModModule(IModContent content, IModuleContext context, ILogger logger) : base(content, context, logger)
     {
         Instance = this;
-    }
+        WiderSetApi = context.Interop.GetApi<IWiderSetModApi>("Teuria.WiderSetMod");
+        MyPlayer.Register(context.Harmony, content, context.Registry);
+        MyArrow.Register(context.Harmony, content, context.Registry);
+        MyPlayerCorpse.Register(context.Harmony);
+        MyPlayerGhost.Register(context.Harmony);
+        RespawnRoundLogic.Register(context.Harmony);
+        MyRollcallElement.Register(context.Harmony);
+        MyVersusPlayerMatchResults.Register(context.Harmony);
 
-    public override void Load()
-    {
-        RespawnRoundLogic.Load();
-        MyPlayerGhost.Load();
-        MyRollcallElement.Load();
-        MyVersusPlayerMatchResults.Load();
-        MyPlayer.Load();
-        MyArrow.Load();
-        MyPlayerCorpse.Load();
-    }
-
-    public override void Unload()
-    {
-        RespawnRoundLogic.Unload();
-        MyPlayerGhost.Unload();
-        MyRollcallElement.Unload();
-        MyVersusPlayerMatchResults.Unload();
-        MyPlayer.Unload();
-        MyArrow.Unload();
-        MyPlayerCorpse.Unload();
-    }
-
-    public override void Initialize()
-    {
-        WiderSetApi = Interop.GetApi<IWiderSetModApi>("Teuria.WiderSetMod");
-        MyPlayer.Register(Registry);
-        MyArrow.Register(Registry);
-
-        Respawn.Register(Registry);
-        Crawl.Register(Registry);
+        Respawn.Register(content, context.Registry);
+        Crawl.Register(content, context.Registry);
     }
 }

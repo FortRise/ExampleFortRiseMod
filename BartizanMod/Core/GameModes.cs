@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using FortRise;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
@@ -12,16 +13,20 @@ namespace BartizanMod;
 
 public class Respawn : IVersusGameMode
 {
+    private static ISubtextureEntry RespawnIcon { get; set; } = null!;
     public static IVersusGameModeEntry RespawnEntry { get; private set; } = null!; 
     public string Name => "Respawn";
     public Color NameColor => Color.Yellow;
 
-    public Subtexture Icon => TFGame.MenuAtlas["Kha.Bartizan/gamemodes/respawn"];
+    public ISubtextureEntry Icon => RespawnIcon;
 
     public bool IsTeamMode => false;
 
-    public static void Register(IModRegistry registry)
+    public static void Register(IModContent content, IModRegistry registry)
     {
+        RespawnIcon = registry.Subtextures.RegisterTexture(
+            content.Root.GetRelativePath("gamemodes/respawn.png")
+        );
         RespawnEntry = registry.GameModes.RegisterVersusGameMode(new Respawn());
     }
 
@@ -47,17 +52,21 @@ public class Respawn : IVersusGameMode
 
 public class Crawl : IVersusGameMode
 {
+    private static ISubtextureEntry CrawlIcon { get; set; } = null!;
     public static IVersusGameModeEntry CrawlEntry { get; private set; } = null!;
 
     public string Name => "Crawl";
     public Color NameColor => Color.Purple;
 
-    public Subtexture Icon => TFGame.MenuAtlas["Kha.Bartizan/gamemodes/crawl"];
+    public ISubtextureEntry Icon => CrawlIcon;
 
     public bool IsTeamMode => false;
 
-    public static void Register(IModRegistry registry)
+    public static void Register(IModContent content, IModRegistry registry)
     {
+        CrawlIcon = registry.Subtextures.RegisterTexture(
+            content.Root.GetRelativePath("gamemodes/crawl.png")
+        );
         CrawlEntry = registry.GameModes.RegisterVersusGameMode(new Crawl());
     }
 
@@ -89,22 +98,22 @@ public class RespawnRoundLogic : RoundLogic
     private Counter endDelay;
     private float[] autoReviveCounters;
 
-
-    internal static void Load() 
+    public static void Register(IHarmony harmony)
     {
-        On.TowerFall.RoundLogic.FFACheckForAllButOneDead += FFACheckForAllButOneDead_patch;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(RoundLogic), nameof(RoundLogic.FFACheckForAllButOneDead)),
+            new HarmonyMethod(RoundLogic_FFACheckForAllButOneDead_Prefix)
+        );
     }
 
-    internal static void Unload() 
+    private static bool RoundLogic_FFACheckForAllButOneDead_Prefix(RoundLogic __instance, ref bool __result)
     {
-        On.TowerFall.RoundLogic.FFACheckForAllButOneDead -= FFACheckForAllButOneDead_patch;
-    }
+        if (__instance is RespawnRoundLogic)
+        {
+            return __result = false;
+        }
 
-    private static bool FFACheckForAllButOneDead_patch(On.TowerFall.RoundLogic.orig_FFACheckForAllButOneDead orig, RoundLogic self)
-    {
-        if (self is RespawnRoundLogic)
-            return false;
-        return orig(self);
+        return true;
     }
 
 
@@ -144,7 +153,7 @@ public class RespawnRoundLogic : RoundLogic
             }
             base.Session.EndRound();
         }
-        if (BartizanModModule.Instance.Settings.RespawnMode == BartizanModSettings.Delayed && !Session.CurrentLevel.Ending) 
+        if (BartizanModModule.Instance.Settings.RespawnMode == "Delayed" && !Session.CurrentLevel.Ending) 
         {
             for (int i = 0; i < autoReviveCounters.Length; i++) 
             {
@@ -192,7 +201,7 @@ public class RespawnRoundLogic : RoundLogic
 
     protected virtual void AfterOnPlayerDeath(Player player, PlayerCorpse corpse)
     {
-        if (BartizanModModule.Instance.Settings.RespawnMode == BartizanModSettings.Instant)
+        if (BartizanModModule.Instance.Settings.RespawnMode == "Instant")
             this.RespawnPlayer(player.PlayerIndex);
         else
             Session.CurrentLevel.Add(new TeamReviver(corpse, TeamReviver.Modes.Quest));
@@ -360,65 +369,64 @@ public class KillCountHUD : Entity
 
 public static class MyPlayerGhost 
 {
-    internal static void Load() 
+    public static void Register(IHarmony harmony)
     {
-        On.TowerFall.PlayerGhost.ctor += ctor_patch;
-        On.TowerFall.PlayerGhost.Die += Die_patch;
+        harmony.Patch(
+            AccessTools.DeclaredConstructor(typeof(PlayerGhost), [typeof(PlayerCorpse)]),
+            new HarmonyMethod(PlayerGhost_ctor_Prefix)
+        );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(PlayerGhost), nameof(PlayerGhost.Die)),
+            postfix: new HarmonyMethod(PlayerGhost_Die_Postfix)
+        );
     }
 
-    internal static void Unload() 
+    private static void PlayerGhost_ctor_Prefix(TowerFall.PlayerGhost __instance, PlayerCorpse corpse)
     {
-        On.TowerFall.PlayerGhost.ctor -= ctor_patch;
-        On.TowerFall.PlayerGhost.Die -= Die_patch;
+        DynamicData.For(__instance).Set("corpse", corpse);
     }
 
-    private static void ctor_patch(On.TowerFall.PlayerGhost.orig_ctor orig, TowerFall.PlayerGhost self, PlayerCorpse corpse)
+    private static void PlayerGhost_Die_Postfix(TowerFall.PlayerGhost __instance, int killerIndex)
     {
-        DynamicData.For(self).Set("corpse", corpse);
-        orig(self, corpse);
-    }
-
-    private static void Die_patch(On.TowerFall.PlayerGhost.orig_Die orig, TowerFall.PlayerGhost self, int killerIndex, Arrow arrow, Explosion explosion, ShockCircle shock)
-    {
-        orig(self, killerIndex, arrow, explosion, shock);
-        var mobLogic = self.Level.Session.RoundLogic as MobRoundLogic;
-        if (mobLogic != null && DynamicData.For(self).TryGet<PlayerCorpse>("corpse", out var corpse)) 
+        var mobLogic = __instance.Level.Session.RoundLogic as MobRoundLogic;
+        if (mobLogic != null && DynamicData.For(__instance).TryGet<PlayerCorpse>("corpse", out var corpse)) 
         {
-            mobLogic.OnPlayerDeath(null!, corpse, self.PlayerIndex, DeathCause.Arrow, self.Position, killerIndex);
+            mobLogic.OnPlayerDeath(null!, corpse, __instance.PlayerIndex, DeathCause.Arrow, __instance.Position, killerIndex);
         }
     }
 }
 
 public static class MyPlayerCorpse 
 {
-    public static void Load() 
+    public static void Register(IHarmony harmony)
     {
-        On.TowerFall.PlayerCorpse.ctor_string_Allegiance_Vector2_Facing_int_int += ctor_patch;
-        On.TowerFall.PlayerCorpse.Update += Update_patch;
+        harmony.Patch(
+            AccessTools.DeclaredConstructor(typeof(PlayerCorpse), [
+                typeof(string), typeof(Allegiance), typeof(Vector2), typeof(Facing), typeof(int), typeof(int)]
+            ),
+            postfix: new HarmonyMethod(PlayerCorpse_ctor_Postfix)
+        );
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(PlayerCorpse), nameof(PlayerCorpse.Update)),
+            postfix: new HarmonyMethod(PlayerCorpse_Update_Postfix)
+        );
     }
 
-    public static void Unload() 
+    private static void PlayerCorpse_ctor_Postfix(PlayerCorpse __instance)
     {
-        On.TowerFall.PlayerCorpse.ctor_string_Allegiance_Vector2_Facing_int_int -= ctor_patch;
-        On.TowerFall.PlayerCorpse.Update -= Update_patch;
-    }
-
-    private static void ctor_patch(On.TowerFall.PlayerCorpse.orig_ctor_string_Allegiance_Vector2_Facing_int_int orig, PlayerCorpse self, string corpseSpriteID, Allegiance teamColor, Vector2 position, Facing facing, int playerIndex, int killerIndex)
-    {
-        orig(self, corpseSpriteID, teamColor, position, facing, playerIndex, killerIndex);
         var level = (Engine.Instance.Scene as Level)!;
-        if (level.Session.MatchSettings.CustomVersusModeName == Crawl.CrawlEntry.Name) 
+        if (level.Session.MatchSettings.Mode == Crawl.CrawlEntry.Modes) 
         {
-            var dynSelf = DynamicData.For(self);
+            var dynSelf = DynamicData.For(__instance);
             var coroutine = new Coroutine();
             dynSelf.Set("ghostMobCoroutine", coroutine);
         }
     }
 
-    private static void Update_patch(On.TowerFall.PlayerCorpse.orig_Update orig, PlayerCorpse self)
+    private static void PlayerCorpse_Update_Postfix(PlayerCorpse __instance)
     {
-        orig(self);
-        if (DynamicData.For(self).TryGet<Coroutine>("ghostMobCoroutine", out var val) && val.Active) 
+        if (DynamicData.For(__instance).TryGet<Coroutine>("ghostMobCoroutine", out var val) && val.Active) 
         {
             val.Update();
         }

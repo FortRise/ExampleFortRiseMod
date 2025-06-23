@@ -1,26 +1,48 @@
-﻿using ColoredDrillArrows.Hooks;
-using FortRise;
+﻿using FortRise;
+using HarmonyLib;
+using Microsoft.Extensions.Logging;
+using Monocle;
+using MonoMod.Utils;
+using TowerFall;
 
 namespace ColoredDrillArrows;
 
-public class ColoredDrillArrowsModule : FortModule
+public class ColoredDrillArrowsModule : Mod
 {
-    public static ColoredDrillArrowsModule Instance = null!;
+    private ISubtextureEntry drillArrow;
+    private ISubtextureEntry buriedArrow;
 
-    public ColoredDrillArrowsModule() 
+    public ColoredDrillArrowsModule(IModContent content, IModuleContext context, ILogger logger) : base(content, context, logger)
     {
-        Instance = this;
+        drillArrow = context.Registry.Subtextures.RegisterTexture(
+            content.Root.GetRelativePath("drillArrow.png")
+        );
+
+        buriedArrow = context.Registry.Subtextures.RegisterTexture(
+            content.Root.GetRelativePath("drillArrowBuried.png")
+        );
+
+        context.Harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(DrillArrow), "InitGraphics"),
+            postfix: new HarmonyMethod(DrillArrow_InitGraphics_Postfix)
+        );
+
+        OnInitialize += (context) =>
+        {
+            TFGame.Atlas.SubTextures["arrows/drillArrow"] = drillArrow.Subtexture;
+            TFGame.Atlas.SubTextures["arrows/drillArrowBuried"] = buriedArrow.Subtexture;
+        };
     }
 
-    public override void LoadContent() {}
-
-    public override void Load()
+    private static void DrillArrow_InitGraphics_Postfix(DrillArrow __instance)
     {
-        DrillArrow.Load();
-    }
-
-    public override void Unload()
-    {
-        DrillArrow.Unload();
+        var dynSelf = DynamicData.For(__instance);
+        var normalSprite = dynSelf.Get<Sprite<int>>("normalSprite")!;
+        var buriedImage = dynSelf.Get<Image>("buriedImage")!;
+        if (__instance.CharacterIndex != -1)
+        {
+            normalSprite.Color = ArcherData.Archers[__instance.CharacterIndex].ColorB;
+            buriedImage.Color = ArcherData.Archers[__instance.CharacterIndex].ColorB;
+        }
     }
 }

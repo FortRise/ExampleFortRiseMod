@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using FortRise;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
@@ -9,6 +11,7 @@ namespace ExampleNewMod;
 
 public class PinkSlime : Slime
 {
+    private static ISpriteContainerEntry SlimeSprite { get; set; } = null!;
     private PlayerShield? shield;
     private DynData<Slime> slimeData;
     private float jumpAround;
@@ -26,8 +29,8 @@ public class PinkSlime : Slime
         var sprite = slimeData.Get<Sprite<string>>("sprite");
         Remove(sprite);
 
-        var pinkSprite = TFGame.SpriteData.GetSpriteString("ExampleNewMod/PinkSlime");
-        pinkSprite.OnAnimationComplete = (Sprite<string> s) =>
+        var pinkSprite = ((ISpriteEntry<string>)SlimeSprite.Entry).Sprite;
+        pinkSprite!.OnAnimationComplete = s =>
         {
             if (State == 3)
             {
@@ -39,8 +42,34 @@ public class PinkSlime : Slime
         Add(pinkSprite);
     }
 
-    public static void Register(IModRegistry registry)
+    public static void Register(IHarmony harmony, IModContent content, IModRegistry registry)
     {
+        var pinkSlimeSprite = registry.Subtextures.RegisterTexture(
+            content.Root.GetRelativePath("Atlas/atlas/pinkSlime.png")
+        );
+
+        SlimeSprite = registry.Sprites.RegisterSprite<string>(
+            "PinkSlime",
+            new()
+            {
+                Texture = pinkSlimeSprite,
+                FrameWidth = 20,
+                FrameHeight = 20,
+                OriginX = 10,
+                OriginY = 20,
+                AdditionalData = new Dictionary<string, object>()
+                {
+                    ["DownY"] = 1
+                },
+                Animations = [
+                    new() { ID = "idle", Frames = [12], Loop = true },
+                    new() { ID = "fall", Frames = [13, 14, 15, 16], Delay = 0.1f, Loop = true },
+                    new() { ID = "land", Frames = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], Delay = 0.06f, Loop = false },
+                    new() { ID = "death", Frames = [18, 19, 20, 21, 22], Delay = 0.1f, Loop = false }
+                ]
+            }
+        );
+
         registry.Enemies.RegisterEnemy("SuperSlime", new() 
         {
             Name = "Super Slime",
@@ -52,6 +81,11 @@ public class PinkSlime : Slime
             Name = "Super Slime Shield",
             Loader = (pos, facing, _) => new PinkSlime(pos, facing, true)
         });
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Slime), "WalkUpdate"),
+            new HarmonyMethod(Slime_WalkUpdate_patch)
+        );
     }
 
     public override void Hurt(Vector2 force, int damage, int killerIndex, Arrow? arrow = null, Explosion? explosion = null, ShockCircle? shock = null)
@@ -73,27 +107,19 @@ public class PinkSlime : Slime
         base.Hurt(force, damage, killerIndex, arrow, explosion, shock);
     }
 
-    internal static void Load() 
-    {
-        On.TowerFall.Slime.WalkUpdate += Slime_WalkUpdate_patch;
-    }
 
-    internal static void Unload() 
+    private static bool Slime_WalkUpdate_patch(Slime __instance, ref int __result)
     {
-        On.TowerFall.Slime.WalkUpdate -= Slime_WalkUpdate_patch;
-    }
-
-    private static int Slime_WalkUpdate_patch(On.TowerFall.Slime.orig_WalkUpdate orig, Slime self)
-    {
-        if (self is PinkSlime pink)
+        if (__instance is PinkSlime pink)
         {
             if (pink.ShouldTurnAround())
             {
                 pink.jumpAround = 0.2f * (int)pink.Facing;
-                return 2;
+                __result = 2;
+                return false;
             }
         }
-        return orig(self);
+        return true;
     }
 
     public override void Added()

@@ -4,8 +4,12 @@ namespace BartizanMod;
 
 public class BartizanModSettings : ModuleSettings 
 {
-    public const int Instant = 0;
-    public const int Delayed = 1;
-    [SettingsOptions("Instant", "Delayed")]
-    public int RespawnMode;
+    public string RespawnMode { get; set; } = "Instant";
+
+    public override void Create(ISettingsCreate settings)
+    {
+        settings.CreateOptions("RespawnMode", "Instant", [
+            "Instant", "Delayed"
+        ], (x) => RespawnMode = x.Item1);
+    }
 }

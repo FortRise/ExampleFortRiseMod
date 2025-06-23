@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using FortRise;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
@@ -8,30 +10,29 @@ namespace BartizanMod;
 
 public class MyRollcallElement 
 {
-    internal static void Load() 
+    public static void Register(IHarmony harmony)
     {
-        On.TowerFall.RollcallElement.ForceStart += ForceStart_patch;
-        On.TowerFall.RollcallElement.StartVersus += StartVersus_patch;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(RollcallElement), "ForceStart"),
+            new HarmonyMethod(RollcallElement_ForceStart_Prefix)
+        );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(RollcallElement), "StartVersus"),
+            new HarmonyMethod(RollcallElement_StartVersus_Prefix)
+        );
     }
 
-    internal static void Unload() 
-    {
-        On.TowerFall.RollcallElement.ForceStart -= ForceStart_patch;
-        On.TowerFall.RollcallElement.StartVersus -= StartVersus_patch;
-    }
-
-    private static void StartVersus_patch(On.TowerFall.RollcallElement.orig_StartVersus orig, RollcallElement self)
+    private static void RollcallElement_StartVersus_Prefix()
     {
         var playerCount = EightPlayerUtils.GetMenuPlayerCount();
         MyVersusPlayerMatchResults.PlayerWins = new int[playerCount];
-        orig(self);
     }
 
-    private static void ForceStart_patch(On.TowerFall.RollcallElement.orig_ForceStart orig, RollcallElement self)
+    private static void RollcallElement_ForceStart_Prefix()
     {
         var playerCount = EightPlayerUtils.GetMenuPlayerCount();
         MyVersusPlayerMatchResults.PlayerWins = new int[playerCount];
-        orig(self);
     }
 }
 
@@ -39,41 +40,52 @@ public class MyVersusPlayerMatchResults
 {
     public static int[] PlayerWins = null!;
 
-
-    internal static void Load() 
+    public static void Register(IHarmony harmony)
     {
-        On.TowerFall.VersusPlayerMatchResults.ctor += ctor_patch;
-        On.TowerFall.VersusPlayerMatchResults.Render += Render_patch;
+        harmony.Patch(
+            AccessTools.DeclaredConstructor(typeof(VersusPlayerMatchResults),
+            [
+                typeof(Session),
+                typeof(VersusMatchResults),
+                typeof(int),
+                typeof(Vector2),
+                typeof(Vector2),
+                typeof(List<AwardInfo>)
+            ]),
+            postfix: new HarmonyMethod(VersusPlayerMatchResults_ctor_Postfix)
+        );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(VersusPlayerMatchResults), nameof(VersusPlayerMatchResults.Render)),
+            postfix: new HarmonyMethod(VersusPlayerMatchResults_Render_Postfix)
+        );
     }
 
-    internal static void Unload() 
+    private static void VersusPlayerMatchResults_ctor_Postfix(VersusPlayerMatchResults __instance, Session session, VersusMatchResults matchResults, int playerIndex)
     {
-        On.TowerFall.VersusPlayerMatchResults.ctor -= ctor_patch;
-        On.TowerFall.VersusPlayerMatchResults.Render -= Render_patch;
-    }
+        var dynData = DynamicData.For(__instance);
 
-    private static void ctor_patch(On.TowerFall.VersusPlayerMatchResults.orig_ctor orig, VersusPlayerMatchResults self, Session session, VersusMatchResults matchResults, int playerIndex, Vector2 tweenFrom, Vector2 tweenTo, List<AwardInfo> awards)
-    {
-        orig(self, session, matchResults, playerIndex, tweenFrom, tweenTo, awards);
-        var dynData = DynamicData.For(self);
         var gem = dynData.Get<Sprite<string>>("gem")!;
         if (session.MatchStats[playerIndex].Won)
+        {
             PlayerWins[playerIndex]++;
+        }
 
         if (PlayerWins[playerIndex] > 0) 
         {
             var winText = new OutlineText(TFGame.Font, PlayerWins[playerIndex].ToString(), gem.Position);
             winText.Color = Color.White;
             winText.OutlineColor = Color.Black;
-            self.Add(winText);
+            __instance.Add(winText);
             dynData.Set("winText", winText);
         }
     }
 
-    private static void Render_patch(On.TowerFall.VersusPlayerMatchResults.orig_Render orig, VersusPlayerMatchResults self)
+    private static void VersusPlayerMatchResults_Render_Postfix(VersusPlayerMatchResults __instance)
     {
-        orig(self);
-        if (DynamicData.For(self).TryGet<OutlineText>("winText", out var text)) 
+        if (DynamicData.For(__instance).TryGet<OutlineText>("winText", out var text))
+        {
             text.Render();
+        }
     }
 }

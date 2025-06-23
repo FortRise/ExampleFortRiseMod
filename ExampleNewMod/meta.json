@@ -1,4 +1,5 @@
 {
+	"Version": "1.0.0",
     "author": "Terria",
     "description": "Adds more variants to the game.",
     "dll": "ExampleNewMod.dll",

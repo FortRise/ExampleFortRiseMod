@@ -1,5 +1,6 @@
 using System.Reflection;
 using FortRise;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod;
@@ -19,13 +20,35 @@ public class TriggerBrambleArrow : TriggerArrow
     {
     }
 
-    public static void Register(IModRegistry registry)
+    public static void Register(IHarmony harmony, IModContent content, IModRegistry registry)
     {
+        var brambleArrow = registry.Subtextures.RegisterTexture(() => TFGame.Atlas["player/arrowHUD/brambleArrow"]);
+
         registry.Arrows.RegisterArrows("TriggerBrambleArrow", new()
         {
             ArrowType = typeof(TriggerBrambleArrow),
-            HUD = TFGame.Atlas["player/arrowHUD/brambleArrow"]
+            HUD = brambleArrow
         });
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(TriggerArrow), nameof(TriggerArrow.SetDetonator), [typeof(Player)]),
+            new HarmonyMethod(SetDetonatorPlayerPatch)
+        );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(TriggerArrow), nameof(TriggerArrow.SetDetonator), [typeof(Enemy)]),
+            new HarmonyMethod(SetDetonatorEnemyPatch)
+        );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(TriggerArrow), nameof(Detonate)),
+            new HarmonyMethod(DetonatePatch)
+        );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(TriggerArrow), nameof(RemoveDetonator)),
+            new HarmonyMethod(RemoveDetonatorPatch)
+        );
     }
 
     protected override bool CheckForTargetCollisions()
@@ -75,38 +98,24 @@ public class TriggerBrambleArrow : TriggerArrow
         base.Add(this.Graphics);
     }
 
-    public static void Load() 
+    private static bool RemoveDetonatorPatch(TriggerArrow __instance)
     {
-        On.TowerFall.TriggerArrow.SetDetonator_Player += SetDetonatorPlayerPatch;
-        On.TowerFall.TriggerArrow.SetDetonator_Enemy += SetDetonatorEnemyPatch;
-        On.TowerFall.TriggerArrow.Detonate += DetonatePatch;
-        On.TowerFall.TriggerArrow.RemoveDetonator += RemoveDetonatorPatch;
-    }
-
-    public static void Unload() 
-    {
-        On.TowerFall.TriggerArrow.SetDetonator_Player -= SetDetonatorPlayerPatch;
-        On.TowerFall.TriggerArrow.SetDetonator_Enemy -= SetDetonatorEnemyPatch;
-        On.TowerFall.TriggerArrow.Detonate -= DetonatePatch;
-        On.TowerFall.TriggerArrow.RemoveDetonator -= RemoveDetonatorPatch;
-    }
-
-    private static void RemoveDetonatorPatch(On.TowerFall.TriggerArrow.orig_RemoveDetonator orig, TriggerArrow self)
-    {
-        if (self is TriggerBrambleArrow) 
+        if (__instance is TriggerBrambleArrow) 
         {
-            self.LightVisible = false;
-            var dynData = DynamicData.For(self);
+            __instance.LightVisible = false;
+            var dynData = DynamicData.For(__instance);
             Player? player = dynData.Get<Player>("playerDetonator");
             dynData.Set("playerDetonator", null);
+
             if (player != null) 
             {
-                player.RemoveTriggerArrow(self);
+                player.RemoveTriggerArrow(__instance);
             }
             dynData.Set("enemyDetonator", null);
-            return;
+            return false;
         }
-        orig(self);
+
+        return true;
     }
 
     [MonoModLinkTo("TowerFall.Arrow", "System.Void Init(TowerFall.LevelEntity,Microsoft.Xna.Framework.Vector2,System.Single)")]
@@ -161,40 +170,41 @@ public class TriggerBrambleArrow : TriggerArrow
     // }
 
 
-    private static void DetonatePatch(On.TowerFall.TriggerArrow.orig_Detonate orig, TriggerArrow self)
+    private static bool DetonatePatch(TriggerArrow __instance)
     {
-        if (self is TriggerBrambleArrow brambleSelf) 
+        if (__instance is TriggerBrambleArrow brambleSelf) 
         {
-            DynamicData.For(self).Set("enemyDetonator", null);
-            DynamicData.For(self).Set("playerDetonator", null);
-            if (self.Scene != null && !self.MarkedForRemoval) 
+            DynamicData.For(__instance).Set("enemyDetonator", null);
+            DynamicData.For(__instance).Set("playerDetonator", null);
+            if (__instance.Scene != null && !__instance.MarkedForRemoval) 
             {
                 brambleSelf.UseBramblePower();
             }
-            return;
+            return false;
         }
-        orig(self);
+        return true;
     }
 
-    private static void SetDetonatorEnemyPatch(On.TowerFall.TriggerArrow.orig_SetDetonator_Enemy orig, TriggerArrow self, Enemy enemy)
+    private static bool SetDetonatorEnemyPatch(TriggerArrow __instance, Enemy enemy)
     {
-        if (self is TriggerBrambleArrow) 
+        if (__instance is TriggerBrambleArrow) 
         {
-            DynamicData.For(self).Set("enemyDetonator", enemy);
-            DynamicData.For(self).Get<Alarm>("enemyDetonateCheck")!.Start();
-            return;
+            DynamicData.For(__instance).Set("enemyDetonator", enemy);
+            DynamicData.For(__instance).Get<Alarm>("enemyDetonateCheck")!.Start();
+            return false;
         }
-        orig(self, enemy);
+        return true;
     }
 
-    private static void SetDetonatorPlayerPatch(On.TowerFall.TriggerArrow.orig_SetDetonator_Player orig, TriggerArrow self, Player player)
+    private static bool SetDetonatorPlayerPatch(TriggerArrow __instance, Player player)
     {
-        if (self is TriggerBrambleArrow) 
+        if (__instance is TriggerBrambleArrow) 
         {
-            DynamicData.For(self).Set("playerDetonator", player);
-            return;
+            DynamicData.For(__instance).Set("playerDetonator", player);
+            return false;
         }
-        orig(self, player);
+
+        return true;
     }
 
 

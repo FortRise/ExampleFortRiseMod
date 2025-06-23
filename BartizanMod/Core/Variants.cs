@@ -1,5 +1,6 @@
 using System.Reflection;
 using FortRise;
+using HarmonyLib;
 using Monocle;
 using MonoMod.Utils;
 using TowerFall;
@@ -13,94 +14,109 @@ public class MyPlayer
     private static IVariantEntry NoLedgeGrab { get; set; } = null!;
     private static IVariantEntry InfiniteArrows { get; set; } = null!;
 
-    internal static void Register(IModRegistry registry)
+    internal static void Register(IHarmony harmony, IModContent content, IModRegistry registry)
     {
         var showDodgeCooldown = registry.Variants.GetVariant("ShowDodgeCooldown")!;
 
-        NoHeadBounce = registry.Variants.RegisterVariant("NoHeadBounce", new() 
+        NoHeadBounce = registry.Variants.RegisterVariant("NoHeadBounce", new()
         {
             Title = "NO HEADBOUNCE",
-            Icon = TFGame.MenuAtlas["Kha.Bartizan/variants/noHeadBounce"]
+            Icon = registry.Subtextures.RegisterTexture(
+                content.Root.GetRelativePath("variants/noHeadBounce.png")
+            )
         });
 
-        NoDodgeCooldown = registry.Variants.RegisterVariant("NoDodgeCooldowns", new() 
+        NoDodgeCooldown = registry.Variants.RegisterVariant("NoDodgeCooldowns", new()
         {
             Title = "NO DODGE COOLDOWNS",
-            Icon = TFGame.MenuAtlas["Kha.Bartizan/variants/noDodgeCooldowns"],
+            Icon = registry.Subtextures.RegisterTexture(
+                content.Root.GetRelativePath("variants/noDodgeCooldowns.png")
+            ),
             Links = [showDodgeCooldown]
         });
 
-        NoLedgeGrab = registry.Variants.RegisterVariant("NoLedgeGrab", new() 
+        NoLedgeGrab = registry.Variants.RegisterVariant("NoLedgeGrab", new()
         {
             Title = "NO LEDGE GRAB",
-            Icon = TFGame.MenuAtlas["Kha.Bartizan/variants/noLedgeGrab"]
+            Icon = registry.Subtextures.RegisterTexture(
+                content.Root.GetRelativePath("variants/noLedgeGrab.png")
+            )
         });
 
-        InfiniteArrows = registry.Variants.RegisterVariant("InfiniteArrows", new() 
+        InfiniteArrows = registry.Variants.RegisterVariant("InfiniteArrows", new()
         {
             Title = "INFINITE ARROWS",
-            Icon = TFGame.MenuAtlas["Kha.Bartizan/variants/infiniteArrows"],
+            Icon = registry.Subtextures.RegisterTexture(
+                content.Root.GetRelativePath("variants/infiniteArrows.png")
+            ),
         });
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Player), "ShootArrow"),
+            new HarmonyMethod(Player_ShootArrow_Prefix),
+            postfix: new HarmonyMethod(Player_ShootArrow_Postfix)
+        );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Player), "GetDodgeExitState"),
+            new HarmonyMethod(Player_GetDodgeExitState_Prefix)
+        );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Player), "CanGrabLedge"),
+            new HarmonyMethod(Player_CanGrabLedge_Prefix)
+        );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Player), nameof(Player.HurtBouncedOn)),
+            new HarmonyMethod(Player_HurtBouncedOn_Prefix)
+        );
     }
 
-    internal static void Load() 
+    private static bool Player_HurtBouncedOn_Prefix(Player __instance)
     {
-        On.TowerFall.Player.CanGrabLedge += Player_CanGrabLedge_patch;
-        On.TowerFall.Player.GetDodgeExitState += Player_GetDodgeExitState;
-        On.TowerFall.Player.ShootArrow += Player_ShootArrow;
-        On.TowerFall.Player.HurtBouncedOn += HurtBouncedOn_patch;
-    }
-
-    internal static void Unload() 
-    {
-        On.TowerFall.Player.CanGrabLedge -= Player_CanGrabLedge_patch;
-        On.TowerFall.Player.GetDodgeExitState -= Player_GetDodgeExitState;
-        On.TowerFall.Player.ShootArrow -= Player_ShootArrow;
-        On.TowerFall.Player.HurtBouncedOn -= HurtBouncedOn_patch;
-    }
-
-    private static void HurtBouncedOn_patch(On.TowerFall.Player.orig_HurtBouncedOn orig, Player self, int bouncerIndex)
-    {
-        if (NoHeadBounce.IsActive(self.PlayerIndex))
+        if (NoHeadBounce.IsActive(__instance.PlayerIndex))
         {
-            return;
+            return false;
         }
 
-        orig(self, bouncerIndex);
+        return true;
     }
 
-    public delegate bool orig_Player_CanGrabLedge(Player self, int targetY, int direction);
-
-    public static bool Player_CanGrabLedge_patch(On.TowerFall.Player.orig_CanGrabLedge orig, Player self, int targetY, int direction) 
+    public static bool Player_CanGrabLedge_Prefix(Player __instance, ref bool __result) 
     {
-        if (NoLedgeGrab.IsActive(self.PlayerIndex)) 
-            return false;
-        
-        return orig(self, targetY, direction);
-    }
-
-    public static int Player_GetDodgeExitState(On.TowerFall.Player.orig_GetDodgeExitState orig, Player self) 
-    {
-        /* New */
-        if (NoDodgeCooldown.IsActive(self.PlayerIndex)) 
+        if (NoLedgeGrab.IsActive(__instance.PlayerIndex))
         {
-            var dynData = new DynData<Player>(self);
+            return __result = false;
+        }
+
+        return true;
+    }
+
+    public static void Player_GetDodgeExitState_Prefix(Player __instance) 
+    {
+        if (NoDodgeCooldown.IsActive(__instance.PlayerIndex)) 
+        {
+            var dynData = new DynData<Player>(__instance);
             dynData.Set("dodgeCooldown", false);
             dynData.Dispose();
         }
-        return orig(self);
     }
 
-    public static void Player_ShootArrow(On.TowerFall.Player.orig_ShootArrow orig, Player self) 
+    public static void Player_ShootArrow_Prefix(Player __instance, ref ArrowTypes __state) 
     {
-        if (InfiniteArrows.IsActive(self.PlayerIndex)) 
+        if (InfiniteArrows.IsActive(__instance.PlayerIndex)) 
         {
-            var arrow = self.Arrows.Arrows[0];
-            orig(self);
-            self.Arrows.AddArrows(arrow);
-            return;
+            __state = __instance.Arrows.Arrows[0];
         }
-        orig(self);
+    }
+
+    public static void Player_ShootArrow_Postfix(Player __instance, in ArrowTypes __state) 
+    {
+        if (InfiniteArrows.IsActive(__instance.PlayerIndex)) 
+        {
+            __instance.Arrows.AddArrows(__state);
+        }
     }
 }
 
@@ -111,49 +127,55 @@ public class MyArrow
     private static IVariantEntry AwfullyFastArrows { get; set; } = null!;
     private static IVariantEntry AwfullySlowArrows { get; set; } = null!;
 
-    internal static void Register(IModRegistry registry)
+    internal static void Register(IHarmony harmony, IModContent content, IModRegistry registry)
     {
-        AwfullyFastArrows = registry.Variants.RegisterVariant("AwfullyFastArrows", new() 
+        AwfullyFastArrows = registry.Variants.RegisterVariant("AwfullyFastArrows", new()
         {
             Title = "AWFULLY FAST ARROWS",
-            Icon = TFGame.MenuAtlas["Kha.Bartizan/variants/awfullyFastArrows"]
+            Icon = registry.Subtextures.RegisterTexture(
+                content.Root.GetRelativePath("variants/awfullyFastArrows.png")
+            )
         });
 
-        AwfullySlowArrows = registry.Variants.RegisterVariant("AwfullySlowArrows", new() 
+        AwfullySlowArrows = registry.Variants.RegisterVariant("AwfullySlowArrows", new()
         {
             Title = "AWFULLY SLOW ARROWS",
-            Icon = TFGame.MenuAtlas["Kha.Bartizan/variants/awfullySlowArrows"],
+            Icon = registry.Subtextures.RegisterTexture(
+                content.Root.GetRelativePath("variants/awfullySlowArrows.png")
+            ),
             Links = [AwfullyFastArrows]
         });
-    }
 
-    internal static void Load() 
-    {
-        On.TowerFall.Arrow.ArrowUpdate += ArrowUpdate_patch;
         Comp_TimeMult = typeof(Engine).GetProperty("TimeMult")!;
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Arrow), nameof(Arrow.ArrowUpdate)),
+            prefix: new HarmonyMethod(Arrow_ArrowUpdate_Prefix),
+            postfix: new HarmonyMethod(Arrow_ArrowUpdate_Postfix)
+        );
     }
 
-    internal static void Unload() 
+    private static void Arrow_ArrowUpdate_Prefix(Arrow __instance)
     {
-        On.TowerFall.Arrow.ArrowUpdate -= ArrowUpdate_patch;
-    }
-
-    private static void ArrowUpdate_patch(On.TowerFall.Arrow.orig_ArrowUpdate orig, Arrow self)
-    {
-        if (AwfullySlowArrows.IsActive(self.PlayerIndex)) 
+        if (AwfullySlowArrows.IsActive(__instance.PlayerIndex)) 
         {
             Comp_TimeMult.SetValue(null, Engine.TimeMult * 0.2f, null);
-            orig(self);
-            Comp_TimeMult.SetValue(null, Engine.TimeMult / 0.2f, null);
-            return;
         }
-        if (AwfullyFastArrows.IsActive(self.PlayerIndex)) 
+        else if (AwfullyFastArrows.IsActive(__instance.PlayerIndex)) 
         {
             Comp_TimeMult.SetValue(null, Engine.TimeMult * 3.0f, null);
-            orig(self);
-            Comp_TimeMult.SetValue(null, Engine.TimeMult / 3.0f, null);
-            return;
         }
-        orig(self);
+    }
+
+    private static void Arrow_ArrowUpdate_Postfix(Arrow __instance)
+    {
+        if (AwfullySlowArrows.IsActive(__instance.PlayerIndex))
+        {
+            Comp_TimeMult.SetValue(null, Engine.TimeMult / 0.2f, null);
+        }
+        else if (AwfullyFastArrows.IsActive(__instance.PlayerIndex))
+        {
+            Comp_TimeMult.SetValue(null, Engine.TimeMult / 3.0f, null);
+        }
     }
 }
