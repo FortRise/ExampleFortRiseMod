@@ -1,11 +1,12 @@
 using FortRise;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 
 namespace Teuria.AdditionalVariants;
 
-public class NeonFilter : ShaderFilter, IHookable
+public class NeonFilter : SceneFilter, IHookable
 {
     public NeonFilter() 
     {
@@ -23,9 +24,13 @@ public class NeonFilter : ShaderFilter, IHookable
 
     public override void Render(RenderTarget2D canvas)
     {
-        var shader = AdditionalVariantsModule.NeonShader;
+        var shader = AdditionalVariantsModule.NeonShader.EffectResource as NeonShaderResource;
+        if (shader is null)
+        {
+            return;
+        }
         Draw.SpriteBatch.BeginShaderRegion();
-
+        
         shader.UseTexture1(ForegroundRenderTarget);
         shader.Apply();
         Draw.SpriteBatch.Draw(ForegroundRenderTarget, Vector2.Zero, Color.White);
@@ -55,28 +60,25 @@ public class NeonFilter : ShaderFilter, IHookable
             Level.Foreground.Visible = true;
     }
 
-    public static void Load()
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.Level.Begin += Begin_patch;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(TowerFall.Level), nameof(TowerFall.Level.Begin)),
+            postfix: new HarmonyMethod(Level_Begin_Postfix)
+        );
     }
 
-    public static void Unload()
+    private static void Level_Begin_Postfix(TowerFall.Level __instance)
     {
-        On.TowerFall.Level.Begin -= Begin_patch;
-    }
-
-    private static void Begin_patch(On.TowerFall.Level.orig_Begin orig, TowerFall.Level self)
-    {
-        orig(self);
         if (Variants.NeonWorld.IsActive())
         {
             var filter = new NeonFilter();
-            self.Activate(filter);
+            __instance.Activate(filter);
         }
     }
 }
 
-public class NeonShaderResource : MiscShaderResource
+public class NeonShaderResource : MiscEffectResource
 {
     private Vector2 texelSize = new Vector2(1.0f / (320f - 1f), 1.0f / (240f - 1f));
     private Vector4 outlineColor = Vector4.One;

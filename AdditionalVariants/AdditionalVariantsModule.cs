@@ -1,15 +1,15 @@
 ﻿using System;
-using AdditionalVariants.EX;
-using AdditionalVariants.EX.JesterHat;
 using FortRise;
+using Microsoft.Extensions.Logging;
 
 namespace Teuria.AdditionalVariants;
 
-public class AdditionalVariantsModule : FortModule
+public sealed class AdditionalVariantsModule : Mod
 {
-    public static NeonShaderResource NeonShader = null!;
-
+    public static AdditionalVariantsModule Instance { get; private set; } = null!;
+    public static IEffectEntry NeonShader { get; private set; } = null!;
     private static Type[] Registerables = [
+        typeof(TextureRegistry),
         typeof(Variants),
         typeof(InvincibleTechnomage)
     ];
@@ -37,48 +37,29 @@ public class AdditionalVariantsModule : FortModule
         typeof(UnfairAutobalance),
     ];
 
-    public override void LoadContent()
+    public AdditionalVariantsModule(IModContent content, IModuleContext context, ILogger logger) : base(content, context, logger)
     {
-        NeonShader = Content.LoadShader<NeonShaderResource>("Effects/neon.fxb", "Neon", out var _);
-    }
-
-    public override void Load()
-    {
+        Instance = this;
         foreach (var hookable in Hookables)
         {
-            hookable.GetMethod(nameof(IHookable.Load))!.Invoke(null, []);
+            hookable.GetMethod(nameof(IHookable.Load))!.Invoke(null, [context.Harmony]);
         }
-        // ArrowFallingUp.Load();
-        FortRise.RiseCore.Events.OnPreInitialize += OnPreInitialize;
-    }
 
-    public override void Unload()
-    {
-
-        foreach (var hookable in Hookables)
-        {
-            hookable.GetMethod(nameof(IHookable.Unload))!.Invoke(null, []);
-        }
-        // ArrowFallingUp.Unload();
-        FortRise.RiseCore.Events.OnPreInitialize -= OnPreInitialize;
-    }
-
-    public override void Initialize()
-    {
         foreach (var registerable in Registerables)
         {
-            registerable.GetMethod(nameof(IRegisterable.Register))!.Invoke(null, [Registry]);
+            registerable.GetMethod(nameof(IRegisterable.Register))!.Invoke(null, [content, context.Registry]);
         }
+
+        NeonShader = context.Registry.Effects.RegisterEffect("NeonFX", new()
+        {
+            EffectResourceType = typeof(NeonShaderResource),
+            EffectFile = content.Root.GetRelativePath("Content/Effects/neon.fxb"),
+            PassName = "Neon"
+        });
     }
 
     public override object? GetApi()
     {
         return new ApiImplementation();
-    }
-
-    private void OnPreInitialize()
-    {
-        TfExAPIModImports.RegisterVariantStateEvents?.Invoke
-            (this, "JestersHat", JesterHatStateEvents.OnSaveState, JesterHatStateEvents.OnLoadState);
     }
 }

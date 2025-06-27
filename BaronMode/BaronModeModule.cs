@@ -4,15 +4,15 @@ using Teuria.BaronMode.Interop;
 using Teuria.BaronMode.Pickups;
 using FortRise;
 using Teuria.BaronMode.GameModes;
+using Microsoft.Extensions.Logging;
 
 namespace Teuria.BaronMode;
 
-internal class BaronModeModule : FortModule
+internal class BaronModeModule : Mod
 {
     public static BaronModeModule Instance = null!;
 
-    public override Type SettingsType => typeof(BaronModeSettings);
-    public BaronModeSettings Settings => (BaronModeSettings)Instance.InternalSettings;
+    public BaronModeSettings Settings => Instance.GetSettings<BaronModeSettings>()!;
 
     public IWiderSetModApi? WiderSetApi { get; private set; }
 
@@ -29,35 +29,24 @@ internal class BaronModeModule : FortModule
         typeof(PlayerCorpseHooks)
     ];
 
-    public BaronModeModule() 
+    public override ModuleSettings? CreateSettings()
+    {
+        return new BaronModeSettings();
+    }
+
+    public BaronModeModule(IModContent content, IModuleContext context, ILogger logger) : base(content, context, logger)
     {
         Instance = this;
-    }
 
-    public override void LoadContent() {}
-
-    public override void Load()
-    {
         foreach (var register in Hookables)
         {
-            register.GetMethod(nameof(IHookable.Load))?.Invoke(null, []);
+            register.GetMethod(nameof(IHookable.Load))?.Invoke(null, [context.Harmony]);
         }
-    }
 
-    public override void Unload()
-    {
-        foreach (var register in Hookables)
-        {
-            register.GetMethod(nameof(IHookable.Unload))?.Invoke(null, []);
-        }
-    }
-
-    public override void Initialize()
-    {
-        WiderSetApi = Interop.GetApi<IWiderSetModApi>("Teuria.WiderSetMod");
+        WiderSetApi = context.Interop.GetApi<IWiderSetModApi>("Teuria.WiderSetMod");
         foreach (var register in Registerables)
         {
-            register.GetMethod(nameof(IRegisterable.Register))?.Invoke(null, [Registry]);
+            register.GetMethod(nameof(IRegisterable.Register))?.Invoke(null, [content, context.Registry]);
         }
     }
 }

@@ -45,7 +45,7 @@ public class PinkSlime : Slime
     public static void Register(IHarmony harmony, IModContent content, IModRegistry registry)
     {
         var pinkSlimeSprite = registry.Subtextures.RegisterTexture(
-            content.Root.GetRelativePath("Atlas/atlas/pinkSlime.png")
+            content.Root.GetRelativePath("Content/Atlas/atlas/pinkSlime.png")
         );
 
         SlimeSprite = registry.Sprites.RegisterSprite<string>(

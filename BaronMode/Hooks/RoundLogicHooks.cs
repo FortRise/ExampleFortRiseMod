@@ -1,4 +1,6 @@
 
+using FortRise;
+using HarmonyLib;
 using Teuria.BaronMode.GameModes;
 using TowerFall;
 
@@ -6,20 +8,22 @@ namespace Teuria.BaronMode.Hooks;
 
 public class RoundLogicHooks : IHookable
 {
-    public static void Load()
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.RoundLogic.FFACheckForAllButOneDead += FFACheckForAllButOneDead_patch;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(RoundLogic), nameof(RoundLogic.FFACheckForAllButOneDead)),
+            new HarmonyMethod(RoundLogic_FFACheckForAllButOneDead_Prefix)
+        );
     }
 
-    public static void Unload()
+    private static bool RoundLogic_FFACheckForAllButOneDead_Prefix(RoundLogic __instance, ref bool __result)
     {
-        On.TowerFall.RoundLogic.FFACheckForAllButOneDead -= FFACheckForAllButOneDead_patch;
-    }
-
-    private static bool FFACheckForAllButOneDead_patch(On.TowerFall.RoundLogic.orig_FFACheckForAllButOneDead orig, RoundLogic self)
-    {
-        if (self is BaronRoundLogic)
+        if (__instance is BaronRoundLogic)
+        {
+            __result = false;
             return false;
-        return orig(self);
+        }
+
+        return true;
     }
 }

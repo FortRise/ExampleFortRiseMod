@@ -1,33 +1,38 @@
+using System.Collections.Generic;
+using System.Reflection.Emit;
 using FortRise;
-using MonoMod.Cil;
+using FortRise.Transpiler;
+using HarmonyLib;
 using TowerFall;
 
 namespace Teuria.AdditionalVariants;
 
 public class NoArrowTinks : IHookable
 {
-    public static void Load()
+    public static void Load(IHarmony harmony)
     {
-        IL.TowerFall.Arrow.Update += Update_ctor;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Arrow), nameof(Arrow.Update)),
+            transpiler: new HarmonyMethod(Arrow_Update_Transpiler)
+        );
     }
 
-    public static void Unload()
+    private static IEnumerable<CodeInstruction> Arrow_Update_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
-        IL.TowerFall.Arrow.Update -= Update_ctor;
-    }
+        var cursor = new ILTranspilerCursor(generator, instructions);
 
-    private static void Update_ctor(ILContext il)
-    {
-        var cursor = new ILCursor(il);
+        int ldlocIndex = AdditionalVariantsModule.Instance.Context.Flags.IsWindows ? 3 : 2;
 
-        int ldlocIndex = RiseCore.IsWindows ? 3 : 2;
+        cursor.GotoNext(
+            MoveType.After,
+            [
+                ILMatch.Ldloc(ldlocIndex),
+                ILMatch.CallOrCallvirt("get_Dangerous")
+            ]
+        );
 
-        if (cursor.TryGotoNext(MoveType.After, 
-            instr => instr.MatchLdloc(ldlocIndex),
-            instr => instr.MatchCallOrCallvirt<Arrow>("get_Dangerous")))
-        {
-            cursor.EmitDelegate((bool isDangerous) => isDangerous && 
-                !Variants.NoArrowTinks.IsActive());
-        }
+        cursor.EmitDelegate((bool isDangerous) => isDangerous && !Variants.NoArrowTinks.IsActive());
+
+        return cursor.Generate();
     }
 }

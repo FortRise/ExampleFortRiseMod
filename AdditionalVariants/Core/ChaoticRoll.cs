@@ -1,20 +1,24 @@
+using FortRise;
+using HarmonyLib;
+using TowerFall;
+
 namespace Teuria.AdditionalVariants;
 
 public class ChaoticRoll : IHookable
 {
-    public static void Load() 
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.RoundLogic.ctor += ctor_patch;
+        harmony.Patch(
+            AccessTools.DeclaredConstructor(
+                typeof(RoundLogic),
+                [typeof(Session), typeof(bool)]
+            ),
+            postfix: new HarmonyMethod(RoundLogic_ctor_Postfix)
+        );
     }
 
-    public static void Unload() 
+    private static void RoundLogic_ctor_Postfix(Session session)
     {
-        On.TowerFall.RoundLogic.ctor -= ctor_patch;
-    }
-
-    private static void ctor_patch(On.TowerFall.RoundLogic.orig_ctor orig, TowerFall.RoundLogic self, TowerFall.Session session, bool canHaveMiasma)
-    {
-        orig(self, session, canHaveMiasma);
         if (Variants.ChaoticRoll.IsActive()) 
         {
             session.MatchSettings.Variants.Randomize();

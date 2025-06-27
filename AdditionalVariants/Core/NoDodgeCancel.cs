@@ -1,76 +1,98 @@
 using System;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
+using System.Collections.Generic;
+using System.Reflection.Emit;
+using FortRise;
+using FortRise.Transpiler;
+using HarmonyLib;
 using TowerFall;
 
 namespace Teuria.AdditionalVariants;
 
 public class NoDodgeCancel : IHookable
 {
-    public static void Load() 
+    public static void Load(IHarmony harmony)
     {
-        IL.TowerFall.Player.DodgingUpdate += DodgingUpdate_patch;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Player), "DodgingUpdate"),
+            transpiler: new HarmonyMethod(Player_DodgingUpdate_Transpiler)
+        );
     }
 
-    public static void Unload() 
+    private static IEnumerable<CodeInstruction> Player_DodgingUpdate_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
-        IL.TowerFall.Player.DodgingUpdate -= DodgingUpdate_patch;
-    }
+        var cursor = new ILTranspilerCursor(generator, instructions);
 
-    private static void DodgingUpdate_patch(ILContext ctx)
-    {
-        var cursor = new ILCursor(ctx);
+        cursor.GotoNext(
+            MoveType.After,
+            [
+                ILMatch.Ldfld("JumpPressed")
+            ]
+        );
 
-        if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdfld<TowerFall.InputState>("JumpPressed"))) 
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate((bool jumpPressed, Player self) =>
         {
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.EmitDelegate<Func<bool, Player, bool>>((jumpPressed, self) => {
-                if (Variants.NoDodgeCancel.IsActive(self.PlayerIndex)) 
-                {
-                    return false;
-                }
-                
-                return jumpPressed;
-            });
-        }
+            if (Variants.NoDodgeCancel.IsActive(self.PlayerIndex))
+            {
+                return false;
+            }
 
-        if (cursor.TryGotoNext(MoveType.After, 
-            instr => instr.MatchLdfld<TowerFall.Player>("jumpBufferCounter"),
-            instr => instr.MatchCall<Monocle.Counter>("op_Implicit"))) 
-        {
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.EmitDelegate<Func<bool, Player, bool>>((dodgePressed, self) => {
-                if (Variants.NoDodgeCancel.IsActive(self.PlayerIndex)) 
-                {
-                    return false;
-                }
-                
-                return dodgePressed;
-            });
-        }
+            return jumpPressed;
+        });
 
-        if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(2.8f)))
-        {
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.EmitDelegate<Func<float, Player, float>>((speed, self) => {
-                var canActive = Variants.NoHypers.IsActive(self.PlayerIndex);
-                if (canActive) 
-                    return 1f;
-                return speed;
-            });
-        }
+        cursor.GotoNext(
+            MoveType.After,
+            [
+                ILMatch.Ldfld("jumpBufferCounter"),
+                ILMatch.Call("op_Implicit")
+            ]
+        );
 
-        if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdfld<TowerFall.InputState>("DodgePressed"))) 
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate((bool dodgePressed, Player self) =>
         {
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.EmitDelegate<Func<bool, Player, bool>>((dodgePressed, self) => {
-                var canActive = Variants.NoDodgeCancel.IsActive(self.PlayerIndex) || 
-                    Variants.NoHypers.IsActive(self.PlayerIndex);
-                if (canActive) 
-                    return false;
-                
-                return dodgePressed;
-            });
-        }
+            if (Variants.NoDodgeCancel.IsActive(self.PlayerIndex))
+            {
+                return false;
+            }
+
+            return dodgePressed;
+        });
+
+        cursor.GotoNext(
+            MoveType.After,
+            [
+                ILMatch.LdcR4(2.8f)
+            ]
+        );
+
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate((float speed, Player self) =>
+        {
+            var canActive = Variants.NoHypers.IsActive(self.PlayerIndex);
+            if (canActive)
+                return 1f;
+            return speed;
+        });
+
+        cursor.GotoNext(
+            MoveType.After,
+            [
+                ILMatch.Ldfld("DodgePressed")
+            ]
+        );
+
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate((bool dodgePressed, Player self) =>
+        {
+            var canActive = Variants.NoDodgeCancel.IsActive(self.PlayerIndex) ||
+                Variants.NoHypers.IsActive(self.PlayerIndex);
+            if (canActive)
+                return false;
+
+            return dodgePressed;
+        });
+
+        return cursor.Generate();
     }
 }

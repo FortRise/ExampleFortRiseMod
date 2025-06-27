@@ -15,11 +15,11 @@ public class ColoredDrillArrowsModule : Mod
     public ColoredDrillArrowsModule(IModContent content, IModuleContext context, ILogger logger) : base(content, context, logger)
     {
         drillArrow = context.Registry.Subtextures.RegisterTexture(
-            content.Root.GetRelativePath("drillArrow.png")
+            content.Root.GetRelativePath("Content/drillArrow.png")
         );
 
         buriedArrow = context.Registry.Subtextures.RegisterTexture(
-            content.Root.GetRelativePath("drillArrowBuried.png")
+            content.Root.GetRelativePath("Content/drillArrowBuried.png")
         );
 
         context.Harmony.Patch(

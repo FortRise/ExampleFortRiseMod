@@ -1,3 +1,5 @@
+using FortRise;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
@@ -7,29 +9,29 @@ namespace Teuria.AdditionalVariants;
 
 public class AtomicArrow : IHookable
 {
-    public static void Load() 
+    public static void Load(IHarmony harmony) 
     {
-        On.TowerFall.Arrow.HitWall += AtomicArrow_HitWall;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Arrow), "HitWall"),
+            postfix: new HarmonyMethod(Arrow_HitWall_Postfix)
+        );
     }
 
-    public static void Unload() 
+    private static void Arrow_HitWall_Postfix(Arrow __instance)
     {
-        On.TowerFall.Arrow.HitWall -= AtomicArrow_HitWall;
-    }
-
-    private static void AtomicArrow_HitWall(On.TowerFall.Arrow.orig_HitWall orig, TowerFall.Arrow self, TowerFall.Platform platform)
-    {
-        if (DynamicData.For(self).Get<bool>("squished"))
-            return;
-        orig(self, platform);
-        if (Variants.AtomicArrow.IsActive(self.PlayerIndex))
+        if (DynamicData.For(__instance).Get<bool>("squished"))
         {
-            if (self is SuperBombArrow) 
+            return;
+        }
+
+        if (Variants.AtomicArrow.IsActive(__instance.PlayerIndex))
+        {
+            if (__instance is SuperBombArrow) 
             {
-                Explode(self, true);
+                Explode(__instance, true);
                 return;
             }
-            Explode(self, false);
+            Explode(__instance, false);
         }
     }
 

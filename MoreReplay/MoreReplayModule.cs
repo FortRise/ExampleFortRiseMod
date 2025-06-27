@@ -1,9 +1,10 @@
 using System;
 using FortRise;
+using Microsoft.Extensions.Logging;
 
 namespace Teuria.MoreReplay;
 
-public sealed class MoreReplayModule : FortModule
+public sealed class MoreReplayModule : Mod
 {
     public static MoreReplayModule Instance = null!;
 
@@ -15,25 +16,13 @@ public sealed class MoreReplayModule : FortModule
         typeof(LevelPatch),
     ];
 
-
-    public MoreReplayModule() 
+    public MoreReplayModule(IModContent content, IModuleContext context, ILogger logger) : base(content, context, logger)
     {
         Instance = this;
-    }
 
-    public override void Load()
-    {
         foreach (var hookable in Hookables)
         {
-            hookable.GetMethod(nameof(IHookable.Load))!.Invoke(null, []);
-        }
-    }
-
-    public override void Unload()
-    {
-        foreach (var hookable in Hookables)
-        {
-            hookable.GetMethod(nameof(IHookable.Unload))!.Invoke(null, []);
+            hookable.GetMethod(nameof(IHookable.Load))!.Invoke(null, [context.Harmony]);
         }
     }
 }

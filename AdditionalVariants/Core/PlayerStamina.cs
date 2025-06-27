@@ -1,4 +1,6 @@
 using System;
+using FortRise;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
@@ -8,54 +10,55 @@ namespace Teuria.AdditionalVariants;
 
 public class PlayerStamina : IHookable
 {
-    public static void Load() 
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.Player.Added += AddStamina;
-        On.TowerFall.Player.HUDRender += HUDRender;
-        On.TowerFall.Player.EnterDodge += DodgeEnter;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Player), nameof(Player.Added)),
+            postfix: new HarmonyMethod(Player_Added_Postfix)
+        );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Player), nameof(Player.HUDRender)),
+            postfix: new HarmonyMethod(Player_HUDRender_Postfix)
+        );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Player), "EnterDodge"),
+            new HarmonyMethod(Player_EnterDodge_Prefix)
+        );
     }
 
-    public static void Unload() 
+    private static void Player_HUDRender_Postfix(Player __instance)
     {
-        On.TowerFall.Player.Added -= AddStamina;
-        On.TowerFall.Player.HUDRender -= HUDRender;
-        On.TowerFall.Player.EnterDodge -= DodgeEnter;
-    }
-
-    private static void HUDRender(On.TowerFall.Player.orig_HUDRender orig, Player self, bool wrapped)
-    {
-        orig(self, wrapped);
-        if (DynamicData.For(self).TryGet<DashStamina>("dashStamina", out var stamina)) 
+        if (DynamicData.For(__instance).TryGet<DashStamina>("dashStamina", out var stamina)) 
         {
             stamina.Render();
         }
     }
 
-    private static void DodgeEnter(On.TowerFall.Player.orig_EnterDodge orig, Player self)
+    private static bool Player_EnterDodge_Prefix(Player __instance)
     {
-        if (DynamicData.For(self).TryGet<DashStamina>("dashStamina", out var stamina)) 
+        if (DynamicData.For(__instance).TryGet<DashStamina>("dashStamina", out var stamina)) 
         {
             if (stamina.UseSmallStamina()) 
             {
-                orig(self);
-                return;
+                return true;
             }
 
-            self.State = Player.PlayerStates.Normal;
-            return;
+            __instance.State = Player.PlayerStates.Normal;
+            return false;
         }
 
-        orig(self);
+        return true;
     }
 
-    private static void AddStamina(On.TowerFall.Player.orig_Added orig, Player self)
+    private static void Player_Added_Postfix(Player __instance)
     {
-        orig(self);
-        if (Variants.DashStamina.IsActive(self.PlayerIndex))
+        if (Variants.DashStamina.IsActive(__instance.PlayerIndex))
         {
             var dashStamina = new DashStamina(true, true);
-            self.Add(dashStamina);
-            DynamicData.For(self).Set("dashStamina", dashStamina);
+            __instance.Add(dashStamina);
+            DynamicData.For(__instance).Set("dashStamina", dashStamina);
         }
     }
 }
@@ -68,7 +71,7 @@ public class DashStamina : Component
     private float alpha;
     public DashStamina(bool active, bool visible) : base(active, visible)
     {
-        staminaImage = TextureRegistry.StaminaBar;
+        staminaImage = TextureRegistry.StaminaBar.Subtexture!;
     }
 
     public bool UseSmallStamina() 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using FortRise;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Monocle;
 using TowerFall;
@@ -10,7 +11,7 @@ namespace Teuria.AdditionalVariants;
 public class InvincibleTechnomage : TechnoMage, IRegisterable
 {
     public static IEnemyEntry Metadata = null!;
-    public static void Register(IModRegistry registry)
+    public static void Register(IModContent content, IModRegistry registry)
     {
         Metadata = registry.Enemies.RegisterEnemy("InvincibleMage", new() 
         {
@@ -41,22 +42,19 @@ public class InvincibleTechnomage : TechnoMage, IRegisterable
 
 public class InvincibleTechnomageVariantSequence : Entity, IHookable
 {
-    public static void Load() 
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.Session.OnLevelLoadFinish += SpawnThisSequence;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Session), nameof(Session.OnLevelLoadFinish)),
+            postfix: new HarmonyMethod(Session_OnLevelLoadFinish_Postfix)
+        );
     }
 
-    public static void Unload() 
+    private static void Session_OnLevelLoadFinish_Postfix(Session __instance)
     {
-        On.TowerFall.Session.OnLevelLoadFinish -= SpawnThisSequence;
-    }
-
-    private static void SpawnThisSequence(On.TowerFall.Session.orig_OnLevelLoadFinish orig, Session self)
-    {
-        orig(self);
-        if (Variants.AnnoyingMage.IsActive() && self.MatchSettings == MainMenu.VersusMatchSettings)
+        if (Variants.AnnoyingMage.IsActive() && __instance.MatchSettings == MainMenu.VersusMatchSettings)
         {
-            self.CurrentLevel.Add(new InvincibleTechnomageVariantSequence());
+            __instance.CurrentLevel.Add(new InvincibleTechnomageVariantSequence());
         }
     }
 

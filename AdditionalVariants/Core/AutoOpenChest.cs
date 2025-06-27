@@ -1,4 +1,5 @@
 using FortRise;
+using HarmonyLib;
 using MonoMod.Utils;
 using TowerFall;
 
@@ -6,22 +7,22 @@ namespace Teuria.AdditionalVariants;
 
 public class AutoOpenChest : IHookable
 {
-    public static void Load()
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.TreasureChest.Added += Added_patch;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(
+                typeof(TreasureChest),
+                nameof(TreasureChest.Added)
+            ),
+            new HarmonyMethod(TreasureChest_Added_Prefix)
+        );
     }
 
-    public static void Unload()
-    {
-        On.TowerFall.TreasureChest.Added -= Added_patch;
-    }
-
-    private static void Added_patch(On.TowerFall.TreasureChest.orig_Added orig, TowerFall.TreasureChest self)
+    private static void TreasureChest_Added_Prefix(TreasureChest __instance)
     {
         if (Variants.AutoOpenChest.IsActive())
         {
-            DynamicData.For(self).Set("type", TreasureChest.Types.AutoOpen);
+            DynamicData.For(__instance).Set("type", TreasureChest.Types.AutoOpen);
         }
-        orig(self);
     }
 }

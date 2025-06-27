@@ -8,9 +8,13 @@ namespace Teuria.BaronMode.Pickups;
 
 public class GemLives : Pickup, IRegisterable
 {
+    public static ISubtextureEntry GemPickupTexture { get; private set; } = null!;
     public static IPickupEntry GemLivesMeta = null!;
-    public static void Register(IModRegistry registry)
+    public static void Register(IModContent content, IModRegistry registry)
     {
+        GemPickupTexture = registry.Subtextures.RegisterTexture(
+            content.Root.GetRelativePath("Content/pickups/gemCoin.png")
+        );
         GemLivesMeta = registry.Pickups.RegisterPickups("GemLives", new() 
         {
             Name = "Gem Lives",
@@ -26,7 +30,7 @@ public class GemLives : Pickup, IRegisterable
     {
         Collider = new Hitbox(16f, 16f, -8f, -8f);
         Tag(GameTags.PlayerCollectible);
-        sprite = new Sprite<int>(TFGame.Atlas["Teuria.BaronMode/pickups/gemCoin"], 12, 10);
+        sprite = new Sprite<int>(GemPickupTexture.Subtexture, 12, 10);
         sprite.Add(0, 0.1f, [0, 0, 0, 1, 2, 3, 4, 5, 6, 7]);
     }
 
@@ -57,7 +61,7 @@ public class GemLives : Pickup, IRegisterable
     {
         if (playerIndex == -1)
         {
-            sprite = new Sprite<int>(TFGame.Atlas["Teuria.BaronMode/pickups/gemCoin"], 12, 10);
+            sprite = new Sprite<int>(GemPickupTexture.Subtexture, 12, 10);
             sprite.Add(0, 0.1f, [0, 0, 0, 1, 2, 3, 4, 5, 6, 7]);
         }
         else 

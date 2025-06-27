@@ -1,23 +1,27 @@
+using TowerFall;
+using FortRise;
+using HarmonyLib;
+
 namespace Teuria.AdditionalVariants;
 
 public class BottomlessQuiver : IHookable
 {
-    public static void Load()
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.Player.Added += Added_patch;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(
+                typeof(Player),
+                nameof(Player.Added)
+            ),
+            postfix: new HarmonyMethod(Player_Added_Postfix)
+        );
     }
 
-    public static void Unload()
+    private static void Player_Added_Postfix(TowerFall.Player __instance)
     {
-        On.TowerFall.Player.Added -= Added_patch;
-    }
-
-    private static void Added_patch(On.TowerFall.Player.orig_Added orig, TowerFall.Player self)
-    {
-        orig(self);
-        if (Variants.BottomlessQuiver.IsActive(self.PlayerIndex))
+        if (Variants.BottomlessQuiver.IsActive(__instance.PlayerIndex))
         {
-            self.Arrows.SetMaxArrows(int.MaxValue);
+            __instance.Arrows.SetMaxArrows(int.MaxValue);
         }
     }
 }

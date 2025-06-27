@@ -1,3 +1,5 @@
+using FortRise;
+using HarmonyLib;
 using MonoMod.Utils;
 using TowerFall;
 
@@ -5,24 +7,21 @@ namespace Teuria.MoreReplay;
 
 public class QuestGameOverPatch : IHookable
 {
-    public static void Load() 
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.QuestGameOver.ctor += ctor_patch;
+        harmony.Patch(
+            AccessTools.DeclaredConstructor(typeof(QuestGameOver), [typeof(QuestRoundLogic)]),
+            postfix: new HarmonyMethod(QuestGameOver_ctor_Postfix)
+        );
     }
 
-    public static void Unload() 
+    private static void QuestGameOver_ctor_Postfix(QuestGameOver __instance)
     {
-        On.TowerFall.QuestGameOver.ctor -= ctor_patch;
-    }
-
-    private static void ctor_patch(On.TowerFall.QuestGameOver.orig_ctor orig, QuestGameOver self, QuestRoundLogic quest)
-    {
-        orig(self, quest);
-        var dynSelf = DynamicData.For(self);
+        var dynSelf = DynamicData.For(__instance);
         dynSelf.Set("replaySaved", false);
         dynSelf.Set("saving", false);
 
         var replayMenuComponent = new ReplayMenuComponent();
-        self.Add(replayMenuComponent);
+        __instance.Add(replayMenuComponent);
     }
 }

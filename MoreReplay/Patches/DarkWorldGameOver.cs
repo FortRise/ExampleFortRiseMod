@@ -1,27 +1,27 @@
+using FortRise;
+using HarmonyLib;
 using MonoMod.Utils;
+using TowerFall;
 
 namespace Teuria.MoreReplay;
 
 public class DarkWorldGameOverPatch : IHookable 
 {
-    public static void Load() 
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.DarkWorldGameOver.ctor += ctor_patch;
+        harmony.Patch(
+            AccessTools.DeclaredConstructor(typeof(DarkWorldGameOver), [typeof(DarkWorldRoundLogic)]),
+            postfix: new HarmonyMethod(DarkWorldGameOver_ctor_Postfix)
+        );
     }
 
-    public static void Unload() 
+    private static void DarkWorldGameOver_ctor_Postfix(TowerFall.DarkWorldGameOver __instance)
     {
-        On.TowerFall.DarkWorldGameOver.ctor -= ctor_patch;
-    }
-
-    private static void ctor_patch(On.TowerFall.DarkWorldGameOver.orig_ctor orig, TowerFall.DarkWorldGameOver self, TowerFall.DarkWorldRoundLogic darkWorld)
-    {
-        orig(self, darkWorld);
-        var dynSelf = DynamicData.For(self);
+        var dynSelf = DynamicData.For(__instance);
         dynSelf.Set("replaySaved", false);
         dynSelf.Set("saving", false);
 
         var replayMenuComponent = new ReplayMenuComponent();
-        self.Add(replayMenuComponent);
+        __instance.Add(replayMenuComponent);
     }
 }

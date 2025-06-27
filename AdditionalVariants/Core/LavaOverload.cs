@@ -1,41 +1,49 @@
 using System;
 using FortRise;
+using HarmonyLib;
 using Monocle;
 using MonoMod.Utils;
 using TowerFall;
 
 namespace Teuria.AdditionalVariants;
 
+
 public class LavaOverload : IHookable
 {
-    private static Action<LavaControl> base_Added = null!;
-
-    public static void Load()
+    public static void Load(IHarmony harmony)
     {
-        base_Added = CallHelper.CallBaseGen<Entity, LavaControl>("Added");
-        On.TowerFall.LavaControl.Added += LavaOverloadVariant;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(LavaControl), nameof(LavaControl.Added)),
+            new HarmonyMethod(LavaControl_Added_Prefix)
+        );
+
+        Harmony.ReversePatch(
+            AccessTools.DeclaredMethod(typeof(Entity), nameof(Entity.Added)),
+            new HarmonyMethod(Entity_Added_ReversePatch)
+        );
     }
 
-    public static void Unload()
+    private static void Entity_Added_ReversePatch(Entity original)
     {
-        On.TowerFall.LavaControl.Added -= LavaOverloadVariant;
+        throw new NotImplementedException();
     }
 
-    private static void LavaOverloadVariant(On.TowerFall.LavaControl.orig_Added orig, TowerFall.LavaControl self)
+    private static bool LavaControl_Added_Prefix(TowerFall.LavaControl __instance)
     {
         if (Variants.LavaOverload.IsActive())
         {
-            base_Added(self);
+            Entity_Added_ReversePatch(__instance);
             Sounds.sfx_lavaLoop.SetVolume(0f);
             Sounds.sfx_lavaLoop.Play(160f, 1f);
             var lavas = new Lava[4];
-            self.Scene.Add(lavas[0] = new Lava(self, Lava.LavaSide.Left));
-            self.Scene.Add(lavas[1] = new Lava(self, Lava.LavaSide.Right));
-            self.Scene.Add(lavas[2] = new Lava(self, Lava.LavaSide.Top));
-            self.Scene.Add(lavas[3] = new Lava(self, Lava.LavaSide.Bottom));
-            DynamicData.For(self).Set("lavas", lavas);
-            return;
+            __instance.Scene.Add(lavas[0] = new Lava(__instance, Lava.LavaSide.Left));
+            __instance.Scene.Add(lavas[1] = new Lava(__instance, Lava.LavaSide.Right));
+            __instance.Scene.Add(lavas[2] = new Lava(__instance, Lava.LavaSide.Top));
+            __instance.Scene.Add(lavas[3] = new Lava(__instance, Lava.LavaSide.Bottom));
+            DynamicData.For(__instance).Set("lavas", lavas);
+            return false;
         }
-        orig(self);
+
+        return true;
     }
 }

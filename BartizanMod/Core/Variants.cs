@@ -22,7 +22,7 @@ public class MyPlayer
         {
             Title = "NO HEADBOUNCE",
             Icon = registry.Subtextures.RegisterTexture(
-                content.Root.GetRelativePath("variants/noHeadBounce.png")
+                content.Root.GetRelativePath("Content/variants/noHeadBounce.png")
             )
         });
 
@@ -30,7 +30,7 @@ public class MyPlayer
         {
             Title = "NO DODGE COOLDOWNS",
             Icon = registry.Subtextures.RegisterTexture(
-                content.Root.GetRelativePath("variants/noDodgeCooldowns.png")
+                content.Root.GetRelativePath("Content/variants/noDodgeCooldowns.png")
             ),
             Links = [showDodgeCooldown]
         });
@@ -39,7 +39,7 @@ public class MyPlayer
         {
             Title = "NO LEDGE GRAB",
             Icon = registry.Subtextures.RegisterTexture(
-                content.Root.GetRelativePath("variants/noLedgeGrab.png")
+                content.Root.GetRelativePath("Content/variants/noLedgeGrab.png")
             )
         });
 
@@ -47,7 +47,7 @@ public class MyPlayer
         {
             Title = "INFINITE ARROWS",
             Icon = registry.Subtextures.RegisterTexture(
-                content.Root.GetRelativePath("variants/infiniteArrows.png")
+                content.Root.GetRelativePath("Content/variants/infiniteArrows.png")
             ),
         });
 
@@ -133,7 +133,7 @@ public class MyArrow
         {
             Title = "AWFULLY FAST ARROWS",
             Icon = registry.Subtextures.RegisterTexture(
-                content.Root.GetRelativePath("variants/awfullyFastArrows.png")
+                content.Root.GetRelativePath("Content/variants/awfullyFastArrows.png")
             )
         });
 
@@ -141,7 +141,7 @@ public class MyArrow
         {
             Title = "AWFULLY SLOW ARROWS",
             Icon = registry.Subtextures.RegisterTexture(
-                content.Root.GetRelativePath("variants/awfullySlowArrows.png")
+                content.Root.GetRelativePath("Content/variants/awfullySlowArrows.png")
             ),
             Links = [AwfullyFastArrows]
         });

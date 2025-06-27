@@ -1,4 +1,6 @@
 using System.Xml;
+using FortRise;
+using HarmonyLib;
 using MonoMod.Utils;
 using TowerFall;
 
@@ -6,23 +8,20 @@ namespace Teuria.MoreReplay;
 
 public class LevelPatch : IHookable
 {
-    public static void Load() 
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.Level.ctor += ctor_patch;
+        harmony.Patch(
+            AccessTools.DeclaredConstructor(typeof(Level), [typeof(Session), typeof(XmlElement)]),
+            postfix: new HarmonyMethod(Level_ctor_Postfix)
+        );
     }
 
-    public static void Unload() 
+    private static void Level_ctor_Postfix(TowerFall.Level __instance, TowerFall.Session session)
     {
-        On.TowerFall.Level.ctor -= ctor_patch;
-    }
-
-    private static void ctor_patch(On.TowerFall.Level.orig_ctor orig, TowerFall.Level self, TowerFall.Session session, XmlElement xml)
-    {
-        orig(self, session, xml);
-        var dynSelf = DynamicData.For(self);
+        var dynSelf = DynamicData.For(__instance);
         if (session.MatchSettings.SoloMode && SaveData.Instance.Options.ReplayMode != Options.ReplayModes.Off)
         {
-            dynSelf.Invoke("set_ReplayRecorder", new ReplayRecorder(self));
+            dynSelf.Invoke("set_ReplayRecorder", new ReplayRecorder(__instance));
         }
     }
 }

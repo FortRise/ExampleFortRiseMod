@@ -28,7 +28,7 @@ public class Variants : IRegisterable
     public static IVariantEntry NoExplosionDamage { get; internal set; } = null!;
 
 
-    public static void Register(IModRegistry registry)
+    public static void Register(IModContent content, IModRegistry registry)
     {
         var smallQuivers = registry.Variants.GetVariant("SmallQuivers")!;
         var noQuivers = registry.Variants.GetVariant("NoQuivers")!;

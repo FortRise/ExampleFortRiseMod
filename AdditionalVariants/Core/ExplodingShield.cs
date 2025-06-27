@@ -1,36 +1,31 @@
-using System;
-using MonoMod.RuntimeDetour;
+using FortRise;
+using HarmonyLib;
 using TowerFall;
 
 namespace Teuria.AdditionalVariants;
 
 public class ExplodingShield : IHookable
 {
-    private static Hook Player_set_HasShield = null!;
-    public static void Load()
+    public static void Load(IHarmony harmony)
     {
-        Player_set_HasShield = new Hook(
-            typeof(Player).GetProperty("HasShield")!.GetSetMethod()!,
-            set_HasShield_patch
+        harmony.Patch(
+            AccessTools.DeclaredPropertySetter(
+                typeof(Player),
+                nameof(Player.HasShield)
+            ),
+            new HarmonyMethod(Player_set_HasShield_Prefix)
         );
     }
 
-    public static void Unload()
+    private static void Player_set_HasShield_Prefix(Player __instance, bool value)
     {
-        Player_set_HasShield.Dispose();
-    }
-
-    private static void set_HasShield_patch(Action<Player, bool> orig, Player self, bool value)
-    {
-        if (Variants.ExplodingShield.IsActive(self.PlayerIndex))
+        if (Variants.ExplodingShield.IsActive(__instance.PlayerIndex))
         {
             if (!value)
             {
-                Explosion.Spawn(self.Level, self.Position, self.PlayerIndex, false, false, false);
-                Sounds.pu_bombArrowExplode.Play(self.X, 1f);
+                Explosion.Spawn(__instance.Level, __instance.Position, __instance.PlayerIndex, false, false, false);
+                Sounds.pu_bombArrowExplode.Play(__instance.X, 1f);
             }
         }
-
-        orig(self, value);
     }
 }

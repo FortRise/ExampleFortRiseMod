@@ -1,33 +1,23 @@
-﻿using System;
-using FortRise;
+﻿using FortRise;
+using Microsoft.Extensions.Logging;
 
 namespace MusicRestart;
 
-public sealed class MusicRestartModule : FortModule
+public sealed class MusicRestartModule : Mod
 {
     public static MusicRestartModule Instance = null!;
 
-    public override Type SettingsType => typeof(MusicRestartSettings);
-    public static MusicRestartSettings Settings => (MusicRestartSettings)Instance.InternalSettings;
+    public static MusicRestartSettings Settings => Instance.GetSettings<MusicRestartSettings>()!;
 
 
-    public MusicRestartModule() 
+    public MusicRestartModule(IModContent content, IModuleContext context, ILogger logger) : base(content, context, logger)
     {
         Instance = this;
+        PauseMenuPatch.Load(context.Harmony);
     }
 
-    public override void Load()
+    public override ModuleSettings? CreateSettings()
     {
-        PauseMenuPatch.Load();
+        return new MusicRestartSettings();
     }
-
-    public override void Unload()
-    {
-        PauseMenuPatch.Unload();
-    }
-}
-
-public sealed class MusicRestartSettings : ModuleSettings 
-{
-    public bool Active = true;
 }

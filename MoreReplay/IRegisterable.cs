@@ -5,6 +5,5 @@ namespace Teuria.MoreReplay;
 
 internal interface IHookable 
 {
-    abstract static void Load();
-    abstract static void Unload();
+    abstract static void Load(IHarmony harmony);
 }

@@ -8,7 +8,7 @@ public class BartizanModSettings : ModuleSettings
 
     public override void Create(ISettingsCreate settings)
     {
-        settings.CreateOptions("RespawnMode", "Instant", [
+        settings.CreateOptions("RespawnMode", RespawnMode, [
             "Instant", "Delayed"
         ], (x) => RespawnMode = x.Item1);
     }

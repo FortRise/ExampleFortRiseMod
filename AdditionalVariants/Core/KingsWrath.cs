@@ -1,3 +1,5 @@
+using FortRise;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using TowerFall;
 
@@ -5,30 +7,29 @@ namespace Teuria.AdditionalVariants;
 
 public class KingsWrath : IHookable
 {
-    public static void Load()
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.Crown.Update += Update_ctor;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Crown), nameof(Crown.Update)),
+            new HarmonyMethod(Crown_Update_Prefix)
+        );
     }
 
-    public static void Unload()
+    private static bool Crown_Update_Prefix(TowerFall.Crown __instance)
     {
-        On.TowerFall.Crown.Update -= Update_ctor;
-    }
-
-    private static void Update_ctor(On.TowerFall.Crown.orig_Update orig, TowerFall.Crown self)
-    {
-        if (self.OwnerIndex >= 0 && Variants.KingsWrath.IsActive(self.OwnerIndex))
+        if (__instance.OwnerIndex >= 0 && Variants.KingsWrath.IsActive(__instance.OwnerIndex))
         {
-            if (self.CheckBelow())
+            if (__instance.CheckBelow())
             {
-                self.RemoveSelf();
-                var chalicePad = new ChalicePad(self.Position - new Vector2(20, -34f), 40);
+                __instance.RemoveSelf();
+                var chalicePad = new ChalicePad(__instance.Position - new Vector2(20, -34f), 40);
                 var chalice = new Chalice(chalicePad);
-                var wrathGhost = new ChaliceGhost(self.OwnerIndex, chalice);
-                self.Level.Add(wrathGhost);
-                return;
+                var wrathGhost = new ChaliceGhost(__instance.OwnerIndex, chalice);
+                __instance.Level.Add(wrathGhost);
+                return false;
             }
         }
-        orig(self);
+
+        return true;
     }
 }

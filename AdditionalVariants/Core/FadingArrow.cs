@@ -1,64 +1,75 @@
 using System;
-using Microsoft.Xna.Framework;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
+using System.Collections.Generic;
+using System.Reflection.Emit;
+using FortRise;
+using FortRise.Transpiler;
+using HarmonyLib;
 using TowerFall;
 
 namespace Teuria.AdditionalVariants;
 
 public class FadingArrow : IHookable
 {
-    public static void Load() 
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.Arrow.Update += Update_patch;
-        On.TowerFall.Arrow.Create += Create_patch;
-        IL.TowerFall.Arrow.Update += InlineUpdate_patch;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(
+                typeof(Arrow), nameof(Arrow.Update)
+            ),
+            postfix: new HarmonyMethod(Arrow_Update_Postfix),
+            transpiler: new HarmonyMethod(Arrow_Update_Transpiler)
+        );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(
+                typeof(Arrow), nameof(Arrow.Create)
+            ),
+            postfix: new HarmonyMethod(Arrow_Create_Postfix)
+        );
     }
 
-    public static void Unload() 
+    private static void Arrow_Create_Postfix(in Arrow __result)
     {
-        On.TowerFall.Arrow.Update -= Update_patch;
-        On.TowerFall.Arrow.Create -= Create_patch;
-        IL.TowerFall.Arrow.Update -= InlineUpdate_patch;
+        __result.StopFlashing();
     }
 
-    private static Arrow Create_patch(On.TowerFall.Arrow.orig_Create orig, ArrowTypes type, LevelEntity owner, Vector2 position, float direction, int? overrideCharacterIndex, int? overridePlayerIndex)
+    private static IEnumerable<CodeInstruction> Arrow_Update_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
-        var arrow = orig(type, owner, position, direction, overrideCharacterIndex, overridePlayerIndex);
-        arrow.StopFlashing();
-        return arrow;
-    }
+        var cursor = new ILTranspilerCursor(generator, instructions);
 
-    private static void InlineUpdate_patch(ILContext ctx)
-    {
-        var cursor = new ILCursor(ctx);
+        cursor.GotoNext(
+            MoveType.After,
+            [
+                ILMatch.Call("get_Flashing")
+            ]
+        );
 
-        if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCall<TowerFall.LevelEntity>("get_Flashing"))) 
+        cursor.Emit(new CodeInstruction(OpCodes.Ldarg_0));
+        cursor.EmitDelegate((bool flashing, Arrow self) =>
         {
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.EmitDelegate<Func<bool, Arrow, bool>>((flashing, self) => {
-                if (Variants.FadingArrow.IsActive(self.PlayerIndex))
-                {
-                    return false;
-                }
-                return flashing;
-            });
-        }
+            if (Variants.FadingArrow.IsActive(self.PlayerIndex))
+            {
+                return false;
+            }
+            return flashing;
+        });
+
+        return cursor.Generate();
     }
 
-    private static void Update_patch(On.TowerFall.Arrow.orig_Update orig, TowerFall.Arrow self)
+    private static void Arrow_Update_Postfix(Arrow __instance)
     {
-        orig(self);
-        if (self is LaserArrow || !Variants.FadingArrow.IsActive(self.PlayerIndex)) 
+        if (__instance is LaserArrow || !Variants.FadingArrow.IsActive(__instance.PlayerIndex))
         {
             return;
         }
-        
-        if (!self.Flashing && self.State >= TowerFall.Arrow.ArrowStates.Stuck) 
+
+        if (!__instance.Flashing && __instance.State >= TowerFall.Arrow.ArrowStates.Stuck)
         {
-            self.Flash(60, () => {
-                self.StopFlashing();
-                self.RemoveSelf();
+            __instance.Flash(60, () =>
+            {
+                __instance.StopFlashing();
+                __instance.RemoveSelf();
             });
         }
     }

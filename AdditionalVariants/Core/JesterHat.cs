@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using FortRise;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
@@ -8,30 +10,30 @@ namespace Teuria.AdditionalVariants;
 
 public class JesterHat : IHookable
 {
-    public static void Load() 
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.Player.LeaveDodge += JesterHatVariant;
-        On.TowerFall.Player.Added += JesterHatAdded;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Player), nameof(Player.Added)),
+            postfix: new HarmonyMethod(Player_Added_Postfix)
+        );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Player), "LeaveDodge"),
+            postfix: new HarmonyMethod(Player_LeaveDodge_Prefix)
+        );
     }
 
-    public static void Unload() 
+    private static void Player_Added_Postfix(Player __instance)
     {
-        On.TowerFall.Player.LeaveDodge -= JesterHatVariant;
-        On.TowerFall.Player.Added -= JesterHatAdded;
-    }
-
-    private static void JesterHatAdded(On.TowerFall.Player.orig_Added orig, Player self)
-    {
-        orig(self);
-        if (Variants.JestersHat.IsActive(self.PlayerIndex))
+        if (Variants.JestersHat.IsActive(__instance.PlayerIndex))
         {
             var warpPoints = new List<Vector2>();
-            var playerSpawn = self.Level.GetXMLPositions("PlayerSpawn");
-            var teamSpawn = self.Level.GetXMLPositions("TeamSpawn");
-            var teamSpawnA = self.Level.GetXMLPositions("TeamSpawnA");
-            var teamSpawnB = self.Level.GetXMLPositions("TeamSpawnB");
-            var spawner = self.Level.GetXMLPositions("Spawner");
-            var treasureChest = self.Level.GetXMLPositions("TreasureChest");
+            var playerSpawn = __instance.Level.GetXMLPositions("PlayerSpawn");
+            var teamSpawn = __instance.Level.GetXMLPositions("TeamSpawn");
+            var teamSpawnA = __instance.Level.GetXMLPositions("TeamSpawnA");
+            var teamSpawnB = __instance.Level.GetXMLPositions("TeamSpawnB");
+            var spawner = __instance.Level.GetXMLPositions("Spawner");
+            var treasureChest = __instance.Level.GetXMLPositions("TreasureChest");
             warpPoints.AddRange(playerSpawn);
             warpPoints.AddRange(teamSpawn);
             warpPoints.AddRange(teamSpawnA);
@@ -40,41 +42,40 @@ public class JesterHat : IHookable
             warpPoints.AddRange(treasureChest);
             foreach (var hook in JesterHatManager.Instance.Hooks)
             {
-                hook.ModifyWarpPoints(new ApiImplementation.JesterHatImplementation.ModifyWarpPointsArgs(self, warpPoints));
+                hook.ModifyWarpPoints(new ApiImplementation.JesterHatImplementation.ModifyWarpPointsArgs(__instance, warpPoints));
             }
-            DynamicData.For(self).Set("warpPoints", warpPoints);
-            DynamicData.For(self).Set("lastWarpPoint", new Vector2(0, 0));
+            DynamicData.For(__instance).Set("warpPoints", warpPoints);
+            DynamicData.For(__instance).Set("lastWarpPoint", new Vector2(0, 0));
         }
     }
 
-    private static void JesterHatVariant(On.TowerFall.Player.orig_LeaveDodge orig, Player self)
+    private static void Player_LeaveDodge_Prefix(Player __instance)
     {
-        var dynSelf = DynamicData.For(self);
+        var dynSelf = DynamicData.For(__instance);
         if (dynSelf.TryGet<List<Vector2>>("warpPoints", out var warpPoints)) 
         {
-            DoExplodeEffect(self);
-            Sounds.sfx_cyanWarp.Play(self.X, 1f);
+            DoExplodeEffect(__instance);
+            Sounds.sfx_cyanWarp.Play(__instance.X, 1f);
             var lightFade = Cache.Create<LightFade>();
-            lightFade.Init(self, null);
-            self.Level.Add(lightFade);
-            warpPoints.Sort((x, y) => WarpSorter(self, x, y));
+            lightFade.Init(__instance, null);
+            __instance.Level.Add(lightFade);
+            warpPoints.Sort((x, y) => WarpSorter(__instance, x, y));
             var warp = warpPoints[1];
             var lastWarpPoint = dynSelf.Get<Vector2>("lastWarpPoint");
             if (warp == lastWarpPoint) 
             {
                 warp = warpPoints[0];
             }
-            self.Position = warp;
-            self.Level.Particles.Emit(Particles.PlayerDust[self.CharacterIndex], 12, self.Position, new Vector2(5f, 8f));
+            __instance.Position = warp;
+            __instance.Level.Particles.Emit(Particles.PlayerDust[__instance.CharacterIndex], 12, __instance.Position, new Vector2(5f, 8f));
 
             foreach (var hook in JesterHatManager.Instance.Hooks)
             {
-                hook.AfterTeleport(new ApiImplementation.JesterHatImplementation.AfterTeleportArgs(self, warp));
+                hook.AfterTeleport(new ApiImplementation.JesterHatImplementation.AfterTeleportArgs(__instance, warp));
             }
 
             dynSelf.Set("lastWarpPoint", warp);
         }
-        orig(self);
     }
 
     private static int WarpSorter(Player player, Vector2 a, Vector2 b) 

@@ -1,4 +1,6 @@
 
+using FortRise;
+using HarmonyLib;
 using Teuria.BaronMode.GameModes;
 using TowerFall;
 
@@ -6,65 +8,76 @@ namespace Teuria.BaronMode.Hooks;
 
 public class SessionHooks : IHookable
 {
-    public static void Load()
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.Session.GetWinner += GetWinner_patch;
-        On.TowerFall.Session.ShouldSpawn += ShouldSpawn_patch;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Session), nameof(Session.GetWinner)),
+            new HarmonyMethod(Session_GetWinner_Prefix)
+        );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Session), nameof(Session.ShouldSpawn)),
+            new HarmonyMethod(Session_ShouldSpawn_Prefix)
+        );
     }
 
-    public static void Unload()
+    private static bool Session_ShouldSpawn_Prefix(Session __instance, int playerIndex, ref bool __result)
     {
-        On.TowerFall.Session.GetWinner -= GetWinner_patch;
-        On.TowerFall.Session.ShouldSpawn -= ShouldSpawn_patch;
-    }
-
-
-    private static bool ShouldSpawn_patch(On.TowerFall.Session.orig_ShouldSpawn orig, Session self, int playerIndex)
-    {
-        if (self.RoundLogic is BaronRoundLogic logic) 
+        if (__instance.RoundLogic is BaronRoundLogic logic)
         {
-            if (logic.TotalLives[playerIndex] > -1) 
+            if (logic.TotalLives[playerIndex] > -1)
             {
-                return true;
+                __result = true;
+                return false;
             }
+
+            __result = false;
             return false;
         }
-        return orig(self, playerIndex);
+
+        return true;
     }
 
-    private static int GetWinner_patch(On.TowerFall.Session.orig_GetWinner orig, Session self)
+    private static bool Session_GetWinner_Prefix(Session __instance, ref int __result)
     {
-        if (self.RoundLogic is BaronRoundLogic logic) 
+        if (__instance.RoundLogic is BaronRoundLogic logic)
         {
             int alive = 0;
             int lastAlive = 0;
-            for (int i = 0; i < logic.TotalLives.Length; i++) 
+            for (int i = 0; i < logic.TotalLives.Length; i++)
             {
-                if (logic.TotalLives[i] <= -1) 
+                if (logic.TotalLives[i] <= -1)
+                {
                     continue;
+                }
+
                 alive++;
                 lastAlive = i;
             }
-            if (alive == 1) 
+            if (alive == 1)
             {
-                return lastAlive;
+                __result = lastAlive;
+                return false;
             }
-            if (alive == 0) 
+            if (alive == 0)
             {
-                for (int i = 0; i < logic.TotalLives.Length; i++) 
+                for (int i = 0; i < logic.TotalLives.Length; i++)
                 {
-                    foreach (Monocle.Entity entity in self.CurrentLevel[Monocle.GameTags.Player])
+                    foreach (Monocle.Entity entity in __instance.CurrentLevel[Monocle.GameTags.Player])
                     {
                         Player player2 = (Player)entity;
                         if (!player2.Dead)
                         {
-                            return player2.PlayerIndex;
+                            __result = player2.PlayerIndex;
+                            return false;
                         }
                     }
                 }
             }
-            return -1;
+            __result = -1;
+            return false;
         }
-        return orig(self);
+
+        return true;
     }
 }

@@ -1,3 +1,5 @@
+using FortRise;
+using HarmonyLib;
 using MonoMod.Utils;
 using TowerFall;
 
@@ -5,32 +7,22 @@ namespace Teuria.AdditionalVariants;
 
 public class DrillingArrow : IHookable
 {
-    public static void Load()
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.Arrow.OnCollideV += OnCollidedV;
-        On.TowerFall.Arrow.OnCollideH += OnCollidedH;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Arrow), "OnCollideV"),
+            new HarmonyMethod(Arrow_OnCollideVH_Prefix)
+        );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Arrow), "OnCollideH"),
+            new HarmonyMethod(Arrow_OnCollideVH_Prefix)
+        );
     }
 
-    public static void Unload()
+    private static bool Arrow_OnCollideVH_Prefix(Arrow __instance, Platform platform)
     {
-        On.TowerFall.Arrow.OnCollideV -= OnCollidedV;
-        On.TowerFall.Arrow.OnCollideH -= OnCollidedH;
-    }
-
-    private static void OnCollidedH(On.TowerFall.Arrow.orig_OnCollideH orig, Arrow self, TowerFall.Platform platform)
-    {
-        if (!CheckDrilled(self, platform))
-        {
-            orig(self, platform);
-        }
-    }
-
-    private static void OnCollidedV(On.TowerFall.Arrow.orig_OnCollideV orig, Arrow self, TowerFall.Platform platform)
-    {
-        if (!CheckDrilled(self, platform))
-        {
-            orig(self, platform);
-        }
+        return !CheckDrilled(__instance, platform);
     }
 
     private static bool CheckDrilled(Arrow self, TowerFall.Platform platform) 

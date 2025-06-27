@@ -1,3 +1,5 @@
+using FortRise;
+using HarmonyLib;
 using Teuria.BaronMode.GameModes;
 using TowerFall;
 
@@ -5,23 +7,23 @@ namespace Teuria.BaronMode.Hooks;
 
 public class PlayerCorpseHooks : IHookable
 {
-    public static void Load()
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.PlayerCorpse.CanDoPrismHit += CanDoPrismHit_patch;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(PlayerCorpse), "CanDoPrismHit"),
+            new HarmonyMethod(PlayerCorpse_CanDoPrismHit_Prefix)
+        );
     }
 
-    public static void Unload()
-    {
-        On.TowerFall.PlayerCorpse.CanDoPrismHit -= CanDoPrismHit_patch;
-    }
-
-    private static bool CanDoPrismHit_patch(On.TowerFall.PlayerCorpse.orig_CanDoPrismHit orig, PlayerCorpse self, Arrow arrow)
+    private static bool PlayerCorpse_CanDoPrismHit_Prefix(Arrow arrow, ref bool __result)
     {
         // Do not remove the corpse as it prevents it from respawning
-        if (arrow.Level.Session.RoundLogic is BaronRoundLogic) 
+        if (arrow.Level.Session.RoundLogic is BaronRoundLogic)
         {
+            __result = false;
             return false;
         }
-        return orig(self, arrow);
+
+        return true;
     }
 }

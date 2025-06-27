@@ -25,7 +25,7 @@ public class Respawn : IVersusGameMode
     public static void Register(IModContent content, IModRegistry registry)
     {
         RespawnIcon = registry.Subtextures.RegisterTexture(
-            content.Root.GetRelativePath("gamemodes/respawn.png")
+            content.Root.GetRelativePath("Content/gamemodes/respawn.png")
         );
         RespawnEntry = registry.GameModes.RegisterVersusGameMode(new Respawn());
     }
@@ -65,7 +65,7 @@ public class Crawl : IVersusGameMode
     public static void Register(IModContent content, IModRegistry registry)
     {
         CrawlIcon = registry.Subtextures.RegisterTexture(
-            content.Root.GetRelativePath("gamemodes/crawl.png")
+            content.Root.GetRelativePath("Content/gamemodes/crawl.png")
         );
         CrawlEntry = registry.GameModes.RegisterVersusGameMode(new Crawl());
     }

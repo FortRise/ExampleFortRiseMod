@@ -1,103 +1,136 @@
-using System;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
+using System.Collections.Generic;
+using System.Reflection.Emit;
+using FortRise;
+using FortRise.Transpiler;
+using HarmonyLib;
 using TowerFall;
 
 namespace Teuria.AdditionalVariants;
 
 public class UnfairAutobalance : IHookable
 {
-    public static void Load()
+    public static void Load(IHarmony harmony)
     {
-        IL.TowerFall.Session.GetSpawnArrows += GetSpawnArrows_patch;
-        IL.TowerFall.Session.GetSpawnShield += GetSpawnShield_patch;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Session), nameof(Session.GetSpawnShield)),
+            transpiler: new HarmonyMethod(Session_GetSpawnShield_Transpiler)
+        );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Session), "GetSpawnArrows"),
+            transpiler: new HarmonyMethod(Session_GetSpawnArrows_Transpiler)
+        );
     }
 
-    public static void Unload()
+    private static IEnumerable<CodeInstruction> Session_GetSpawnArrows_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
-        IL.TowerFall.Session.GetSpawnArrows -= GetSpawnArrows_patch;
-        IL.TowerFall.Session.GetSpawnShield -= GetSpawnShield_patch;
+        var cursor = new ILTranspilerCursor(generator, instructions);
+
+        cursor.GotoNext(
+            MoveType.After,
+            [
+                ILMatch.LdcI4(6)
+            ]
+        );
+
+        cursor.Emit(new CodeInstruction(OpCodes.Ldarg_0));
+        cursor.EmitDelegate((int arrows, Session session) =>
+        {
+            if (Variants.UnfairAutobalance.IsActive() && HasOnePlayerCrown(session))
+            {
+                return 4;
+            }
+
+            return arrows;
+        });
+
+        cursor.GotoNext(
+            MoveType.After,
+            [
+                ILMatch.LdcI4(4)
+            ]
+        );
+
+        cursor.EmitDelegate((int arrows) =>
+        {
+            if (Variants.UnfairAutobalance.IsActive())
+            {
+                return 6;
+            }
+
+            return arrows;
+        });
+
+        cursor.GotoNext(
+            MoveType.After,
+            [
+                ILMatch.LdcI4(3)
+            ]
+        );
+
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate((int arrows, Session session) =>
+        {
+            if (Variants.UnfairAutobalance.IsActive() && HasOnePlayerCrown(session))
+            {
+                return 2;
+            }
+
+            return arrows;
+        });
+
+        cursor.GotoNext(
+            MoveType.After,
+            [
+                ILMatch.Call("Max")
+            ]
+        );
+
+        cursor.EmitDelegate((int arrows) =>
+        {
+            if (Variants.UnfairAutobalance.IsActive())
+            {
+                return 3;
+            }
+
+            return arrows;
+        });
+
+        return cursor.Generate();
     }
 
-    private static void GetSpawnArrows_patch(ILContext il)
+    private static IEnumerable<CodeInstruction> Session_GetSpawnShield_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
-        var cursor = new ILCursor(il);
+        var cursor = new ILTranspilerCursor(generator, instructions);
 
-        if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcI4(6)))
+        cursor.GotoNext(
+            MoveType.After,
+            [
+                ILMatch.Cgt()
+            ]
+        );
+
+        cursor.Emits([
+            new CodeInstruction(OpCodes.Ldarg_0),
+            new CodeInstruction(OpCodes.Ldarg_1),
+        ]);
+
+        cursor.EmitDelegate((bool isLosing, Session session, int playerIndex) =>
         {
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.EmitDelegate<Func<int, Session, int>>((arrows, session) => {
-                if (Variants.UnfairAutobalance.IsActive() && HasOnePlayerCrown(session))
+            if (Variants.UnfairAutobalance.IsActive() && HasOnePlayerCrown(session))
+            {
+                if (session.GetSpawnHatState(playerIndex) == Player.HatStates.Crown)
                 {
-                    return 4;
+                    return false;
                 }
 
-                return arrows;
-            });
-        }
+                return true;
+            }
 
-        if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcI4(4)))
-        {
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.EmitDelegate<Func<int, Session, int>>((arrows, session) => {
-                if (Variants.UnfairAutobalance.IsActive())
-                {
-                    return 6;
-                }
+            return isLosing;
+        });
 
-                return arrows;
-            });
-        }
-
-        if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcI4(3)))
-        {
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.EmitDelegate<Func<int, Session, int>>((arrows, session) => {
-                if (Variants.UnfairAutobalance.IsActive() && HasOnePlayerCrown(session))
-                {
-                    return 2;
-                }
-
-                return arrows;
-            });
-        }
-
-        if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCallOrCallvirt("System.Math", "System.Int32 Max(System.Int32,System.Int32)")))
-        {
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.EmitDelegate<Func<int, Session, int>>((arrows, session) => {
-                if (Variants.UnfairAutobalance.IsActive())
-                {
-                    return 3;
-                }
-
-                return arrows;
-            });
-        }
-    }
-
-    private static void GetSpawnShield_patch(ILContext il)
-    {
-        var cursor = new ILCursor(il);
-
-        if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCgt()))
-        {
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.Emit(OpCodes.Ldarg_1);
-            cursor.EmitDelegate<Func<bool, Session, int, bool>>((isLosing, session, playerIndex) => {
-                if (Variants.UnfairAutobalance.IsActive() && HasOnePlayerCrown(session))
-                {
-                    if (session.GetSpawnHatState(playerIndex) == Player.HatStates.Crown)
-                    {
-                        return false;
-                    }
-
-                    return true;
-                }
-
-                return isLosing;
-            });
-        }
+        return cursor.Generate();
     }
 
     private static bool HasOnePlayerCrown(Session session)

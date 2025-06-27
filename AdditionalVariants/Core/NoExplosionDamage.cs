@@ -1,25 +1,31 @@
+using TowerFall;
+using FortRise;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 
 namespace Teuria.AdditionalVariants;
 
 public class NoExplosionDamage : IHookable
 {
-    public static void Load()
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.Player.Hurt_Explosion_Vector2 += Hurt_Explosion;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(
+                typeof(Player),
+                nameof(Player.Hurt),
+                [typeof(Explosion), typeof(Vector2)]
+            ),
+            new HarmonyMethod(Player_Hurt_Prefix)
+        );
     }
 
-    public static void Unload()
+    private static bool Player_Hurt_Prefix(TowerFall.Player __instance)
     {
-        On.TowerFall.Player.Hurt_Explosion_Vector2 -= Hurt_Explosion;
-    }
-
-    private static void Hurt_Explosion(On.TowerFall.Player.orig_Hurt_Explosion_Vector2 orig, TowerFall.Player self, TowerFall.Explosion explosion, Vector2 normal)
-    {
-        if (Variants.NoExplosionDamage.IsActive(self.PlayerIndex)) 
+        if (Variants.NoExplosionDamage.IsActive(__instance.PlayerIndex))
         {
-            return;
+            return false;
         }
-        orig(self, explosion, normal);
+
+        return true;
     }
 }

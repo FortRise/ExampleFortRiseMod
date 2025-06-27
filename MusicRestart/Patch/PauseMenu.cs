@@ -1,3 +1,5 @@
+using FortRise;
+using HarmonyLib;
 using Monocle;
 using MonoMod.Utils;
 using TowerFall;
@@ -6,17 +8,17 @@ namespace MusicRestart;
 
 public static class PauseMenuPatch 
 {
-
-    public static void Load() 
+    public static void Load(IHarmony harmony)
     {
-        On.TowerFall.PauseMenu.DarkWorldRestart += DarkWorldRestart_patch;
-        On.TowerFall.PauseMenu.QuestRestart += QuestRestart_patch;
-    }
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(PauseMenu), "DarkWorldRestart"),
+            new HarmonyMethod(PauseMenu_ModeRestart_Prefix)
+        );
 
-    public static void Unload() 
-    {
-        On.TowerFall.PauseMenu.DarkWorldRestart -= DarkWorldRestart_patch;
-        On.TowerFall.PauseMenu.QuestRestart -= QuestRestart_patch;
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(PauseMenu), "QuestRestart"),
+            new HarmonyMethod(PauseMenu_ModeRestart_Prefix)
+        );
     }
 
     private static void UsePatch(PauseMenu self) 
@@ -26,21 +28,11 @@ public static class PauseMenuPatch
         Music.Play(level.Session.MatchSettings.LevelSystem.Theme.Music);
     }
 
-    private static void DarkWorldRestart_patch(On.TowerFall.PauseMenu.orig_DarkWorldRestart orig, PauseMenu self)
+    private static void PauseMenu_ModeRestart_Prefix(PauseMenu __instance)
     {
         if (MusicRestartModule.Settings.Active) 
         {
-            UsePatch(self);
+            UsePatch(__instance);
         }
-        orig(self);
-    }
-
-    private static void QuestRestart_patch(On.TowerFall.PauseMenu.orig_QuestRestart orig, PauseMenu self)
-    {
-        if (MusicRestartModule.Settings.Active) 
-        {
-            UsePatch(self);
-        }
-        orig(self);
     }
 }

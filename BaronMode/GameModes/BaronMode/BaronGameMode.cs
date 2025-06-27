@@ -3,13 +3,18 @@ using FortRise;
 using Microsoft.Xna.Framework;
 using Monocle;
 using TowerFall;
+using Teuria.BaronMode.Pickups;
 
 namespace Teuria.BaronMode.GameModes;
 
 public class Baron : IVersusGameMode, IRegisterable
 {
-    public static void Register(IModRegistry registry)
+    private static ISubtextureEntry BaronIcon { get; set; } = null!;
+    public static void Register(IModContent content, IModRegistry registry)
     {
+        BaronIcon = registry.Subtextures.RegisterTexture(
+            content.Root.GetRelativePath("Content/gameModes/baron.png")
+        );
         registry.GameModes.RegisterVersusGameMode(new Baron());
     }
 
@@ -17,7 +22,7 @@ public class Baron : IVersusGameMode, IRegisterable
     public string Name => "Baron";
     public Color NameColor => Color.LightPink;
 
-    public Subtexture Icon => TFGame.Atlas["Teuria.BaronMode/gameModes/baron"];
+    public ISubtextureEntry Icon => BaronIcon;
 
     public bool IsTeamMode => false;
 
@@ -49,7 +54,7 @@ public class Baron : IVersusGameMode, IRegisterable
 
     public Sprite<int> OverrideCoinSprite(Session session)
     {
-        var sprite = new Sprite<int>(TFGame.Atlas["Teuria.BaronMode/pickups/gemCoin"], 12, 10);
+        var sprite = new Sprite<int>(GemLives.GemPickupTexture.Subtexture, 12, 10);
 
         sprite.Add(0, 0.1f, [0, 0, 0, 1, 2, 3, 4, 5, 6, 7]);
         sprite.Play(0);
