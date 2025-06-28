@@ -32,6 +32,7 @@ public class TextureRegistry : IRegisterable
     public static ISubtextureEntry ExplodingShield { get; private set; } = null!;
     public static ISubtextureEntry ClumsySwap { get; private set; } = null!;
     public static ISubtextureEntry NoExplosionDamage { get; private set; } = null!;
+    public static ISubtextureEntry FragilePrism { get; private set; } = null!;
 
     // Chest
     public static ISubtextureEntry GrayChest { get; private set; } = null!;
@@ -66,6 +67,7 @@ public class TextureRegistry : IRegisterable
         ExplodingShield = registry.Subtextures.RegisterTexture("ExplodingShield", content.Root.GetRelativePath("Content/images/variants/explodingShield.png"));
         ClumsySwap = registry.Subtextures.RegisterTexture("ClumsySwap", content.Root.GetRelativePath("Content/images/variants/clumsySwap.png"));
         NoExplosionDamage = registry.Subtextures.RegisterTexture("NoExplosionDamage", content.Root.GetRelativePath("Content/images/variants/noExplosionDamage.png"));
+        FragilePrism = registry.Subtextures.RegisterTexture("FragilePrism", content.Root.GetRelativePath("Content/images/variants/fragilePrism.png"));
 
         GrayChest = registry.Subtextures.RegisterTexture("GrayChest", content.Root.GetRelativePath("Content/images/chest/graychest.png"));
         BlueChest = registry.Subtextures.RegisterTexture("BlueChest", content.Root.GetRelativePath("Content/images/chest/bluechest.png"));

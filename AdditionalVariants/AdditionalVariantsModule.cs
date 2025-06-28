@@ -23,6 +23,7 @@ public sealed class AdditionalVariantsModule : Mod
         typeof(DarkWorld),
         typeof(DrillingArrow),
         typeof(ExplodingShield),
+        typeof(FragilePrism),
         typeof(InvincibleTechnomageVariantSequence),
         typeof(FadingArrow),
         typeof(NeonFilter),

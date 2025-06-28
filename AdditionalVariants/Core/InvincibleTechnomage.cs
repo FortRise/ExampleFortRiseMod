@@ -90,7 +90,7 @@ public class InvincibleTechnomageVariantSequence : Entity, IHookable
         level.Add(portal);
         portal.Appear();
         yield return 20;
-        portal.SpawnEnemy(InvincibleTechnomage.Metadata.Name);
+        portal.SpawnEnemy(InvincibleTechnomage.Metadata.ID);
         yield return 10;
         portal.ForceDisappear();
     }
