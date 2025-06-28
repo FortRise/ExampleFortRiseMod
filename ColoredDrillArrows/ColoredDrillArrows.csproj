@@ -3,7 +3,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ModName>Teuria.ColoredDrillArrows</ModName>
-    <ModVersion>1.1.0</ModVersion>
+    <ModVersion>1.1.1</ModVersion>
 
     <!-- If Steam path cannot be found, try specifying the path. -->
     <ModLoaderPath>..\..\..\</ModLoaderPath>
