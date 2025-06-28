@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
 using FortRise;
 using FortRise.Transpiler;
@@ -12,10 +14,37 @@ public class DarkWorldRoundLogicPatch : IHookable
 {
     public static void Load(IHarmony harmony)
     {
+        Harmony.ReversePatch(
+            AccessTools.DeclaredMethod(typeof(DarkWorldRoundLogic), nameof(DarkWorldRoundLogic.OnPlayerDeath)),
+            new HarmonyMethod(DarkWorldRoundLogic_OnPlayerDeath_ReversePatch),
+            transpiler: AccessTools.DeclaredMethod(typeof(DarkWorldRoundLogicPatch), nameof(Transpiler)),
+            null
+        );
+
         harmony.Patch(
             AccessTools.DeclaredMethod(typeof(DarkWorldRoundLogic), nameof(DarkWorldRoundLogic.OnPlayerDeath)),
             transpiler: new HarmonyMethod(DarkWorldRoundLogic_OnPlayerDeath_Transpiler)
         );
+    }
+
+    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        var cursor = new ILTranspilerCursor(generator, instructions);
+
+        cursor.GotoNext(
+            MoveType.After,
+            [
+                ILMatch.Call("FinalKillNoSpotlightOrMusicStop")
+            ]
+        );
+
+        var instr = cursor.Instructions.ToArray()[cursor.Index..];
+        return instr;
+    }
+
+    private static void DarkWorldRoundLogic_OnPlayerDeath_ReversePatch(RoundLogic self)
+    {
+        throw new NotImplementedException();
     }
 
     private static IEnumerable<CodeInstruction> DarkWorldRoundLogic_OnPlayerDeath_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
@@ -70,15 +99,14 @@ public class DarkWorldRoundLogicPatch : IHookable
                 {
                     ScreenEffects.Reset();
                     self.Session.CurrentLevel.OrbLogic.CancelSlowMo();
-                    self.Session.CurrentLevel.Ending = true;
                     self.Session.CurrentLevel.Frozen = false;
-                    self.Session.CurrentLevel.Add(new DarkWorldGameOver(self));
+                    DarkWorldRoundLogic_OnPlayerDeath_ReversePatch(self);
                 });
             });
             self.Session.CurrentLevel.Add(entity);
         });
 
-        cursor.MarkLabel(br_Ret);
+        cursor.MarkLabel(br_Ret, cursor.Instruction);
 
         return cursor.Generate();
     }

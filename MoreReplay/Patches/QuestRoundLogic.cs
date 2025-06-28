@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
+using System.Text;
 using FortRise;
 using FortRise.Transpiler;
 using HarmonyLib;
@@ -12,10 +15,49 @@ public class QuestRoundLogicPatch : IHookable
 {
     public static void Load(IHarmony harmony)
     {
+        Harmony.ReversePatch(
+            AccessTools.DeclaredMethod(typeof(QuestRoundLogic), nameof(QuestRoundLogic.OnPlayerDeath)),
+            new HarmonyMethod(QuestRoundLogic_OnPlayerDeath_ReversePatch),
+            transpiler: AccessTools.DeclaredMethod(typeof(QuestRoundLogicPatch), nameof(Transpiler)),
+            null
+        );
+
         harmony.Patch(
             AccessTools.DeclaredMethod(typeof(QuestRoundLogic), nameof(QuestRoundLogic.OnPlayerDeath)),
             transpiler: new HarmonyMethod(QuestRoundLogic_OnPlayerDeath_Transpiler)
         );
+    }
+
+    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        var cursor = new ILTranspilerCursor(generator, instructions);
+
+        cursor.GotoNext(
+            MoveType.After,
+            [
+                ILMatch.Call("FinalKillNoSpotlight")
+            ]
+        );
+
+        var firstIndex = cursor.Index;
+
+        cursor.GotoNext(
+            MoveType.After,
+            [
+                ILMatch.Pop()
+            ]
+        );
+
+        var secondIndex = cursor.Index;
+
+        var instr = cursor.Instructions.ToList()[firstIndex..secondIndex];
+        instr.Add(new CodeInstruction(OpCodes.Ret));
+        return instr;
+    }
+
+    private static void QuestRoundLogic_OnPlayerDeath_ReversePatch(RoundLogic self)
+    {
+        throw new NotImplementedException();
     }
 
 
@@ -72,9 +114,10 @@ public class QuestRoundLogicPatch : IHookable
                 {
                     ScreenEffects.Reset();
                     self.Session.CurrentLevel.OrbLogic.CancelSlowMo();
-                    self.Session.CurrentLevel.Ending = true;
                     self.Session.CurrentLevel.Frozen = false;
-                    self.Session.CurrentLevel.Add(new QuestGameOver(self));
+                    QuestRoundLogic_OnPlayerDeath_ReversePatch(self);
+                    // self.Session.CurrentLevel.Ending = true;
+                    // self.Session.CurrentLevel.Add(new QuestGameOver(self));
                 });
             });
             self.Session.CurrentLevel.Add(entity);
