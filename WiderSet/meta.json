@@ -1,0 +1,13 @@
+{
+	"version": "0.1.0",
+	"displayName": "Wider Set",
+	"author": "Terria",
+    "description": "Explore the world of TowerFall with Wider experience.",
+    "dll": "WiderSet.dll",
+	"dependencies": [
+		{
+			"name": "FortRise",
+			"version": "5.0.0-beta.1"
+		}
+	]
+}
