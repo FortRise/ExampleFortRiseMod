@@ -6,20 +6,20 @@ using FortRise;
 using FortRise.Transpiler;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
-using MonoMod.Utils;
 using TowerFall;
 
 namespace Teuria.WiderSet;
 
+internal sealed class UnsafeArcherPortrait
+{
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_FlipSide")]
+    public static extern ArcherData ArcherPortraitGetFlipSide(ArcherPortrait portrait);
+}
+
 internal sealed class ArcherPortraitHooks : IHookable
 {
-    private static FastReflectionHelper.FastInvoker FlipSide = null!;
-
     public static void Load(IHarmony harmony)
     {
-        FlipSide = FastReflectionHelper.GetFastInvoker(
-            AccessTools.DeclaredPropertyGetter(typeof(ArcherPortrait), "FlipSide")
-        );
         harmony.Patch(
             AccessTools.DeclaredMethod(typeof(ArcherPortrait), "SetCharacter"),
             transpiler: new HarmonyMethod(ArcherPortrait_SetCharacter_Transpiler)
@@ -152,12 +152,10 @@ internal sealed class ArcherPortraitHooks : IHookable
                     rec = new Rectangle((int)offset.X, 10 + (int)offset.Y, 60, 60);
                 }
 
-                return ((ArcherData)FlipSide.Invoke(self)!).Portraits.NotJoined.GetAbsoluteClipRect(rec);
+                return UnsafeArcherPortrait.ArcherPortraitGetFlipSide(self).Portraits.NotJoined.GetAbsoluteClipRect(rec);
             }
             return rect;
         });
-
-        cursor.LogInstructions();
 
         return cursor.Generate();
     }
