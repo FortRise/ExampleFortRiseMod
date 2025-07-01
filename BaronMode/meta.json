@@ -7,10 +7,6 @@
 		{
 			"name": "FortRise",
 			"version": "5.0.0-beta.3"
-		},
-		{
-			"name": "ExampleNewMod",
-			"version": "1.0.0"
 		}
 	],
 	"update": {
