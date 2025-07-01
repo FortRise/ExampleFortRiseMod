@@ -4,11 +4,12 @@ using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
+using Teuria.Ascencore;
 using TowerFall;
 
 namespace Teuria.AdditionalVariants;
 
-public class JesterHat : IHookable
+public class JesterHat : IHookable, IAscencoreAPI.IPlayerDodgeStateHookApi.IHook
 {
     public static void Load(IHarmony harmony)
     {
@@ -17,9 +18,8 @@ public class JesterHat : IHookable
             postfix: new HarmonyMethod(Player_Added_Postfix)
         );
 
-        harmony.Patch(
-            AccessTools.DeclaredMethod(typeof(Player), "LeaveDodge"),
-            postfix: new HarmonyMethod(Player_LeaveDodge_Prefix)
+        AdditionalVariantsModule.AscencoreAPI.DodgeStateApi.RegisterHook(
+            new JesterHat()
         );
     }
 
@@ -49,29 +49,30 @@ public class JesterHat : IHookable
         }
     }
 
-    private static void Player_LeaveDodge_Prefix(Player __instance)
+    public void OnLeaveDodge(IAscencoreAPI.IPlayerDodgeStateHookApi.IHook.OnLeaveDodgeEventArgs args)
     {
-        var dynSelf = DynamicData.For(__instance);
-        if (dynSelf.TryGet<List<Vector2>>("warpPoints", out var warpPoints)) 
+        var player = args.Player;
+        var dynSelf = DynamicData.For(player);
+        if (dynSelf.TryGet<List<Vector2>>("warpPoints", out var warpPoints))
         {
-            DoExplodeEffect(__instance);
-            Sounds.sfx_cyanWarp.Play(__instance.X, 1f);
+            DoExplodeEffect(player);
+            Sounds.sfx_cyanWarp.Play(player.X, 1f);
             var lightFade = Cache.Create<LightFade>();
-            lightFade.Init(__instance, null);
-            __instance.Level.Add(lightFade);
-            warpPoints.Sort((x, y) => WarpSorter(__instance, x, y));
+            lightFade.Init(player, null);
+            player.Level.Add(lightFade);
+            warpPoints.Sort((x, y) => WarpSorter(player, x, y));
             var warp = warpPoints[1];
             var lastWarpPoint = dynSelf.Get<Vector2>("lastWarpPoint");
-            if (warp == lastWarpPoint) 
+            if (warp == lastWarpPoint)
             {
                 warp = warpPoints[0];
             }
-            __instance.Position = warp;
-            __instance.Level.Particles.Emit(Particles.PlayerDust[__instance.CharacterIndex], 12, __instance.Position, new Vector2(5f, 8f));
+            player.Position = warp;
+            player.Level.Particles.Emit(Particles.PlayerDust[player.CharacterIndex], 12, player.Position, new Vector2(5f, 8f));
 
             foreach (var hook in JesterHatManager.Instance.Hooks)
             {
-                hook.AfterTeleport(new ApiImplementation.JesterHatImplementation.AfterTeleportArgs(__instance, warp));
+                hook.AfterTeleport(new ApiImplementation.JesterHatImplementation.AfterTeleportArgs(player, warp));
             }
 
             dynSelf.Set("lastWarpPoint", warp);

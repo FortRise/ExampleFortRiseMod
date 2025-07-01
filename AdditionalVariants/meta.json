@@ -8,6 +8,10 @@
 		{
 			"name": "FortRise",
 			"version": "5.0.0-beta.1"
+		},
+		{
+			"name": "Teuria.Ascencore",
+			"version": "1.0.0"
 		}
 	],
 	"optionalDependencies": [

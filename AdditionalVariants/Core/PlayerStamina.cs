@@ -4,11 +4,12 @@ using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
+using Teuria.Ascencore;
 using TowerFall;
 
 namespace Teuria.AdditionalVariants;
 
-public class PlayerStamina : IHookable
+public class PlayerStamina : IHookable, IAscencoreAPI.IPlayerDodgeStateHookApi.IHook
 {
     public static void Load(IHarmony harmony)
     {
@@ -22,34 +23,33 @@ public class PlayerStamina : IHookable
             postfix: new HarmonyMethod(Player_HUDRender_Postfix)
         );
 
-        harmony.Patch(
-            AccessTools.DeclaredMethod(typeof(Player), "EnterDodge"),
-            new HarmonyMethod(Player_EnterDodge_Prefix)
+        AdditionalVariantsModule.AscencoreAPI.DodgeStateApi.RegisterHook(
+            new PlayerStamina(),
+            -10
         );
     }
 
-    private static void Player_HUDRender_Postfix(Player __instance)
+    public Option<bool> IsDodgeEnabled(IAscencoreAPI.IPlayerDodgeStateHookApi.IHook.IsDodgeEnabledEventArgs args)
     {
-        if (DynamicData.For(__instance).TryGet<DashStamina>("dashStamina", out var stamina)) 
+        if (DynamicData.For(args.Player).TryGet<DashStamina>("dashStamina", out var stamina))
         {
-            stamina.Render();
-        }
-    }
-
-    private static bool Player_EnterDodge_Prefix(Player __instance)
-    {
-        if (DynamicData.For(__instance).TryGet<DashStamina>("dashStamina", out var stamina)) 
-        {
-            if (stamina.UseSmallStamina()) 
+            if (stamina.UseSmallStamina())
             {
                 return true;
             }
 
-            __instance.State = Player.PlayerStates.Normal;
             return false;
         }
 
-        return true;
+        return Option<bool>.None();
+    }
+
+    private static void Player_HUDRender_Postfix(Player __instance)
+    {
+        if (DynamicData.For(__instance).TryGet<DashStamina>("dashStamina", out var stamina))
+        {
+            stamina.Render();
+        }
     }
 
     private static void Player_Added_Postfix(Player __instance)

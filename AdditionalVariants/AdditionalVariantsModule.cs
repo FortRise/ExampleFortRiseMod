@@ -1,6 +1,7 @@
 ﻿using System;
 using FortRise;
 using Microsoft.Extensions.Logging;
+using Teuria.Ascencore;
 
 namespace Teuria.AdditionalVariants;
 
@@ -8,6 +9,7 @@ public sealed class AdditionalVariantsModule : Mod
 {
     public static AdditionalVariantsModule Instance { get; private set; } = null!;
     public static IEffectEntry NeonShader { get; private set; } = null!;
+    public static IAscencoreAPI AscencoreAPI { get; private set; } = null!;
     private static Type[] Registerables = [
         typeof(TextureRegistry),
         typeof(Variants),
@@ -41,6 +43,7 @@ public sealed class AdditionalVariantsModule : Mod
     public AdditionalVariantsModule(IModContent content, IModuleContext context, ILogger logger) : base(content, context, logger)
     {
         Instance = this;
+        AscencoreAPI = context.Interop.GetApi<IAscencoreAPI>("Teuria.Ascencore")!;
         foreach (var hookable in Hookables)
         {
             hookable.GetMethod(nameof(IHookable.Load))!.Invoke(null, [context.Harmony]);

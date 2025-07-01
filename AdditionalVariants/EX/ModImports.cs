@@ -7,7 +7,7 @@ namespace AdditionalVariants.EX
     [ModImportName("TF.EX.API")]
     public static class TfExAPIModImports
     {
-        public static Action<FortModule, string, Func<string>, Action<string>> RegisterVariantStateEvents = null!;
+        // public static Action<FortModule, string, Func<string>, Action<string>> RegisterVariantStateEvents = null!;
 
         static TfExAPIModImports()
         {
