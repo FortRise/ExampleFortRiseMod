@@ -17,8 +17,7 @@ public class DarkWorldRoundLogicPatch : IHookable
         Harmony.ReversePatch(
             AccessTools.DeclaredMethod(typeof(DarkWorldRoundLogic), nameof(DarkWorldRoundLogic.OnPlayerDeath)),
             new HarmonyMethod(DarkWorldRoundLogic_OnPlayerDeath_ReversePatch),
-            transpiler: AccessTools.DeclaredMethod(typeof(DarkWorldRoundLogicPatch), nameof(Transpiler)),
-            null
+            transpiler: AccessTools.DeclaredMethod(typeof(DarkWorldRoundLogicPatch), nameof(Transpiler))
         );
 
         harmony.Patch(

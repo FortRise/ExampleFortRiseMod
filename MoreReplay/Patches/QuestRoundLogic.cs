@@ -18,8 +18,7 @@ public class QuestRoundLogicPatch : IHookable
         Harmony.ReversePatch(
             AccessTools.DeclaredMethod(typeof(QuestRoundLogic), nameof(QuestRoundLogic.OnPlayerDeath)),
             new HarmonyMethod(QuestRoundLogic_OnPlayerDeath_ReversePatch),
-            transpiler: AccessTools.DeclaredMethod(typeof(QuestRoundLogicPatch), nameof(Transpiler)),
-            null
+            transpiler: AccessTools.DeclaredMethod(typeof(QuestRoundLogicPatch), nameof(Transpiler))
         );
 
         harmony.Patch(
