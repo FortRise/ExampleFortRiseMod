@@ -1,0 +1,13 @@
+{
+	"version": "1.0.0",
+	"displayName": "Ascencore",
+	"author": "Terria",
+    "description": "The central mod library for all modders and players.",
+    "dll": "Ascencore.dll",
+	"dependencies": [
+		{
+			"name": "FortRise",
+			"version": "5.0.0-beta.7"
+		}
+	]
+}

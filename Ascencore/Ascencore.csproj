@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ModName>Teuria.Ascencore</ModName>
+    <ModVersion>1.0.0</ModVersion>
+
+    <!-- If Steam path cannot be found, try specifying the path. -->
+    <ModLoaderPath>..\..\..\</ModLoaderPath>
+    <ModZipPath>..\release\$(ModName)-$(ModVersion).zip</ModZipPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Content/**/*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FortRise.Configuration" Version="1.5.0" />
+  </ItemGroup>
+</Project>
+
+
