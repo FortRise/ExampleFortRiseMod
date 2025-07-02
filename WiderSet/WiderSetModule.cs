@@ -19,15 +19,35 @@ public class WiderSetModule : Mod
 {
     public static Type[] Hookables = [
         typeof(ArcherPortraitHooks),
+        typeof(BackgroundHooks),
         typeof(FightButtonHooks),
+        typeof(LevelHooks),
         typeof(MainMenuHooks),
+        typeof(MapSceneHooks),
+        typeof(MenuBackgroundHooks),
+        typeof(PlayerInputHooks),
         typeof(RollcallElementHooks),
         typeof(TFGameHooks),
-        typeof(PlayerInputHooks)
+        typeof(ScreenHooks),
+        typeof(ScreenTitleHooks),
     ];
 
 
-    public static bool IsWide { get; internal set; }
+    public static bool IsWide
+    {
+        get
+        {
+            return wide;
+        }
+        set
+        {
+            DirtyWide = true;
+            wide = value;
+        }
+    }
+    public static bool DirtyWide { get; internal set; }
+    public static bool AboutToGetWide { get; internal set; }
+    private static bool wide;
     public static IMenuSpriteContainerEntry StandardSetSprite { get; internal set; } = null!;
     public static IMenuSpriteContainerEntry WideSetSprite { get; internal set; } = null!;
     public static IMenuStateEntry StandardSelectionEntry { get; internal set; } = null!;
@@ -50,6 +70,7 @@ public class WiderSetModule : Mod
         {
             TFGame.Characters[i] = i;
         }
+        Environment.SetEnvironmentVariable("FNA_GAMEPAD_NUM_GAMEPADS", "8");
 
         ref var colliders = ref UnsafePlayer.GetPlayerWasColliders(null!);
         Array.Resize(ref colliders, 8);

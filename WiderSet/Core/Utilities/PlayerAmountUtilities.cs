@@ -5,7 +5,42 @@ using HarmonyLib;
 
 namespace Teuria.WiderSet;
 
-public static class PlayerAmountUtilities
+internal static class ScreenWidthUtilities
+{
+    // public static IEnumerable<CodeInstruction> ScreenWidthTranspilerNoCondition(
+    //     IEnumerable<CodeInstruction> instructions,
+    //     ILGenerator generator)
+    // {
+    //     var cursor = new ILTranspilerCursor(generator, instructions);
+
+    //     cursor.Encompass(x =>
+    //     {
+    //         while (x.Next(
+    //                 MoveType.After,
+    //                 [
+    //                     ILMatch.LdcI4(320)
+    //                 ]
+    //             )
+    //         )
+    //         {
+    //             cursor.EmitDelegate((int playerAmount) =>
+    //             {
+    //                 if (WiderSetModule.IsWide)
+    //                 {
+    //                     return playerAmount + 4;
+    //                 }
+
+    //                 return playerAmount;
+    //             });
+    //         }
+    //     });
+
+
+    //     return cursor.Generate();
+    // }
+}
+
+internal static class PlayerAmountUtilities
 {
     public static IEnumerable<CodeInstruction> EightPlayerTranspiler(
         IEnumerable<CodeInstruction> instructions,
