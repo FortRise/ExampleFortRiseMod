@@ -16,6 +16,7 @@ internal class StandardSelectionFromVersus : CustomMenuState
     public override void Create()
     {
         WiderSetModule.IsWide = false;
+        WrapMath.AddWidth = new Vector2(320, 0);
         LevelSetType levelSetType = LevelSetType.Versus;
 
         var standardSet = new StandardSetButton(new Vector2(160f - 60, 90f), new Vector2(-160f, 120f), levelSetType);
@@ -140,6 +141,7 @@ public class WideSetButton : MainModeButton
         tower.Play(1);
         WiderSetModule.IsWide = true;
         WiderSetModule.AboutToGetWide = false;
+        WrapMath.AddWidth = new Vector2(420, 0);
         // MainMenu.VersusMatchSettings.Teams = EightPlayerModule.EightPlayerTeams;
     }
 

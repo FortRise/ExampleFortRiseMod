@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
+using System.Xml;
 using FortRise;
 using FortRise.Transpiler;
 using HarmonyLib;
@@ -26,6 +28,10 @@ internal sealed class BackgroundHooks : IHookable
             AccessTools.DeclaredMethod(typeof(Background), nameof(Background.Render)),
             transpiler: new HarmonyMethod(Background_Render_Transpiler)
         );
+
+        ScrollLayerHooks.Load(harmony);
+        LightningFlashLayerHooks.Load(harmony);
+        VortexLayerHooks.Load(harmony);
     }
 
     private static IEnumerable<CodeInstruction> Background_Render_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
@@ -57,6 +63,7 @@ internal sealed class BackgroundHooks : IHookable
 
         cursor.EmitDelegate((Matrix x) =>
         {
+            if (WiderSetModule.IsWide) { return x; }
             Engine.Instance.Scene.Camera.X -= Screen.LeftImage.Width;
             var matrix = Engine.Instance.Scene.Camera.Matrix;
             Engine.Instance.Scene.Camera.X += Screen.LeftImage.Width;
@@ -70,10 +77,150 @@ internal sealed class BackgroundHooks : IHookable
         {
             if (!WiderSetModule.IsWide)
             {
-                Engine.Instance.GraphicsDevice.ScissorRectangle = new Rectangle(0, 0, 320, 240);
+                Engine.Instance.GraphicsDevice.ScissorRectangle = new Rectangle(
+                    0,
+                    0,
+                    420 - 54,
+                    240
+                );
             }
         });
 
         return cursor.Generate();
+    }
+
+    internal sealed class ScrollLayerHooks
+    {
+        public static void Load(IHarmony harmony)
+        {
+            harmony.Patch(
+                AccessTools.DeclaredConstructor(typeof(Background.ScrollLayer), [typeof(Level), typeof(XmlElement)]),
+                postfix: new HarmonyMethod(ScrollLayer_ctor_Postfix)
+            );
+        }
+
+        private static void ScrollLayer_ctor_Postfix(Background.ScrollLayer __instance)
+        {
+            if (WiderSetModule.IsWide)
+            {
+                __instance.WrapSize.X = Math.Max(320f, __instance.Image.Width);
+            }
+        }
+    }
+
+    internal sealed class LightningFlashLayerHooks
+    {
+        public static void Load(IHarmony harmony)
+        {
+            harmony.Patch(
+                AccessTools.DeclaredMethod(typeof(Background.LightningFlashLayer), nameof(Background.LightningFlashLayer.Render)),
+                transpiler: new HarmonyMethod(LightningFlashLayer_Render_Transpiler)
+            );
+        }
+
+        private static IEnumerable<CodeInstruction> LightningFlashLayer_Render_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        {
+            var cursor = new ILTranspilerCursor(generator, instructions);
+
+            cursor.GotoNext(
+                MoveType.After,
+                [
+                    ILMatch.LdcR4(320f)
+                ]
+            );
+
+            cursor.EmitDelegate((float x) =>
+            {
+                if (WiderSetModule.IsWide)
+                {
+                    return x + 100;
+                }
+
+                return x;
+            });
+
+            return cursor.Generate();
+        }
+    }
+
+    internal sealed class VortexLayerHooks
+    {
+        public static void Load(IHarmony harmony)
+        {
+            harmony.Patch(
+                AccessTools.DeclaredMethod(typeof(Background.VortexLayer), "GetRandomBezier"),
+                transpiler: new HarmonyMethod(VortexLayer_GetRandomBezier_Transpiler)
+            );
+
+            harmony.Patch(
+                AccessTools.DeclaredMethod(typeof(Background.VortexLayer), nameof(Background.VortexLayer.Render)),
+                transpiler: new HarmonyMethod(VortexLayer_Render_Transpiler)
+            );
+        }
+
+        private static IEnumerable<CodeInstruction> VortexLayer_GetRandomBezier_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        {
+            var cursor = new ILTranspilerCursor(generator, instructions);
+
+            cursor.GotoNext(
+                MoveType.After,
+                [
+                    ILMatch.LdcR4(100f)
+                ]
+            );
+
+            cursor.EmitDelegate((float x) =>
+            {
+                if (WiderSetModule.IsWide)
+                {
+                    return x + 50;
+                }
+
+                return x;
+            });
+
+            cursor.GotoNext(
+                MoveType.After,
+                [
+                    ILMatch.LdcR4(155f)
+                ]
+            );
+
+            cursor.EmitDelegate((float x) =>
+            {
+                if (WiderSetModule.IsWide)
+                {
+                    return x + 50;
+                }
+
+                return x;
+            });
+
+            return cursor.Generate();
+        }
+
+        private static IEnumerable<CodeInstruction> VortexLayer_Render_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        {
+            var cursor = new ILTranspilerCursor(generator, instructions);
+
+            cursor.GotoNext(
+                MoveType.After,
+                [
+                    ILMatch.LdcR4(320f)
+                ]
+            );
+
+            cursor.EmitDelegate((float x) =>
+            {
+                if (WiderSetModule.IsWide)
+                {
+                    return x + 100;
+                }
+
+                return x;
+            });
+
+            return cursor.Generate();
+        }
     }
 }

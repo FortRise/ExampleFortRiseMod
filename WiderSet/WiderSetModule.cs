@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Xml;
 using FortRise;
+using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -18,18 +21,38 @@ public class UnsafePlayer
 public class WiderSetModule : Mod
 {
     public static Type[] Hookables = [
+        typeof(ActorHooks),
         typeof(ArcherPortraitHooks),
         typeof(BackgroundHooks),
+        typeof(EnemyHooks),
         typeof(FightButtonHooks),
+        typeof(GameplayLayerHooks),
+        typeof(HUDFadeHooks),
+        typeof(LavaHooks),
         typeof(LevelHooks),
+        typeof(LevelEntityHooks),
+        typeof(LevelLoaderXMLHooks),
+        typeof(LevelSystemHooks),
+        typeof(LevelTilesHooks),
+        typeof(LevelBGTilesHooks),
+        typeof(LightingLayerHooks),
         typeof(MainMenuHooks),
         typeof(MapSceneHooks),
         typeof(MenuBackgroundHooks),
+        typeof(MiasmaHooks),
+        typeof(OrbLogicHooks),
         typeof(PlayerInputHooks),
         typeof(RollcallElementHooks),
+        typeof(RoundLogicHooks),
         typeof(TFGameHooks),
         typeof(ScreenHooks),
         typeof(ScreenTitleHooks),
+        typeof(SessionHooks),
+        typeof(VersusLevelSystemHooks),
+        typeof(VersusStartHooks),
+        typeof(VersusMatchResultsHooks),
+        typeof(WrapHitboxHooks),
+        typeof(WrapMathHooks)
     ];
 
 
@@ -54,6 +77,8 @@ public class WiderSetModule : Mod
 
     public static Dictionary<int, Vector2> NotJoinedCharacterOffset = new Dictionary<int, Vector2>();
     public static Dictionary<int, Vector2> NotJoinedAltCharacterOffset = new Dictionary<int, Vector2>();
+    public static Dictionary<string, XmlElement> WideBG = new Dictionary<string, XmlElement>();
+    public static Dictionary<string, string> WideRedirector = new Dictionary<string, string>();
 
     public static WiderSetModule Instance { get; private set; } = null!;
 
@@ -65,6 +90,7 @@ public class WiderSetModule : Mod
         TFGame.Characters = new int[8];
         TFGame.AltSelect = new ArcherData.ArcherTypes[8];
         TFGame.CoOpCrowns = new bool[8];
+        Session.TeamStartArrows = [3, 3, 3, 3, 2, 2, 2];
 
         for (int i = 4; i < 8; i++)
         {
@@ -127,6 +153,9 @@ public class WiderSetModule : Mod
         {
             hookable.GetMethod(nameof(IHookable.Load))!.Invoke(null, [context.Harmony]);
         }
+
+        LoadTextures(context.Registry, content);
+        OnInitialize += (_) => Inject();
     }
 
     public override object? GetApi() => new ApiImplementation();
@@ -134,5 +163,39 @@ public class WiderSetModule : Mod
     private static void AdjustCharacterOffset()
     {
         NotJoinedCharacterOffset[6] = new Vector2(0, 50);
+    }
+
+    private static void LoadTextures(IModRegistry registry, IModContent content)
+    {
+        var resource = content.Root.GetRelativePath("Content/images/bg");
+
+        foreach (var child in resource.Childrens)
+        {
+            registry.Subtextures.RegisterTexture(
+                Path.GetFileNameWithoutExtension(child.Path),
+                child,
+                SubtextureAtlasDestination.BGAtlas
+            );
+        }
+
+        var data = content.Root.GetRelativePath("Content/Atlas/GameData/sixPlayerBGData.xml").Xml!;
+
+        foreach (XmlElement xml in data!.GetElementsByTagName("BG"))
+        {
+            WideBG.Add(xml.Attr("id"), xml);
+        }
+    }
+
+    private static void Inject()
+    {
+        foreach (var theme in GameData.Themes.Keys)
+        {
+            if (theme == "GauntletA" || theme == "GauntletB")
+            {
+                WideRedirector[theme] = "Gauntlet";
+                continue;
+            }
+            WideRedirector[theme] = theme;
+        }
     }
 }

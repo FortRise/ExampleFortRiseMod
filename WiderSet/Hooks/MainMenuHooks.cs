@@ -120,6 +120,7 @@ internal sealed class MainMenuHooks : IHookable
     private static void MainMenu_CreateMain_Prefix()
     {
         WiderSetModule.IsWide = false;
+        WrapMath.AddWidth = new Vector2(320, 0);
     }
 
     private static void MainMenu_Update_Prefix()
