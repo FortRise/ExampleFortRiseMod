@@ -4,7 +4,6 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Xml;
 using FortRise;
-using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -32,6 +31,11 @@ public class WiderSetModule : Mod
         typeof(LevelHooks),
         typeof(LevelEntityHooks),
         typeof(LevelLoaderXMLHooks),
+        typeof(LevelRandomBGDetailsHooks),
+        typeof(LevelRandomBGTilesHooks),
+        typeof(LevelRandomGeometryHooks),
+        typeof(LevelRandomItemsHooks),
+        typeof(LevelRandomTreasureHooks),
         typeof(LevelSystemHooks),
         typeof(LevelTilesHooks),
         typeof(LevelBGTilesHooks),
@@ -48,6 +52,9 @@ public class WiderSetModule : Mod
         typeof(ScreenHooks),
         typeof(ScreenTitleHooks),
         typeof(SessionHooks),
+        typeof(VariantHooks),
+        typeof(VariantPerPlayerHooks),
+        typeof(VersusAwardsHooks),
         typeof(VersusLevelSystemHooks),
         typeof(VersusStartHooks),
         typeof(VersusMatchResultsHooks),
@@ -79,6 +86,7 @@ public class WiderSetModule : Mod
     public static Dictionary<int, Vector2> NotJoinedAltCharacterOffset = new Dictionary<int, Vector2>();
     public static Dictionary<string, XmlElement> WideBG = new Dictionary<string, XmlElement>();
     public static Dictionary<string, string> WideRedirector = new Dictionary<string, string>();
+    public static Dictionary<string, IVersusTowerEntry> MapEntry = new Dictionary<string, IVersusTowerEntry>();
 
     public static WiderSetModule Instance { get; private set; } = null!;
 
@@ -183,6 +191,63 @@ public class WiderSetModule : Mod
         foreach (XmlElement xml in data!.GetElementsByTagName("BG"))
         {
             WideBG.Add(xml.Attr("id"), xml);
+        }
+
+        var versusChapters = content.Root.GetRelativePath("Content/WideLevels/Versus");
+
+        foreach (var chapter in versusChapters.Childrens)
+        {
+            List<IResourceInfo> levels = new List<IResourceInfo>();
+            List<Treasure> treasures = new List<Treasure>();
+            IResourceInfo? xml = null;
+            foreach (var level in chapter.Childrens)
+            {
+                if (level.Path.EndsWith("oel"))
+                {
+                    levels.Add(level);
+                    continue;
+                }
+
+                if (level.Path.EndsWith("xml"))
+                {
+                    xml = level;
+                    continue;
+                }
+            }
+
+            if (xml is null)
+            {
+                continue;
+            }
+
+            var doc = xml.Xml!;
+            var tow = doc["tower"];
+            var themeName = tow!["theme"]!.InnerText.Trim();
+            var treasure = tow!["treasure"];
+            var csv = Calc.ReadCSV(treasure!.InnerText);
+            var arrowRate = treasure.AttrFloat("arrows", 0.6f);
+            var arrowShuffle = treasure.AttrBool("arrowShuffle", false);
+
+            foreach (var c in csv)
+            {
+                treasures.Add(new Treasure()
+                {
+                    Pickup = Calc.StringToEnum<Pickups>(c)
+                });
+            }
+
+            MapEntry[themeName] = registry.Towers.RegisterVersusTower(
+                themeName,
+                new()
+                {
+                    Levels = levels.ToArray(),
+                    Treasure = treasures.ToArray(),
+                    Theme = themeName,
+                    SpecialArrowRate = arrowRate,
+                    ArrowShuffle = arrowShuffle,
+                    Procedural = tow!.HasChild("procedural")
+                }
+            );
         }
     }
 

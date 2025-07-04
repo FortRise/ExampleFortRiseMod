@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
 using FortRise;
 using FortRise.Transpiler;
@@ -16,20 +17,33 @@ internal sealed class VersusMatchResultsHooks : IHookable
     {
         harmony.Patch(
             AccessTools.DeclaredConstructor(typeof(VersusMatchResults), [typeof(Session), typeof(VersusRoundResults)]),
-            transpiler: new HarmonyMethod(VersusRoundResults_ctor_Transpiler),
-            finalizer: new HarmonyMethod(VersusRoundResults_ctor_Finalizer)
+            transpiler: new HarmonyMethod(VersusMatchResults_ctor_Transpiler)
         );
     }
 
-    private static IEnumerable<CodeInstruction> VersusRoundResults_ctor_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    private static IEnumerable<CodeInstruction> VersusMatchResults_ctor_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         var cursor = new ILTranspilerCursor(generator, instructions);
+
+        cursor.GotoNext(MoveType.After, [ILMatch.Stloc(6), ILMatch.Ldloc(6)]);
+        cursor.GotoNext(MoveType.After, [ILMatch.Stloc(6), ILMatch.Ldloc(6)]);
+        cursor.GotoNext(MoveType.After, [ILMatch.Stloc(6), ILMatch.Ldloc(6)]);
+
+
+        var br_Winner = cursor.CreateLabel();
 
         cursor.GotoNext(
             [
                 ILMatch.Ldstr("Invalid player amount for match results!")
             ]
         );
+
+        var instr = cursor.Instructions[cursor.Index];
+        var labels = instr.labels.ToHashSet();
+        cursor.Instructions[cursor.Index] = new CodeInstruction(instr.opcode, instr.operand)
+        {
+            blocks = [.. instr.blocks]
+        };
 
         // tweenFrom
         cursor.EmitDelegate<Func<Vector2[]>>(() =>
@@ -39,7 +53,7 @@ internal sealed class VersusMatchResultsHooks : IHookable
                 5 => [
                     new Vector2(-240f, 120f),
                     new Vector2(-160f, 120f),
-                    new Vector2(210f, 360f),
+                    new Vector2(160f, 360f),
                     new Vector2(580f, 120f),
                     new Vector2(660f, 120f)
                 ],
@@ -73,6 +87,12 @@ internal sealed class VersusMatchResultsHooks : IHookable
                 _ => []
             };
         });
+
+        foreach (var label in labels)
+        {
+            cursor.Prev.labels.Add(label);
+        }
+
         cursor.Emit(new CodeInstruction(OpCodes.Stloc_0));
 
         // tweenTo
@@ -120,13 +140,29 @@ internal sealed class VersusMatchResultsHooks : IHookable
         });
         cursor.Emit(new CodeInstruction(OpCodes.Stloc_1));
 
+        cursor.Emit(OpCodes.Br_S, br_Winner);
+
+        cursor.GotoNext([ILMatch.Throw()]);
+
+        cursor.MarkLabel(br_Winner);
+
+        cursor.Encompass((x) =>
+        {
+            while (x.Next(MoveType.After, [ILMatch.LdcI4(4)]))
+            {
+                cursor.EmitDelegate((int x) =>
+                {
+                    if (WiderSetModule.IsWide)
+                    {
+                        return x + 4;
+                    }
+
+                    return x;
+                });
+            }
+        });
 
 
         return cursor.Generate();
-    }
-
-    private static Exception? VersusRoundResults_ctor_Finalizer(Exception __exception)
-    {
-        return null;
     }
 }

@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using FortRise;
 using HarmonyLib;
 using TowerFall;
@@ -11,6 +11,9 @@ internal sealed class UnsafeVersusLevelSystem
 {
     [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "levels")]
     public static extern ref List<string> GetLevels(VersusLevelSystem instance);
+
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "set_VersusTowerData")]
+    public static extern void SetVersusTowerData(VersusLevelSystem instance, VersusTowerData? value);
 }
 
 internal sealed class VersusLevelSystemHooks : IHookable
@@ -18,35 +21,19 @@ internal sealed class VersusLevelSystemHooks : IHookable
     public static void Load(IHarmony harmony)
     {
         harmony.Patch(
-            AccessTools.DeclaredMethod(typeof(VersusLevelSystem), "GenLevels"),
-            postfix: new HarmonyMethod(VersusLevelSystem_GenLevels_Postfix)
+            AccessTools.DeclaredConstructor(typeof(VersusLevelSystem), [typeof(VersusTowerData)]),
+            postfix: new HarmonyMethod(VersusLevelSystem_ctor_Postfix)
         );
     }
 
-    private static void VersusLevelSystem_GenLevels_Postfix(VersusLevelSystem __instance)
+    private static void VersusLevelSystem_ctor_Postfix(VersusLevelSystem __instance)
     {
         if (!WiderSetModule.IsWide)
         {
             return;
         }
 
-        ref var levels = ref UnsafeVersusLevelSystem.GetLevels(__instance);
-        List<string> wideLevels = new List<string>(levels.Count);
-        foreach (var level in levels)
-        {
-            // if the first level starts with 'mod:'
-            // it means this tower is modded
-            if (level.StartsWith("mod:"))
-            {
-                break;
-            }
-
-            // redirect the level to us instead
-            string prefix = "mod:Teuria.WiderSet/";
-            string actualLevel = $"{prefix}{level}".Replace("Levels", "WideLevels");
-            wideLevels.Add(actualLevel);
-        }
-
-        levels = wideLevels;
+        ref IVersusTowerEntry level = ref CollectionsMarshal.GetValueRefOrNullRef(WiderSetModule.MapEntry, __instance.VersusTowerData.GetLevelID());
+        UnsafeVersusLevelSystem.SetVersusTowerData(__instance, level.VersusTowerData);
     }
 }
