@@ -68,27 +68,46 @@ internal sealed class RollcallElementHooks : IHookable
         }
     }
 
-    // TODO: possible incompatibility with Windows
     private static IEnumerable<CodeInstruction> RollcallElement_Render_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         var cursor = new ILTranspilerCursor(generator, instructions);
 
         // if (input != null)
-        cursor.GotoNext(
-            MoveType.After,
-            [
-                ILMatch.Ldnull(),
-                ILMatch.Ceq(),
-                ILMatch.Stloc(),
-                ILMatch.Ldloc()
-            ]
-        );
-
-        // NOTE: The return type has to be inverted, the expected value should've been false to be true
-        cursor.EmitDelegate((bool inputNotNull) =>
+        if (!WiderSetModule.Instance.Context.Flags.IsWindows)
         {
-            return inputNotNull || WiderSetModule.IsWide;
-        });
+            cursor.GotoNext(
+                MoveType.After,
+                [
+                    ILMatch.Ldnull(),
+                    ILMatch.Ceq(),
+                    ILMatch.Stloc(),
+                    ILMatch.Ldloc()
+                ]
+            );
+
+            // NOTE: The return type has to be inverted, the expected value should've been false to be true
+            cursor.EmitDelegate((bool inputNotNull) =>
+            {
+                return inputNotNull || WiderSetModule.IsWide;
+            });
+        }
+        else
+        {
+            // *we have a regression here with Windows where it does not have these 4 instructions 
+
+            cursor.GotoNext(
+                MoveType.After,
+                [
+                    ILMatch.Ldfld("input")
+                ]
+            );
+
+            cursor.EmitDelegate((PlayerInput input) =>
+            {
+                return input != null && !WiderSetModule.IsWide;
+            });
+        }
+
 
         // if (... && GameData.DarkWorldDLC)
         cursor.GotoNext(
