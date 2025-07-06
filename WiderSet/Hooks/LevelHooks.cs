@@ -19,6 +19,11 @@ internal sealed class LevelHooks : IHookable
         );
 
         harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Level), nameof(Level.DebugModeRender)),
+            transpiler: new HarmonyMethod(Level_DebugModeRender_Transpiler)
+        );
+
+        harmony.Patch(
             AccessTools.DeclaredMethod(typeof(Level), nameof(Level.CoreRender)),
             transpiler: new HarmonyMethod(Level_CoreRender_Transpiler)
         );
@@ -43,6 +48,30 @@ internal sealed class LevelHooks : IHookable
             }
             return width;
         });
+
+        return cursor.Generate();
+    }
+
+    private static IEnumerable<CodeInstruction> Level_DebugModeRender_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        var cursor = new ILTranspilerCursor(generator, instructions);
+
+        cursor.GotoNext(
+            MoveType.After,
+            [
+                ILMatch.Call("Lerp")
+            ]
+        );
+
+        cursor.EmitDelegate((Matrix x) =>
+        {
+            if (WiderSetModule.IsWide) { return x; }
+            Engine.Instance.Scene.Camera.X -= Screen.LeftImage.Width - 2;
+            var matrix = Engine.Instance.Scene.Camera.Matrix;
+            Engine.Instance.Scene.Camera.X += Screen.LeftImage.Width - 2;
+            return matrix;
+        });
+
 
         return cursor.Generate();
     }
