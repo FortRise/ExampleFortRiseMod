@@ -34,6 +34,10 @@ internal sealed class VersusLevelSystemHooks : IHookable
         }
 
         ref IVersusTowerEntry level = ref CollectionsMarshal.GetValueRefOrNullRef(WiderSetModule.MapEntry, __instance.VersusTowerData.GetLevelID());
+        if (Unsafe.IsNullRef(ref level))
+        {
+            return;
+        }
         UnsafeVersusLevelSystem.SetVersusTowerData(__instance, level.VersusTowerData);
     }
 }
