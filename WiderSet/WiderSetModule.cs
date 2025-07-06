@@ -54,6 +54,7 @@ public class WiderSetModule : Mod
         typeof(RollcallElementHooks),
         typeof(RoundLogicHooks),
         typeof(TFGameHooks),
+        typeof(TreasureSpawnerHooks),
         typeof(ScreenHooks),
         typeof(ScreenTitleHooks),
         typeof(SessionHooks),
@@ -97,6 +98,7 @@ public class WiderSetModule : Mod
 
     public WiderSetModule(IModContent content, IModuleContext context, ILogger logger) : base(content, context, logger)
     {
+
         IsWide = false;
         Instance = this;
         TFGame.Players = new bool[8];
