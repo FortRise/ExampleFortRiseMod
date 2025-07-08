@@ -24,11 +24,6 @@ internal sealed class MainMenuHooks : IHookable
     public static void Load(IHarmony harmony)
     {
         harmony.Patch(
-            AccessTools.DeclaredConstructor(typeof(MainMenu), [typeof(MainMenu.MenuState)]),
-            transpiler: new HarmonyMethod(MainMenu_ctor_Transpiler)
-        );
-
-        harmony.Patch(
             AccessTools.DeclaredMethod(typeof(MainMenu), nameof(MainMenu.Begin)),
             postfix: new HarmonyMethod(MainMenu_Begin_Postfix)
         );
