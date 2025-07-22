@@ -78,9 +78,9 @@ internal sealed class BackgroundHooks : IHookable
             if (!WiderSetModule.IsWide)
             {
                 Engine.Instance.GraphicsDevice.ScissorRectangle = new Rectangle(
+                    55,
                     0,
-                    0,
-                    420 - 54,
+                    420 - 108,
                     240
                 );
             }

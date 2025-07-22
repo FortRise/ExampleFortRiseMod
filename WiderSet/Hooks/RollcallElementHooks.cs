@@ -177,6 +177,9 @@ internal sealed class RollcallElementHooks : IHookable
     {
         var cursor = new ILTranspilerCursor(generator, instructions);
 
+        cursor.GotoNext(MoveType.After, [ILMatch.LdcI4(4)]);
+        cursor.EmitDelegate((int player) => player + 4);
+
         cursor.GotoNext([
             ILMatch.Call("get_MainMenu"),
             ILMatch.LdcI4(3)

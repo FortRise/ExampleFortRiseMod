@@ -4,6 +4,7 @@ using FortRise;
 using FortRise.Transpiler;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using TowerFall;
 
@@ -63,6 +64,9 @@ internal sealed class ReplayFrameHooks : IHookable
 
             return size;
         });
+
+        cursor.GotoNext(MoveType.After, [ILMatch.Ldsfld("Opaque")]);
+        cursor.EmitDelegate((BlendState _) => BlendState.AlphaBlend);
 
         cursor.GotoNext(MoveType.After, [ILMatch.Callvirt("Begin")]);
 

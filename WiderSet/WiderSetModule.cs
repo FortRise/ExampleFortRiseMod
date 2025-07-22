@@ -45,6 +45,7 @@ public class WiderSetModule : Mod
         typeof(LightingLayerHooks),
         typeof(MainMenuHooks),
         typeof(MapSceneHooks),
+        typeof(MatchTeamsHooks),
         typeof(MenuBackgroundHooks),
         typeof(MenuButtonGuideHooks),
         typeof(MiasmaHooks),
@@ -101,6 +102,7 @@ public class WiderSetModule : Mod
 
         IsWide = false;
         Instance = this;
+        // patch all arrays that only has limited size
         TFGame.Players = new bool[8];
         TFGame.Characters = new int[8];
         TFGame.AltSelect = new ArcherData.ArcherTypes[8];
@@ -111,6 +113,16 @@ public class WiderSetModule : Mod
         {
             TFGame.Characters[i] = i;
         }
+
+        var chestChances = TreasureSpawner.ChestChances;
+        Array.Resize(ref chestChances, chestChances.Length + 4);
+        chestChances[3] = [0.9f, 0.9f, 0.8f, 0.8f, 0.2f, 0.1f];
+        chestChances[4] = [0.9f, 0.9f, 0.9f, 0.8f, 0.4f, 0.1f];
+        chestChances[5] = [0.9f, 0.9f, 0.9f, 0.8f, 0.4f, 0.2f];
+        chestChances[6] = [0.9f, 0.9f, 0.9f, 0.9f, 0.4f, 0.2f, 0.1f];
+        TreasureSpawner.ChestChances = chestChances;
+
+
         Environment.SetEnvironmentVariable("FNA_GAMEPAD_NUM_GAMEPADS", "8");
 
         ref var colliders = ref UnsafePlayer.GetPlayerWasColliders(null!);

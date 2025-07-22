@@ -3,6 +3,9 @@ using System.Reflection.Emit;
 using FortRise;
 using FortRise.Transpiler;
 using HarmonyLib;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Monocle;
 using TowerFall;
 
 namespace Teuria.WiderSet;
@@ -18,6 +21,7 @@ internal sealed class ReplayViewerHooks : IHookable
 
         harmony.Patch(
             AccessTools.DeclaredMethod(typeof(ReplayViewer), nameof(ReplayViewer.Render)),
+            prefix: new HarmonyMethod(ReplayViewer_Render_Prefix),
             transpiler: new HarmonyMethod(ReplayViewer_Render_Transpiler)
         );
 
@@ -62,9 +66,24 @@ internal sealed class ReplayViewerHooks : IHookable
         return cursor.Generate();
     }
 
+    private static void ReplayViewer_Render_Prefix()
+    {
+        Draw.Clear(Color.Transparent);
+    }
+
     private static IEnumerable<CodeInstruction> ReplayViewer_Render_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         var cursor = new ILTranspilerCursor(generator, instructions);
+
+        cursor.GotoNext(MoveType.After, [ILMatch.Ldsfld("Opaque")]);
+        cursor.EmitDelegate((BlendState _) => BlendState.AlphaBlend);
+
+        cursor.GotoNext(MoveType.After, [ILMatch.Callvirt("Begin")]);
+        cursor.EmitDelegate(() =>
+        {
+            ref var matrix = ref UnsafeSpriteBatch.GetSpriteBatchTransformMatrix(Draw.SpriteBatch);
+            matrix = MatrixUtilities.IdentityFixed;
+        });
 
         cursor.GotoNext(MoveType.After, [ILMatch.LdcR4(320f)]);
 

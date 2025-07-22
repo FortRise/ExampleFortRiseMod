@@ -45,8 +45,113 @@ internal sealed class MainMenuHooks : IHookable
 
         harmony.Patch(
             AccessTools.DeclaredMethod(typeof(MainMenu), nameof(MainMenu.CreateRollcall)),
-            transpiler: new HarmonyMethod(PlayerAmountUtilities.EightPlayerTranspiler)
+            transpiler: new HarmonyMethod(MainMenu_CreateRollcall_Transpiler)
         );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(MainMenu), nameof(MainMenu.CreateTeamSelect)),
+            transpiler: new HarmonyMethod(MainMenu_CreateTeamSelect_Transpiler)
+        );
+    }
+
+    private static IEnumerable<CodeInstruction> MainMenu_CreateRollcall_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        var cursor = new ILTranspilerCursor(generator, instructions);
+
+        cursor.GotoNext(MoveType.After, [ILMatch.LdcI4(4)]);
+        cursor.EmitDelegate((int player) => player + 4); // we need to set all of them to false, no matter the set is
+
+        cursor.GotoNext(MoveType.After, [ILMatch.LdcI4(4)]);
+        cursor.EmitDelegate((int player) =>
+        {
+            if (WiderSetModule.IsWide)
+            {
+                return player + 4; // this one however, needs to be checked
+            }
+
+            return player;
+        }); 
+
+        cursor.GotoNext(MoveType.After, [ILMatch.LdcI4(4)]);
+        cursor.EmitDelegate((int player) => player + 4); // and then again..
+
+        return cursor.Generate();
+    }
+
+    private static IEnumerable<CodeInstruction> MainMenu_CreateTeamSelect_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        var cursor = new ILTranspilerCursor(generator, instructions);
+
+        cursor.Encompass(x =>
+        {
+            while (x.Next(MoveType.After, [ILMatch.LdcR4(80f)]))
+            {
+                cursor.EmitDelegate((float y) =>
+                {
+                    if (WiderSetModule.IsWide)
+                    {
+                        return y - 20;
+                    }
+
+                    return y;
+                });
+            }
+        });
+
+        cursor.Encompass(x =>
+        {
+            while (x.Next(MoveType.After, [ILMatch.LdcI4(20)]))
+            {
+                cursor.EmitDelegate((int y) =>
+                {
+                    if (WiderSetModule.IsWide)
+                    {
+                        return y - 5;
+                    }
+
+                    return y;
+                });
+            }
+        });
+
+        cursor.Index = 0;
+
+        cursor.GotoNext(MoveType.After, [ILMatch.LdcI4(145)]);
+        cursor.EmitDelegate((int y) =>
+        {
+            if (WiderSetModule.IsWide)
+            {
+                return y - 30;
+            }
+
+            return y;
+        });
+
+        cursor.GotoNext(MoveType.After, [ILMatch.LdcI4(135)]);
+        cursor.EmitDelegate((int y) =>
+        {
+            if (WiderSetModule.IsWide)
+            {
+                return y - 30;
+            }
+
+            return y;
+        });
+
+
+        cursor.GotoNext(MoveType.After, [ILMatch.LdcI4(4)]);
+        cursor.EmitDelegate((int player) =>
+        {
+            if (WiderSetModule.IsWide)
+            {
+                return player + 4;
+            }
+
+            return player;
+        });
+
+
+        return cursor.Generate();
     }
 
     private static IEnumerable<CodeInstruction> MainMenu_ctor_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
