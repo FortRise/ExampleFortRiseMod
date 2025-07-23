@@ -95,6 +95,9 @@ internal sealed class VersusMatchResultsHooks : IHookable
 
         cursor.Emit(new CodeInstruction(OpCodes.Stloc_0));
 
+        const float yTop = 75f;
+        const float yBottom = 180f;
+
         // tweenTo
         cursor.EmitDelegate<Func<Vector2[]>>(() =>
         {
@@ -109,31 +112,31 @@ internal sealed class VersusMatchResultsHooks : IHookable
                     new Vector2(320f, 120f)
                 ],
                 6 => [
-                    new Vector2(50f, 105f),
-                    new Vector2(130f, 105f),
-                    new Vector2(210f, 105f),
-                    new Vector2(110f, 210f),
-                    new Vector2(190f, 210f),
-                    new Vector2(170f, 210f)
+                    new Vector2(50f, yTop),
+                    new Vector2(130f, yTop),
+                    new Vector2(210f, yTop),
+                    new Vector2(110f, yBottom),
+                    new Vector2(190f, yBottom),
+                    new Vector2(270f, yBottom)
                 ],
                 7 => [
-                    new Vector2(40f, 105f),
-                    new Vector2(120f, 105f),
-                    new Vector2(200f, 105f),
-                    new Vector2(280f, 105f),
-                    new Vector2(80f, 210f),
-                    new Vector2(160f, 210f),
-                    new Vector2(240f, 210f)
+                    new Vector2(40f, yTop),
+                    new Vector2(120f, yTop),
+                    new Vector2(200f, yTop),
+                    new Vector2(280f, yTop),
+                    new Vector2(80f, yBottom),
+                    new Vector2(160f, yBottom),
+                    new Vector2(240f, yBottom)
                 ],
                 8 => [
-                    new Vector2(20f, 105f),
-                    new Vector2(100f, 105f),
-                    new Vector2(180f, 105f),
-                    new Vector2(260f, 105f),
-                    new Vector2(60f, 210f),
-                    new Vector2(140f, 210f),
-                    new Vector2(220f, 210f),
-                    new Vector2(300f, 210f)
+                    new Vector2(20f, yTop),
+                    new Vector2(100f, yTop),
+                    new Vector2(180f, yTop),
+                    new Vector2(260f, yTop),
+                    new Vector2(60f, yBottom),
+                    new Vector2(140f, yBottom),
+                    new Vector2(220f, yBottom),
+                    new Vector2(300f, yBottom)
                 ],
                 _ => []
             };

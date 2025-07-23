@@ -46,6 +46,7 @@ public class WiderSetModule : Mod
         typeof(MainMenuHooks),
         typeof(MapSceneHooks),
         typeof(MatchTeamsHooks),
+        typeof(MatchSettingsHooks),
         typeof(MenuBackgroundHooks),
         typeof(MenuButtonGuideHooks),
         typeof(MiasmaHooks),
@@ -65,6 +66,7 @@ public class WiderSetModule : Mod
         typeof(VersusLevelSystemHooks),
         typeof(VersusStartHooks),
         typeof(VersusMatchResultsHooks),
+        typeof(VersusPlayerMatchResultsHooks),
         typeof(WrapHitboxHooks),
         typeof(WrapMathHooks)
     ];
@@ -95,11 +97,13 @@ public class WiderSetModule : Mod
     public static Dictionary<string, string> WideRedirector = new Dictionary<string, string>();
     public static Dictionary<string, IVersusTowerEntry> MapEntry = new Dictionary<string, IVersusTowerEntry>();
 
+    public static ISubtextureEntry SilverPortrait { get; private set; } = null!; 
+    public static ISubtextureEntry GoldPortrait { get; private set; } = null!;
+
     public static WiderSetModule Instance { get; private set; } = null!;
 
     public WiderSetModule(IModContent content, IModuleContext context, ILogger logger) : base(content, context, logger)
     {
-
         IsWide = false;
         Instance = this;
         // patch all arrays that only has limited size
@@ -172,6 +176,16 @@ public class WiderSetModule : Mod
             {
                 MenuStateType = typeof(StandardSelectionFromVersus)
             }
+        );
+
+        SilverPortrait = context.Registry.Subtextures.RegisterTexture(
+            "SilverPortrait",
+            content.Root.GetRelativePath("Content/images/portrait/silver.png")
+        );
+
+        GoldPortrait = context.Registry.Subtextures.RegisterTexture(
+            "GoldPortrait",
+            content.Root.GetRelativePath("Content/images/portrait/gold.png")
         );
 
         AdjustCharacterOffset();

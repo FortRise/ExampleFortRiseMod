@@ -81,6 +81,10 @@ internal sealed class ReplayViewerHooks : IHookable
         cursor.GotoNext(MoveType.After, [ILMatch.Callvirt("Begin")]);
         cursor.EmitDelegate(() =>
         {
+            if (WiderSetModule.IsWide)
+            {
+                return;
+            }
             ref var matrix = ref UnsafeSpriteBatch.GetSpriteBatchTransformMatrix(Draw.SpriteBatch);
             matrix = MatrixUtilities.IdentityFixed;
         });
