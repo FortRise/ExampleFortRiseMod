@@ -6,7 +6,6 @@ using FortRise;
 using FortRise.Transpiler;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
-using Monocle;
 using TowerFall;
 
 namespace Teuria.WiderSet;
@@ -101,7 +100,6 @@ internal sealed class VersusMatchResultsHooks : IHookable
         // tweenTo
         cursor.EmitDelegate<Func<Vector2[]>>(() =>
         {
-            var offset = Screen.LeftImage.Width;
             return TFGame.PlayerAmount switch
             {
                 5 => [

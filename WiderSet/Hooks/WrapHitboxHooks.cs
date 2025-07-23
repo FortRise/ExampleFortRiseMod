@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
-using System.Xml;
 using FortRise;
 using FortRise.Transpiler;
 using HarmonyLib;

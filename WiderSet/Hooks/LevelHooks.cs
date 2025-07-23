@@ -19,6 +19,11 @@ internal sealed class LevelHooks : IHookable
         );
 
         harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Level), nameof(Level.Begin)),
+            postfix: new HarmonyMethod(Level_Begin_Postfix)
+        );
+
+        harmony.Patch(
             AccessTools.DeclaredMethod(typeof(Level), nameof(Level.DebugModeRender)),
             transpiler: new HarmonyMethod(Level_DebugModeRender_Transpiler)
         );
@@ -27,6 +32,11 @@ internal sealed class LevelHooks : IHookable
             AccessTools.DeclaredMethod(typeof(Level), nameof(Level.CoreRender)),
             transpiler: new HarmonyMethod(Level_CoreRender_Transpiler)
         );
+    }
+
+    private static void Level_Begin_Postfix(Level __instance)
+    {
+        BackgroundHooks.ForegroundCheck = __instance.Foreground;
     }
 
     private static IEnumerable<CodeInstruction> Level_ctor_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
@@ -66,9 +76,9 @@ internal sealed class LevelHooks : IHookable
         cursor.EmitDelegate((Matrix x) =>
         {
             if (WiderSetModule.IsWide) { return x; }
-            Engine.Instance.Scene.Camera.X -= Screen.LeftImage.Width - 2;
+            Engine.Instance.Scene.Camera.X -= Screen.LeftImage.Width - 4;
             var matrix = Engine.Instance.Scene.Camera.Matrix;
-            Engine.Instance.Scene.Camera.X += Screen.LeftImage.Width - 2;
+            Engine.Instance.Scene.Camera.X += Screen.LeftImage.Width - 4;
             return matrix;
         });
 
@@ -100,7 +110,7 @@ internal sealed class LevelHooks : IHookable
         cursor.EmitDelegate((Vector2 x) => {
             if (!WiderSetModule.IsWide)
             {
-                return x + new Vector2(Screen.LeftImage.Width - 2, 0);
+                return x + new Vector2(Screen.LeftImage.Width - 4, 0);
             }
             return x;
         });

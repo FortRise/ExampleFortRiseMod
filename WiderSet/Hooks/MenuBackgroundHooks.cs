@@ -22,7 +22,7 @@ internal sealed class MenuBackgroundHooks : IHookable
 
     private static void MenuBackground_Render_Prefix()
     {
-        Draw.Rect(new Rectangle(-Screen.LeftImage.Width, (int)Engine.Instance.Scene.Camera.Y, 420, 240), new Color(35, 23, 89));
+        Draw.Rect(new Rectangle(-(Screen.LeftImage.Width - 4), (int)Engine.Instance.Scene.Camera.Y, 420, 240), new Color(35, 23, 89));
     }
 
     private static IEnumerable<CodeInstruction> MenuBackground_Render_Transpiler(

@@ -17,6 +17,15 @@ public class UnsafePlayer
     public static extern ref Collider[] GetPlayerWasColliders(Player player);
 }
 
+public class UnsafeLogo
+{
+    [UnsafeAccessor(UnsafeAccessorKind.StaticField, Name = "titleTweenFrom")]
+    public static extern ref Vector2 GetTitleTweenFrom(Logo? logo);
+
+    [UnsafeAccessor(UnsafeAccessorKind.StaticField, Name = "arrowTweenFrom")]
+    public static extern ref Vector2 GetArrowTweenFrom(Logo? logo);
+}
+
 public class WiderSetModule : Mod
 {
     public static Type[] Hookables = [
@@ -126,6 +135,12 @@ public class WiderSetModule : Mod
         chestChances[6] = [0.9f, 0.9f, 0.9f, 0.9f, 0.4f, 0.2f, 0.1f];
         TreasureSpawner.ChestChances = chestChances;
 
+        // logo
+        ref var arrowTweenFrom = ref UnsafeLogo.GetArrowTweenFrom(null);
+        ref var titleTweenFrom = ref UnsafeLogo.GetTitleTweenFrom(null);
+
+        arrowTweenFrom += new Vector2(100, 0);
+        titleTweenFrom -= new Vector2(100, 0);
 
         Environment.SetEnvironmentVariable("FNA_GAMEPAD_NUM_GAMEPADS", "8");
 

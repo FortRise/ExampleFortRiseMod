@@ -213,8 +213,8 @@ internal sealed class MainMenuHooks : IHookable
         tween = Tween.Create(Tween.TweenMode.Persist, Ease.CubeOut, 60);
         entity.Add(tween);
         __instance.Add(entity);
-        __instance.Camera.X -= Screen.LeftImage.Width - 2;
-        __instance.UILayer.Camera.X -= Screen.LeftImage.Width - 2;
+        __instance.Camera.X -= Screen.LeftImage.Width - 4;
+        __instance.UILayer.Camera.X -= Screen.LeftImage.Width - 4;
     }
 
     private static void MainMenu_CreateMain_Prefix()

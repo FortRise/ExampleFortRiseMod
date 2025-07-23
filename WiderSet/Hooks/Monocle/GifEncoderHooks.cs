@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using FortRise;
 using FortRise.Transpiler;
 using HarmonyLib;
 using Moments.Encoder;
-using TowerFall;
 
 namespace Teuria.WiderSet;
 
@@ -80,62 +78,6 @@ internal sealed class GifEncoderHooks : IHookable
                     return width;
                 });
             }
-        });
-
-        return cursor.Generate();
-    }
-}
-
-internal sealed class GifExporterHooks : IHookable
-{
-    public static void Load(IHarmony harmony)
-    {
-        harmony.Patch(
-            AccessTools.DeclaredConstructor(typeof(GifExporter), [typeof(ReplayData), typeof(Action<bool>)]),
-            transpiler: new HarmonyMethod(GifExporter_ctor_Transpiler)
-        );
-
-        harmony.Patch(
-            AccessTools.EnumeratorMoveNext(
-                AccessTools.DeclaredMethod(typeof(GifExporter), "ExportGIF")
-            ),
-            transpiler: new HarmonyMethod(GifExporter_Render_Transpiler)
-        );
-    }
-
-    private static IEnumerable<CodeInstruction> GifExporter_Render_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-    {
-        var cursor = new ILTranspilerCursor(generator, instructions);
-
-        cursor.GotoNext(MoveType.After, [ILMatch.LdcI4(320)]);
-
-        cursor.EmitDelegate((int width) =>
-        {
-            if (WiderSetModule.IsWide)
-            {
-                return width + 100;
-            }
-
-            return width;
-        });
-
-        return cursor.Generate();
-    }
-
-    private static IEnumerable<CodeInstruction> GifExporter_ctor_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-    {
-        var cursor = new ILTranspilerCursor(generator, instructions);
-
-        cursor.GotoNext(MoveType.After, [ILMatch.LdcI4(320)]);
-
-        cursor.EmitDelegate((int width) =>
-        {
-            if (WiderSetModule.IsWide)
-            {
-                return width + 100;
-            }
-
-            return width;
         });
 
         return cursor.Generate();

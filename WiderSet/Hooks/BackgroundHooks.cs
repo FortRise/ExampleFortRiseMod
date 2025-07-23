@@ -15,6 +15,7 @@ namespace Teuria.WiderSet;
 internal sealed class BackgroundHooks : IHookable
 {
     private static RasterizerState ScissorRasterizer = null!;
+    public static Background ForegroundCheck = null!;
 
     public static void Load(IHarmony harmony)
     {
@@ -61,9 +62,11 @@ internal sealed class BackgroundHooks : IHookable
             ]
         );
 
-        cursor.EmitDelegate((Matrix x) =>
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate((Matrix x, Background __instance) =>
         {
             if (WiderSetModule.IsWide) { return x; }
+            if (__instance == ForegroundCheck) { return x; } // do not change anything if its a foreground.
             Engine.Instance.Scene.Camera.X -= Screen.LeftImage.Width;
             var matrix = Engine.Instance.Scene.Camera.Matrix;
             Engine.Instance.Scene.Camera.X += Screen.LeftImage.Width;
@@ -73,8 +76,10 @@ internal sealed class BackgroundHooks : IHookable
 
         cursor.GotoNext(MoveType.After, [ILMatch.Callvirt("Begin")]);
 
-        cursor.EmitDelegate(() =>
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate((Background __instance) =>
         {
+            if (__instance == ForegroundCheck) { return; } // do not change anything if its a foreground.
             if (!WiderSetModule.IsWide)
             {
                 Engine.Instance.GraphicsDevice.ScissorRectangle = new Rectangle(

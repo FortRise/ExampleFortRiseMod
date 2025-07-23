@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
@@ -101,12 +102,12 @@ internal sealed class ScreenHooks : IHookable
 
     private static void Screen_DisableFullscreen_Postfix(Screen __instance)
     {
-        var offset = (Screen.LeftImage.Width * 3) - 6;
+        var offset = Screen.LeftImage.Width * 3;
         UnsafeScreen.UpdatePadRects(__instance);
         ref var rect = ref UnsafeScreen.RightDrawPadRect(__instance);
-        rect.X -= 145;
+        rect.X -= 148;
         ref var leftRect = ref UnsafeScreen.LeftDrawPadRect(__instance);
-        leftRect.X += offset;
+        leftRect.X += offset - 12;
         __instance.Matrix =
             Matrix.CreateScale(__instance.Scale) *
             Matrix.CreateTranslation(offset, 0f, 0f);

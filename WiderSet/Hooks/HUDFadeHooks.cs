@@ -36,7 +36,7 @@ internal sealed class HUDFadeHooks : IHookable
                 return x - Screen.LeftImage.Width;
             }
 
-            return x;
+            return x - 4;
         });
 
         cursor.GotoNext(
