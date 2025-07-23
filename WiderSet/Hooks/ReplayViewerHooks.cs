@@ -89,6 +89,19 @@ internal sealed class ReplayViewerHooks : IHookable
             matrix = MatrixUtilities.IdentityFixed;
         });
 
+        cursor.GotoNext(MoveType.After, [ILMatch.Call("get_Zero")]);
+        cursor.GotoNext(MoveType.After, [ILMatch.Call("get_Zero")]);
+        cursor.EmitDelegate((Vector2 pos) =>
+        {
+            if (WiderSetModule.IsWide)
+            {
+                return pos;
+            }
+
+            return pos + new Vector2(4, 0);
+        });
+
+
         cursor.GotoNext(MoveType.After, [ILMatch.LdcR4(320f)]);
 
         cursor.EmitDelegate((float width) =>
