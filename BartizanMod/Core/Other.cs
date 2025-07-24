@@ -25,13 +25,13 @@ public class MyRollcallElement
 
     private static void RollcallElement_StartVersus_Prefix()
     {
-        var playerCount = EightPlayerUtils.GetMenuPlayerCount();
+        var playerCount = WiderSetUtils.GetMenuPlayerCount();
         MyVersusPlayerMatchResults.PlayerWins = new int[playerCount];
     }
 
     private static void RollcallElement_ForceStart_Prefix()
     {
-        var playerCount = EightPlayerUtils.GetMenuPlayerCount();
+        var playerCount = WiderSetUtils.GetMenuPlayerCount();
         MyVersusPlayerMatchResults.PlayerWins = new int[playerCount];
     }
 }

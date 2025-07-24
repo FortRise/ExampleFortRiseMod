@@ -16,7 +16,7 @@ public class BartizanModModule : Mod
     public BartizanModModule(IModContent content, IModuleContext context, ILogger logger) : base(content, context, logger)
     {
         Instance = this;
-        WiderSetApi = context.Interop.GetApi<IWiderSetModApi>("Teuria.WiderSetMod");
+        WiderSetApi = context.Interop.GetApi<IWiderSetModApi>("Teuria.WiderSet");
         MyPlayer.Register(context.Harmony, content, context.Registry);
         MyArrow.Register(context.Harmony, content, context.Registry);
         MyPlayerCorpse.Register(context.Harmony);

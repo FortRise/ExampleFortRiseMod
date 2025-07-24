@@ -1,24 +1,34 @@
-using System;
-using MonoMod.ModInterop;
-
 namespace BartizanMod;
 
 public interface IWiderSetModApi 
 {
-    bool IsEightPlayer { get; }
-    bool LaunchedEightPlayer { get; }
+    bool IsWide { get; }
 }
 
-public static class EightPlayerUtils 
+public static class WiderSetUtils 
 {
-    public static int GetScreenWidth() 
+    public static int GetLeftOffset
+    {
+        get
+        {
+            var widerSetApi = BartizanModModule.Instance.WiderSetApi;
+            if (widerSetApi is null)
+            {
+                return 0;
+            }
+
+            return widerSetApi.IsWide ? 55 : 0;
+        }
+    }
+
+    public static int GetScreenWidth()
     {
         var widerSetApi = BartizanModModule.Instance.WiderSetApi;
         if (widerSetApi is null)
         {
             return 320;
         }
-        return widerSetApi.IsEightPlayer ? 420 : 320;
+        return widerSetApi.IsWide ? 420 : 320;
     }
 
     public static int GetPlayerCount() 
@@ -28,7 +38,7 @@ public static class EightPlayerUtils
         {
             return 4;
         }
-        return widerSetApi.IsEightPlayer ? 8: 4;
+        return widerSetApi.IsWide ? 8: 4;
     }
 
     public static int GetMenuPlayerCount() 
@@ -38,6 +48,6 @@ public static class EightPlayerUtils
         {
             return 4;
         }
-        return widerSetApi.LaunchedEightPlayer ? 8: 4;
+        return widerSetApi.IsWide ? 8: 4;
     }
 }

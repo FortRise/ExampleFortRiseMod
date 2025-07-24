@@ -119,7 +119,7 @@ public class RespawnRoundLogic : RoundLogic
 
     public RespawnRoundLogic(Session session) :base(session, false)
     {
-        var playerCount = EightPlayerUtils.GetPlayerCount();
+        var playerCount = WiderSetUtils.GetPlayerCount();
         killCountHUDs = new KillCountHUD[playerCount];
         for (int i = 0; i < playerCount; i++) 
         {
@@ -201,7 +201,7 @@ public class RespawnRoundLogic : RoundLogic
 
     protected virtual void AfterOnPlayerDeath(Player player, PlayerCorpse corpse)
     {
-        if (BartizanModModule.Instance.Settings.RespawnMode == "Instant")
+        if (BartizanModModule.Instance.Settings.RespawnMode != "Delayed")
             this.RespawnPlayer(player.PlayerIndex);
         else
             Session.CurrentLevel.Add(new TeamReviver(corpse, TeamReviver.Modes.Quest));
@@ -246,7 +246,7 @@ public class MobRoundLogic : RespawnRoundLogic
     public MobRoundLogic(Session session)
         : base(session)
     {
-        var playerCount = EightPlayerUtils.GetPlayerCount();
+        var playerCount = WiderSetUtils.GetPlayerCount();
         activeGhosts = new PlayerGhost[playerCount];
     }
 
@@ -332,7 +332,7 @@ public class KillCountHUD : Entity
         Sprite<int> sprite = DeathSkull.GetSprite();
         sprite.Color = ArcherData.GetColorA(playerIndex);
 
-        var width = EightPlayerUtils.GetScreenWidth();
+        var width = WiderSetUtils.GetScreenWidth();
 
         if (this.playerIndex % 2 == 0) 
             sprite.X = 8 + 10 * skullIcons.Count;
@@ -341,6 +341,8 @@ public class KillCountHUD : Entity
         float offset = 0;
         if (playerIndex > 4)
             offset = 20;
+
+        sprite.X -= WiderSetUtils.GetLeftOffset;
 
         sprite.Y = this.playerIndex / 2 is 0 or 2 or 4 ? 20 + offset : (240 - 20) - offset;
         sprite.Stop();
