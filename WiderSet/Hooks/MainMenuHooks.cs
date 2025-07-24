@@ -185,10 +185,11 @@ internal sealed class MainMenuHooks : IHookable
             matrix = Engine.Instance.Screen.Matrix;
         });
 
+
         cursor.GotoNext(
             MoveType.After,
             [
-                ILMatch.Brtrue_S(),
+                WiderSetModule.Instance.Context.Flags.IsWindows ? ILMatchExt.Ble_Un_S() : ILMatch.Brtrue_S(),
                 ILMatch.LdcI4(0)
             ]
         );

@@ -24,11 +24,6 @@ internal sealed class VersusMatchResultsHooks : IHookable
     {
         var cursor = new ILTranspilerCursor(generator, instructions);
 
-        cursor.GotoNext(MoveType.After, [ILMatch.Stloc(6), ILMatch.Ldloc(6)]);
-        cursor.GotoNext(MoveType.After, [ILMatch.Stloc(6), ILMatch.Ldloc(6)]);
-        cursor.GotoNext(MoveType.After, [ILMatch.Stloc(6), ILMatch.Ldloc(6)]);
-
-
         var br_Winner = cursor.CreateLabel();
 
         cursor.GotoNext(
