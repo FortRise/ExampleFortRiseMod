@@ -9,5 +9,10 @@
 			"name": "FortRise",
 			"version": "5.0.0-beta.8"
 		}
-	]
+	],
+	"update": {
+		"gamebanana": {
+			"id": 608884
+		}
+	}
 }
