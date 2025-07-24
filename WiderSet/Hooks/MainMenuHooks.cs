@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
@@ -185,11 +186,10 @@ internal sealed class MainMenuHooks : IHookable
             matrix = Engine.Instance.Screen.Matrix;
         });
 
-
         cursor.GotoNext(
             MoveType.After,
             [
-                WiderSetModule.Instance.Context.Flags.IsWindows ? ILMatchExt.Ble_Un_S() : ILMatch.Brtrue_S(),
+                RiseCore.IsWindows ? ILMatchExt.Ble_Un_S() : ILMatch.Brtrue_S(),
                 ILMatch.LdcI4(0)
             ]
         );

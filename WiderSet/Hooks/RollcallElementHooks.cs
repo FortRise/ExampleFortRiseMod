@@ -73,7 +73,7 @@ internal sealed class RollcallElementHooks : IHookable
         var cursor = new ILTranspilerCursor(generator, instructions);
 
         // if (input != null)
-        if (!WiderSetModule.Instance.Context.Flags.IsWindows)
+        if (!RiseCore.IsWindows)
         {
             cursor.GotoNext(
                 MoveType.After,

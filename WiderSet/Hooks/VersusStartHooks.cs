@@ -25,7 +25,7 @@ internal sealed class VersusStartHooks : IHookable
         cursor.GotoNext(
             MoveType.After,
             [
-                WiderSetModule.Instance.Context.Flags.IsWindows ? ILMatchExt.Ble_Un_S() : ILMatch.Brtrue_S(),
+                RiseCore.IsWindows ? ILMatchExt.Ble_Un_S() : ILMatch.Brtrue_S(),
                 ILMatch.LdcR4(0f)
             ]
         );
