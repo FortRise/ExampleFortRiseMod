@@ -34,7 +34,7 @@ internal sealed class VersusStartHooks : IHookable
         {
             if (WiderSetModule.IsWide)
             {
-                return x - Screen.LeftImage.Width - 4;
+                return x - Screen.LeftImage.Width;
             }
 
             return x - 4;

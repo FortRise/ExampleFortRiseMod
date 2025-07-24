@@ -95,9 +95,12 @@ internal sealed class ScreenHooks : IHookable
         var offset = Screen.LeftImage.Width * 3;
         UnsafeScreen.UpdatePadRects(__instance);
         ref var rect = ref UnsafeScreen.RightDrawPadRect(__instance);
-        rect.X -= 209;
+        rect.X -= 220;
         ref var leftRect = ref UnsafeScreen.LeftDrawPadRect(__instance);
-        leftRect.X += offset + 80;
+        leftRect.X += offset + 64;
+        __instance.Matrix =
+            Matrix.CreateScale(__instance.Scale) *
+            Matrix.CreateTranslation(offset + 97, 0f, 0f);
     }
 
     private static void Screen_DisableFullscreen_Postfix(Screen __instance)
