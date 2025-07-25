@@ -1,13 +1,13 @@
 {
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"displayName": "Autolock Modifier",
 	"author": "Terria",
     "description": "Disables Auto Locking mechanic when the player is close to each other.",
-    "dll": "DisableAutoLock.dll",
+    "dll": "AutolockModifier.dll",
 	"dependencies": [
 		{
 			"name": "FortRise",
-			"version": "5.0.0-beta.7"
+			"version": "5.0.0-rc.2"
 		}
 	]
 }

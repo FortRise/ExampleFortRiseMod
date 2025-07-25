@@ -29,13 +29,25 @@ public sealed class AutolockModifier : Mod
         var cursor = new ILTranspilerCursor(generator, instructions);
 
         cursor.GotoNext(MoveType.After, ILMatch.LdcR4(1.134464f));
-        cursor.EmitDelegate((float x) => Instance.Settings.MaxAngle == 65 ? x : Instance.Settings.MaxAngle * Calc.DEG_TO_RAD);
+        cursor.Emit(new CodeInstruction(OpCodes.Ldarg_0));
+        cursor.EmitDelegate((float x, Player player) => {
+            if (player.Level.Session.MatchSettings.Mode == Modes.Trials && !Instance.Settings.AllowTrials)
+            {
+                return x;
+            }
+            return Instance.Settings.MaxAngle == 65 ? x : Instance.Settings.MaxAngle * Calc.DEG_TO_RAD;
+        });
 
         return cursor.Generate();
     }
 
     private static bool Player_FindAutoLockAngle_Prefix(Player __instance, ref float __result)
     {
+        if (__instance.Level.Session.MatchSettings.Mode == Modes.Trials && !Instance.Settings.AllowTrials)
+        {
+            return true;
+        }
+
         if (Instance.Settings.DisableAutoLock)
         {
             __result = __instance.AimDirection;
