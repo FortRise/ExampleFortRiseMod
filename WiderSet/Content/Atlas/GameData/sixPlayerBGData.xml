@@ -336,7 +336,7 @@
     <Background bgColor="FFFFFF">
       <ScrollLayer x="0" y="0" speedX="0.2" speedY="0" opacity="1">Teuria.WiderSet/distantSky</ScrollLayer>
       <ScrollLayer x="0" y="0" speedX="0.4" speedY="0" opacity="0.02">Teuria.WiderSet/thickMist</ScrollLayer>
-      <ScrollLayer x="0" y="0" speedX="1" speedY="2.0" opacity="0.03">Teuria.WiderSet/now</ScrollLayer>
+      <ScrollLayer x="0" y="0" speedX="1" speedY="2.0" opacity="0.03">Teuria.WiderSet/snow</ScrollLayer>
 
       <WavyLayer x="-5" y="154" waveFrames="240" amplitude="4" sliceSize="5" horizontal="True" opacity="0.250" sliceAdd="-.005">Teuria.WiderSet/sea</WavyLayer>
       <WavyLayer x="-5" y="165" waveFrames="200" amplitude="5" sliceSize="10" horizontal="True" opacity="0.50" sliceAdd="-.005">Teuria.WiderSet/sea</WavyLayer>

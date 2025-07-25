@@ -1,6 +1,6 @@
 {
 	"version": "1.0.0",
-	"displayName": "Disable Auto Lock",
+	"displayName": "Autolock Modifier",
 	"author": "Terria",
     "description": "Disables Auto Locking mechanic when the player is close to each other.",
     "dll": "DisableAutoLock.dll",
