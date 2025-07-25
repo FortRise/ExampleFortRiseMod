@@ -4,7 +4,7 @@ namespace Teuria.AutolockModifier;
 
 public sealed class AutolockModifierSettings : ModuleSettings
 {
-    public bool DisableAutoLock { get; set; } = true;
+    public bool DisableAutoLock { get; set; }
     public int MaxAngle { get; set; } = 65;
     public bool AllowTrials { get; set; }
 
