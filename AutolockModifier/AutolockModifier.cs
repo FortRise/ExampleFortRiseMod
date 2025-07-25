@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection.Emit;
 using FortRise;
 using FortRise.Transpiler;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework;
 using Monocle;
 using TowerFall;
 
@@ -27,6 +29,17 @@ public sealed class AutolockModifier : Mod
     private static IEnumerable<CodeInstruction> Player_FindAutoLockAngle_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         var cursor = new ILTranspilerCursor(generator, instructions);
+
+        cursor.GotoNext(MoveType.After, ILMatch.LdcR4(1296));
+        cursor.Emit(new CodeInstruction(OpCodes.Ldarg_0));
+        cursor.EmitDelegate((float x, Player player) => {
+            if (player.Level.Session.MatchSettings.Mode == Modes.Trials && !Instance.Settings.AllowTrials)
+            {
+                return x;
+            }
+
+            return Instance.Settings.MaxDistanceInPixels * Instance.Settings.MaxDistanceInPixels;
+        });
 
         cursor.GotoNext(MoveType.After, ILMatch.LdcR4(1.134464f));
         cursor.Emit(new CodeInstruction(OpCodes.Ldarg_0));
@@ -55,7 +68,6 @@ public sealed class AutolockModifier : Mod
         }
         return true;
     }
-
 
     public override ModuleSettings? CreateSettings()
     {

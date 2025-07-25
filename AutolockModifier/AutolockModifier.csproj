@@ -3,7 +3,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ModName>Teuria.AutolockModifier</ModName>
-    <ModVersion>1.1.0</ModVersion>
+    <ModVersion>1.2.0</ModVersion>
 
     <!-- If Steam path cannot be found, try specifying the path. -->
     <ModLoaderPath>..\..\..\</ModLoaderPath>
