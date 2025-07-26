@@ -14,6 +14,32 @@ internal sealed class LevelSystemHooks : IHookable
             AccessTools.DeclaredMethod(typeof(LevelSystem), nameof(LevelSystem.GetBackground)),
             postfix: new HarmonyMethod(LevelSystem_GetBackground_Postfix)
         );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(LevelSystem), nameof(LevelSystem.GetForeground)),
+            postfix: new HarmonyMethod(LevelSystem_GetForeground_Postfix)
+        );
+    }
+
+    private static void LevelSystem_GetForeground_Postfix(Level level, LevelSystem __instance, ref Background? __result)
+    {
+        if (__result is null)
+        {
+            return;
+        }
+
+        if (WiderSetModule.IsWide)
+        {
+            ref var val = ref CollectionsMarshal.GetValueRefOrNullRef(WiderSetModule.WideRedirector, __instance.Theme.ID);
+            if (Unsafe.IsNullRef(ref val))
+            {
+                return;
+            }
+
+            var bg = new Background(level, WiderSetModule.WideBG[val]["Foreground"]);
+
+            __result = bg;
+        }
     }
 
     private static void LevelSystem_GetBackground_Postfix(Level level, LevelSystem __instance, ref Background __result)

@@ -108,7 +108,7 @@ internal sealed class BackgroundHooks : IHookable
         {
             if (WiderSetModule.IsWide)
             {
-                __instance.WrapSize.X = Math.Max(320f, __instance.Image.Width);
+                __instance.WrapSize.X = Math.Max(420f, __instance.Image.Width);
             }
         }
     }

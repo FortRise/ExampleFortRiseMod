@@ -52,6 +52,7 @@ public class WiderSetModule : Mod
         typeof(LevelTilesHooks),
         typeof(LevelBGTilesHooks),
         typeof(LightingLayerHooks),
+        typeof(LoopPlatformHooks),
         typeof(MainMenuHooks),
         typeof(MapSceneHooks),
         typeof(MatchTeamsHooks),

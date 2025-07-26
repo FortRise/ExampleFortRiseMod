@@ -153,7 +153,7 @@
     <PlayerSpawn id="0" x="25" y="110" />
     <PlayerSpawn id="53" x="395" y="110" />
     <SpikeBall id="53" x="210" y="100" Explodes="True">
-      <node x="205" y="155" />
+      <node x="210" y="155" />
     </SpikeBall>
     <TeamSpawnA id="55" x="65" y="210" />
     <TeamSpawnA id="54" x="115" y="210" />
