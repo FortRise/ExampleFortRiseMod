@@ -3,7 +3,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ModName>Teuria.WiderSet</ModName>
-    <ModVersion>0.3.0</ModVersion>
+    <ModVersion>0.4.0</ModVersion>
 
     <!-- If Steam path cannot be found, try specifying the path. -->
     <ModLoaderPath>..\..\..\</ModLoaderPath>
