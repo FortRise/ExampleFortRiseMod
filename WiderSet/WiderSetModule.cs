@@ -60,6 +60,7 @@ public class WiderSetModule : Mod
         typeof(MenuBackgroundHooks),
         typeof(MenuButtonGuideHooks),
         typeof(MiasmaHooks),
+        typeof(MInputHooks),
         typeof(OrbLogicHooks),
         typeof(PlayerInputHooks),
         typeof(ReplayFrameHooks),
@@ -77,6 +78,7 @@ public class WiderSetModule : Mod
         typeof(VersusStartHooks),
         typeof(VersusMatchResultsHooks),
         typeof(VersusPlayerMatchResultsHooks),
+        typeof(VersusRoundResultsHooks),
         typeof(WrapHitboxHooks),
         typeof(WrapMathHooks)
     ];
