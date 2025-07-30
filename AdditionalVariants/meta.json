@@ -1,5 +1,5 @@
 {
-	"version": "2.3.0",
+	"version": "2.3.1",
 	"displayName": "Additional Variants",
 	"author": "Terria",
     "description": "Adds more variants to the game.",
@@ -7,7 +7,7 @@
 	"dependencies": [
 		{
 			"name": "FortRise",
-			"version": "5.0.0-beta.1"
+			"version": "5.0.0-rc.6"
 		},
 		{
 			"name": "Teuria.Ascencore",

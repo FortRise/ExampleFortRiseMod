@@ -3,7 +3,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ModName>Teuria.AdditionalVariants</ModName>
-    <ModVersion>2.3.0</ModVersion>
+    <ModVersion>2.3.1</ModVersion>
 
     <!-- If Steam path cannot be found, try specifying the path. -->
     <ModLoaderPath>..\..\..\</ModLoaderPath>
