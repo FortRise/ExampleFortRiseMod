@@ -104,6 +104,7 @@ public class WiderSetModule : Mod
     public static IMenuStateEntry StandardSelectionEntry { get; internal set; } = null!;
 
     public static Dictionary<int, Vector2> NotJoinedCharacterOffset = new Dictionary<int, Vector2>();
+    public static Dictionary<int, Vector2> NotJoinedSecretCharacterOffset = new Dictionary<int, Vector2>();
     public static Dictionary<int, Vector2> NotJoinedAltCharacterOffset = new Dictionary<int, Vector2>();
     public static Dictionary<string, XmlElement> WideBG = new Dictionary<string, XmlElement>();
     public static Dictionary<string, string> WideRedirector = new Dictionary<string, string>();

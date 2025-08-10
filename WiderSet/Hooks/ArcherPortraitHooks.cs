@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
@@ -116,9 +117,13 @@ internal sealed class ArcherPortraitHooks : IHookable
         {
             if (WiderSetModule.IsWide)
             {
-                var dict = self.AltSelect == ArcherData.ArcherTypes.Alt ?
-                    WiderSetModule.NotJoinedAltCharacterOffset :
-                    WiderSetModule.NotJoinedCharacterOffset;
+                var dict = self.AltSelect switch 
+                {
+                    ArcherData.ArcherTypes.Alt => WiderSetModule.NotJoinedAltCharacterOffset,
+                    ArcherData.ArcherTypes.Normal => WiderSetModule.NotJoinedCharacterOffset,
+                    ArcherData.ArcherTypes.Secret => WiderSetModule.NotJoinedSecretCharacterOffset,
+                    _ => throw new NotImplementedException()
+                };
                 ref var offset = ref CollectionsMarshal.GetValueRefOrNullRef(dict, self.CharacterIndex);
                 Rectangle rec;
                 if (Unsafe.IsNullRef(ref offset))
