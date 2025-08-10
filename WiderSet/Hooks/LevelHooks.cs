@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
+using System.Xml;
 using FortRise;
 using FortRise.Transpiler;
 using HarmonyLib;
@@ -14,7 +15,7 @@ internal sealed class LevelHooks : IHookable
     public static void Load(IHarmony harmony)
     {
         harmony.Patch(
-            AccessTools.DeclaredMethod(typeof(Level), nameof(Level.orig_ctor)),
+            AccessTools.DeclaredConstructor(typeof(Level), [typeof(Session), typeof(XmlElement)]),
             transpiler: new HarmonyMethod(Level_ctor_Transpiler)
         );
 
