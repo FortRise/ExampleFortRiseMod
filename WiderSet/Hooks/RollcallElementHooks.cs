@@ -180,13 +180,20 @@ internal sealed class RollcallElementHooks : IHookable
         cursor.GotoNext(MoveType.After, [ILMatch.LdcI4(4)]);
         cursor.EmitDelegate((int player) => player + 4);
 
-        cursor.GotoNext([
+        cursor.GotoNext(MoveType.After, [
             ILMatch.Call("get_MainMenu"),
             ILMatch.LdcI4(3)
         ]);
 
-        cursor.Next.opcode = OpCodes.Ldc_I4;
-        cursor.Next.operand = (int)WiderSetModule.StandardSelectionEntry.MenuState;
+        cursor.EmitDelegate((MainMenu.MenuState state) => 
+        {
+            if (MainMenu.RollcallMode == MainMenu.RollcallModes.Versus)
+            {
+                return WiderSetModule.StandardSelectionEntry.MenuState;
+            }
+
+            return state;
+        });
 
         return cursor.Generate();
     }
