@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+      <TargetFramework>net9.0</TargetFramework>
+      <Nullable>enable</Nullable>
+      <ModName>Teuria.DiscordPresence</ModName>
+      <ModVersion>1.0.0</ModVersion>
+
+      <!-- If Steam path cannot be found, try specifying the path. -->
+      <ModLoaderPath>..\..\..\</ModLoaderPath>
+      <ModZipPath>..\release\$(ModName).zip</ModZipPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+      <PackageReference Include="FortRise.Configuration" Version="1.5.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+      <Content Include="Unmanaged/**/*">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+  </ItemGroup>
+</Project>
+

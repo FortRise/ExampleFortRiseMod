@@ -1,0 +1,11 @@
+{
+  "displayName": "Discord Presence",
+  "version": "1.0.0",
+  "dependencies": [
+    {
+      "name": "FortRise",
+      "version": "5.1.0"
+    }
+  ],
+  "dll": "DiscordPresence.dll"
+}
