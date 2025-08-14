@@ -32,8 +32,7 @@ public class DiscordPresenceModule : Mod
         }
         catch (Exception e)
         {
-            logger.LogError("Could not initialize Discord Presence");
-            logger.LogError(e.ToString());
+            logger.LogError("Could not initialize Discord Presence due to an exception: {exception}", e);
             return;
         }
 
@@ -452,7 +451,7 @@ public class DiscordPresenceModule : Mod
                 }
                 else 
                 {
-                    DiscordPresenceModule.Instance.Logger.LogWarning($"Failed to change presence: {result}");
+                    DiscordPresenceModule.Instance.Logger.LogWarning("Failed to change presence: {result}", result);
                 }
             });
             dirty = false;
@@ -466,7 +465,7 @@ public class DiscordPresenceModule : Mod
         {
             if (e.Message == nameof(Discord.Result.NotRunning)) 
             {
-                DiscordPresenceModule.Instance.Logger.LogWarning("[DISCORD] Discord was shut down! Disposing Game SDK.");
+                DiscordPresenceModule.Instance.Logger.LogWarning("Discord was shut down! Disposing Game SDK.");
                 Unload(DiscordPresenceModule.Instance.Context);
                 return;
             }
