@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../Configuration.props"/>
+
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ModName>ExampleNewMod</ModName>
     <ModVersion>1.0.0</ModVersion>
 
-    <!-- If Steam path cannot be found, try specifying the path. -->
-    <ModLoaderPath>..\..\..\</ModLoaderPath>
     <ModZipPath>..\release\$(ModName).zip</ModZipPath>
   </PropertyGroup>
 

@@ -75,7 +75,6 @@ public class DiscordPresenceModule : Mod
             AccessTools.DeclaredMethod(typeof(QuestControl), "SpawnWave"),
             new HarmonyMethod(QuestControl_SpawnWave_Prefix)
         );
-
         context.Harmony.Patch(
             AccessTools.DeclaredMethod(typeof(QuestRoundLogic), nameof(QuestRoundLogic.RegisterEnemyKill)),
             transpiler: new HarmonyMethod(QuestRoundLogic_RegisterEnemyKill_Transpiler)

@@ -1,0 +1,19 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="AdditionalVariants/AdditionalVariants.csproj" />
+  <Project Path="Ascencore/Ascencore.csproj" />
+  <Project Path="AutolockModifier/AutolockModifier.csproj" />
+  <Project Path="BaronMode/BaronMode.csproj" />
+  <Project Path="BartizanMod/BartizanMod.csproj" />
+  <Project Path="ColoredDrillArrows/ColoredDrillArrows.csproj" />
+  <Project Path="DiscordPresence/DiscordPresence.csproj" />
+  <Project Path="ExampleNewMod/ExampleNewMod.csproj" />
+  <Project Path="MiasmaColors/MiasmaColors.csproj" />
+  <Project Path="MoreReplay/MoreReplay.csproj" />
+  <Project Path="MusicRestart/MusicRestart.csproj" />
+  <Project Path="WiderSet/WiderSet.csproj" />
+</Solution>

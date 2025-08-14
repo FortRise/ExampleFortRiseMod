@@ -21,7 +21,7 @@ public class ChaoticRoll : IHookable
     {
         if (Variants.ChaoticRoll.IsActive()) 
         {
-            session.MatchSettings.Variants.Randomize();
+            session.MatchSettings.Variants!.Randomize();
         }
     }
 }

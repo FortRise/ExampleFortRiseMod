@@ -1,0 +1,6 @@
+<Project>
+  <!-- If Steam path cannot be found, try specifying the path. -->
+  <PropertyGroup>
+      <ModLoaderPath>..\..\..\FortRise</ModLoaderPath>
+  </PropertyGroup>
+</Project>

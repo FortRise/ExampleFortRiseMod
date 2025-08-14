@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../Configuration.props"/>
+
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ModName>Teuria.AutolockModifier</ModName>
     <ModVersion>1.2.0</ModVersion>
 
-    <!-- If Steam path cannot be found, try specifying the path. -->
-    <ModLoaderPath>..\..\..\</ModLoaderPath>
     <ModZipPath>..\release\$(ModName)-$(ModVersion).zip</ModZipPath>
   </PropertyGroup>
 
@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FortRise.Configuration" Version="1.5.0" />
+    <PackageReference Include="FortRise.Configuration" Version="1.5.6" />
   </ItemGroup>
 </Project>
 
