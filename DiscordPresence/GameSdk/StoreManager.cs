@@ -1,7 +1,5 @@
-using System;
-using System.Runtime.InteropServices;
+#nullable disable
 using System.Collections.Generic;
-using System.Text;
 
 namespace Discord
 {
