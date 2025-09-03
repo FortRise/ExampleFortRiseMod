@@ -5,7 +5,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ModName>Teuria.WiderSet</ModName>
-    <ModVersion>0.5.0</ModVersion>
+    <ModVersion>0.5.1</ModVersion>
 
     <!-- If Steam path cannot be found, try specifying the path. -->
     <ModZipPath>..\release\$(ModName)-$(ModVersion).zip</ModZipPath>
