@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
-using System.Text;
 using FortRise;
 using FortRise.Transpiler;
 using HarmonyLib;
