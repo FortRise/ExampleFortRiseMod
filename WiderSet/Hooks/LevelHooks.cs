@@ -77,9 +77,9 @@ internal sealed class LevelHooks : IHookable
         cursor.EmitDelegate((Matrix x) =>
         {
             if (WiderSetModule.IsWide) { return x; }
-            Engine.Instance.Scene.Camera.X -= Screen.LeftImage.Width - 4;
+            Engine.Instance.Scene.Camera.X -= Screen.LeftImage.Width - 5;
             var matrix = Engine.Instance.Scene.Camera.Matrix;
-            Engine.Instance.Scene.Camera.X += Screen.LeftImage.Width - 4;
+            Engine.Instance.Scene.Camera.X += Screen.LeftImage.Width - 5;
             return matrix;
         });
 
@@ -111,7 +111,7 @@ internal sealed class LevelHooks : IHookable
         cursor.EmitDelegate((Vector2 x) => {
             if (!WiderSetModule.IsWide)
             {
-                return x + new Vector2(Screen.LeftImage.Width - 4, 0);
+                return x + new Vector2(Screen.LeftImage.Width - 5, 0);
             }
             return x;
         });

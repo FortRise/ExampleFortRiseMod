@@ -30,6 +30,12 @@ internal sealed class ScreenHooks : IHookable
     public static void Load(IHarmony harmony)
     {
         harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(Screen), "SetWindowSize", [typeof(int), typeof(int), typeof(bool)]),
+            postfix: new HarmonyMethod(Screen_SetWindowSize_Postfix),
+            transpiler: new HarmonyMethod(Screen_SetWindowSize_Transpiler)
+        );
+
+        harmony.Patch(
             AccessTools.DeclaredMethod(typeof(Screen), nameof(Screen.DisableFullscreen), [typeof(float)]),
             postfix: new HarmonyMethod(Screen_DisableFullscreen_Postfix)
         );
@@ -43,6 +49,34 @@ internal sealed class ScreenHooks : IHookable
             AccessTools.DeclaredMethod(typeof(Screen), nameof(Screen.Render)),
             transpiler: new HarmonyMethod(Screen_Render_Transpiler)
         );
+    }
+
+    private static IEnumerable<CodeInstruction> Screen_SetWindowSize_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        var cursor = new ILTranspilerCursor(generator, instructions);
+
+        cursor.GotoNext(MoveType.After, [ILMatch.Ldarg(1)]);
+
+        cursor.Emit(new CodeInstruction(OpCodes.Ldarg_0));
+        cursor.EmitDelegate((int width, Screen __instance) => 
+        {
+            int x = (int)(width + 10 * Private.Field<Screen, float>("scale", __instance).Read());
+            return x;
+        });
+
+        return cursor.Generate();
+    }
+
+    private static void Screen_SetWindowSize_Postfix(int width, Screen __instance)
+    {
+        float scale = Private.Field<Screen, float>("scale", __instance).Read();
+        int x = (int)(width + 10 * scale);
+        var viewportPtr = Private.Field<Screen, Viewport>("viewport", __instance);
+        var viewport = viewportPtr.Read();
+        viewport.Width = x;
+        viewportPtr.Write(viewport);
+
+        __instance.DrawRect.X = viewport.Width / 2 - __instance.ScaledWidth / 2;
     }
 
     private static IEnumerable<CodeInstruction> Screen_Render_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
@@ -92,25 +126,36 @@ internal sealed class ScreenHooks : IHookable
 
     private static void Screen_EnableFullscreen_Postfix(Screen __instance)
     {
-        var offset = Screen.LeftImage.Width * 3;
+        int x = Private.Field<Screen, Rectangle>("leftPadDrawRect", __instance).Read().Width;
+        var offset = (float)(Screen.LeftImage.Width * __instance.Scale);
+        var offsetForMatrix = (float)((Screen.LeftImage.Width - 1.6f) * __instance.Scale);
         UnsafeScreen.UpdatePadRects(__instance);
+
         ref var rect = ref UnsafeScreen.RightDrawPadRect(__instance);
-        rect.X -= 220;
+        rect.X = __instance.DrawRect.X + __instance.DrawRect.Width + (int)(5 * Private.Field<Screen, float>("scale", __instance).Read());
+        rect.X -= x;
+
         ref var leftRect = ref UnsafeScreen.LeftDrawPadRect(__instance);
-        leftRect.X += offset + 64;
+        leftRect.X += (int)(offset - (5 * Private.Field<Screen, float>("scale", __instance).Read()));
+
         __instance.Matrix =
             Matrix.CreateScale(__instance.Scale) *
-            Matrix.CreateTranslation(offset + 97, 0f, 0f);
+            Matrix.CreateTranslation(offsetForMatrix, 0f, 0f);
     }
 
     private static void Screen_DisableFullscreen_Postfix(Screen __instance)
     {
-        var offset = Screen.LeftImage.Width * 3;
+        int x = Private.Field<Screen, Rectangle>("leftPadDrawRect", __instance).Read().Width;
+        var offset = (int)(Screen.LeftImage.Width * __instance.Scale);
         UnsafeScreen.UpdatePadRects(__instance);
+
         ref var rect = ref UnsafeScreen.RightDrawPadRect(__instance);
-        rect.X -= 148;
+        rect.X = __instance.DrawRect.X + __instance.DrawRect.Width + (int)(5 * Private.Field<Screen, float>("scale", __instance).Read());
+        rect.X -= x;
+
         ref var leftRect = ref UnsafeScreen.LeftDrawPadRect(__instance);
-        leftRect.X += offset - 12;
+        leftRect.X += offset - (int)(5 * Private.Field<Screen, float>("scale", __instance).Read());
+
         __instance.Matrix =
             Matrix.CreateScale(__instance.Scale) *
             Matrix.CreateTranslation(offset, 0f, 0f);

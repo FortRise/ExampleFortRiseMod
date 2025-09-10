@@ -214,14 +214,13 @@ internal sealed class MainMenuHooks : IHookable
         tween = Tween.Create(Tween.TweenMode.Persist, Ease.CubeOut, 60);
         entity.Add(tween);
         __instance.Add(entity);
-        __instance.Camera.X -= Screen.LeftImage.Width - 4;
-        __instance.UILayer.Camera.X -= Screen.LeftImage.Width - 4;
+        __instance.Camera.X -= OffsetUtilities.OffsetX;
+        __instance.UILayer.Camera.X -= OffsetUtilities.OffsetX;
     }
 
     private static void MainMenu_CreateMain_Prefix()
     {
         WiderSetModule.IsWide = false;
-        WrapMath.AddWidth = new Vector2(320, 0);
     }
 
     private static void MainMenu_Update_Prefix()
@@ -245,7 +244,7 @@ internal sealed class MainMenuHooks : IHookable
             {
                 tween.OnUpdate = t =>
                 {
-                    Engine.Instance.Screen.PadOffset = MathHelper.Lerp(Engine.Instance.Screen.PadOffset, -60f, t.Eased);
+                    Engine.Instance.Screen.PadOffset = MathHelper.Lerp(Engine.Instance.Screen.PadOffset, -50f, t.Eased);
                 };
             }
 

@@ -6,9 +6,20 @@ public sealed class ApiImplementation : IWiderSetModApi
 {
     public ApiImplementation() {}
 
-    public bool IsWide => WiderSetModule.IsWide;
+    public bool IsWide 
+    {
+        get => WiderSetModule.IsWide;
+        set => WiderSetModule.IsWide = value;
+    }
+
+    public bool IsHoveringWide 
+    {
+        get => WiderSetModule.AboutToGetWide;
+        set => WiderSetModule.AboutToGetWide = value;
+    }
 
     public Matrix WideIdentity => MatrixUtilities.IdentityFixed;
+    public float UIXOffset => WiderSetModule.IsWide ? 50 : 0;
 
     public void SetNotJoinedArcherOffset(int archerID, Vector2 offset, IWiderSetModApi.ArcherType type)
     {

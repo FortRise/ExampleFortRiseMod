@@ -98,7 +98,7 @@ internal sealed class ReplayViewerHooks : IHookable
                 return pos;
             }
 
-            return pos + new Vector2(4, 0);
+            return pos;
         });
 
 

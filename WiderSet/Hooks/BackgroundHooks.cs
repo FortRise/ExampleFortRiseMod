@@ -67,9 +67,9 @@ internal sealed class BackgroundHooks : IHookable
         {
             if (WiderSetModule.IsWide) { return x; }
             if (__instance == ForegroundCheck) { return x; } // do not change anything if its a foreground.
-            Engine.Instance.Scene.Camera.X -= Screen.LeftImage.Width;
+            Engine.Instance.Scene.Camera.X -= Screen.LeftImage.Width - 5;
             var matrix = Engine.Instance.Scene.Camera.Matrix;
-            Engine.Instance.Scene.Camera.X += Screen.LeftImage.Width;
+            Engine.Instance.Scene.Camera.X += Screen.LeftImage.Width - 5;
             return matrix;
         });
 
@@ -85,7 +85,7 @@ internal sealed class BackgroundHooks : IHookable
                 Engine.Instance.GraphicsDevice.ScissorRectangle = new Rectangle(
                     55,
                     0,
-                    420 - 108,
+                    420 - 110,
                     240
                 );
             }

@@ -6,7 +6,6 @@ using System.Xml;
 using FortRise;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using Monocle;
 using TowerFall;
 
@@ -39,6 +38,8 @@ public class WiderSetModule : Mod
         typeof(GifExporterHooks),
         typeof(GifEncoderHooks),
         typeof(HUDFadeHooks),
+        typeof(IntroSceneHooks),
+
         typeof(LavaHooks),
         typeof(LayerHooks),
         typeof(LevelHooks),
@@ -60,19 +61,24 @@ public class WiderSetModule : Mod
         typeof(MatchSettingsHooks),
         typeof(MenuBackgroundHooks),
         typeof(MenuButtonGuideHooks),
+
         typeof(MiasmaHooks),
         typeof(MInputHooks),
         typeof(OrbLogicHooks),
         typeof(PlayerInputHooks),
+        typeof(PauseMenuHooks),
         typeof(ReplayFrameHooks),
         typeof(ReplayViewerHooks),
         typeof(RollcallElementHooks),
         typeof(RoundLogicHooks),
         typeof(TFGameHooks),
         typeof(TreasureSpawnerHooks),
+        typeof(SavingInfoSceneHooks),
         typeof(ScreenHooks),
         typeof(SessionHooks),
+        typeof(SwitchBlockHooks),
         typeof(VariantHooks),
+
         typeof(VariantPerPlayerHooks),
         typeof(VersusAwardsHooks),
         typeof(VersusLevelSystemHooks),
@@ -95,6 +101,14 @@ public class WiderSetModule : Mod
         {
             DirtyWide = true;
             wide = value;
+            if (value)
+            {
+                WrapMath.AddWidth = new Vector2(420, 0);
+            }
+            else 
+            {
+                WrapMath.AddWidth = new Vector2(320, 0);
+            }
         }
     }
     public static bool DirtyWide { get; internal set; }

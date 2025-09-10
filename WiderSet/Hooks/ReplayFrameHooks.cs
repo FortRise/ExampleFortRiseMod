@@ -16,7 +16,7 @@ internal sealed class ReplayFrameHooks : IHookable
     public static void Load(IHarmony harmony)
     {
         Matrix = Matrix.Identity *
-            Matrix.CreateTranslation(new Vector3(-new Vector2(54, 0), 0f)) *
+            Matrix.CreateTranslation(new Vector3(-new Vector2(50, 0), 0f)) *
             Matrix.CreateRotationZ(0f) *
             Matrix.CreateScale(new Vector3(Vector2.One, 1f)) *
             Matrix.CreateTranslation(new Vector3(new Vector2(0, 0), 0f));
