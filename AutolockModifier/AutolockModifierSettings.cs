@@ -15,5 +15,14 @@ public sealed class AutolockModifierSettings : ModuleSettings
         settings.CreateNumber("Max Angle", MaxAngle, (x) => MaxAngle = x, 0, 360);
         settings.CreateNumber("Max Pixel Distance", MaxDistanceInPixels, (x) => MaxDistanceInPixels = x, 0, 420);
         settings.CreateOnOff("Allow Trials", AllowTrials, (x) => AllowTrials = x);
+        settings.CreateButton("Reset to Defaults", () => 
+        {
+            DisableAutoLock = false;
+            MaxAngle = 65;
+            MaxDistanceInPixels = 36;
+            AllowTrials = false;
+            settings.Refresh();
+        });
+
     }
 }
