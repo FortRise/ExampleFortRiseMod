@@ -28,7 +28,9 @@ public class UnsafeLogo
 
 public class WiderSetModule : Mod
 {
-    public static Type[] Hookables = [
+    private static readonly Type[] Hookables = [
+        typeof(EditorBaseHooks),
+
         typeof(ActorHooks),
         typeof(ArcherPortraitHooks),
         typeof(BackgroundHooks),
@@ -113,6 +115,7 @@ public class WiderSetModule : Mod
     }
     public static bool DirtyWide { get; internal set; }
     public static bool AboutToGetWide { get; internal set; }
+    public static bool InsideOfTheEditor { get; internal set; }
     private static bool wide;
     public static IMenuSpriteContainerEntry StandardSetSprite { get; internal set; } = null!;
     public static IMenuSpriteContainerEntry WideSetSprite { get; internal set; } = null!;

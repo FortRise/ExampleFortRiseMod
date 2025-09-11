@@ -60,6 +60,11 @@ internal sealed class ScreenHooks : IHookable
         cursor.Emit(new CodeInstruction(OpCodes.Ldarg_0));
         cursor.EmitDelegate((int width, Screen __instance) => 
         {
+            if (WiderSetModule.InsideOfTheEditor)
+            {
+                return width;
+            }
+
             int x = (int)(width + 10 * Private.Field<Screen, float>("scale", __instance).Read());
             return x;
         });
@@ -69,6 +74,11 @@ internal sealed class ScreenHooks : IHookable
 
     private static void Screen_SetWindowSize_Postfix(int width, Screen __instance)
     {
+        if (WiderSetModule.InsideOfTheEditor)
+        {
+            return;
+        }
+
         float scale = Private.Field<Screen, float>("scale", __instance).Read();
         int x = (int)(width + 10 * scale);
         var viewportPtr = Private.Field<Screen, Viewport>("viewport", __instance);
@@ -126,6 +136,11 @@ internal sealed class ScreenHooks : IHookable
 
     private static void Screen_EnableFullscreen_Postfix(Screen __instance)
     {
+        if (WiderSetModule.InsideOfTheEditor)
+        {
+            return;
+        }
+
         int x = Private.Field<Screen, Rectangle>("leftPadDrawRect", __instance).Read().Width;
         var offset = (float)(Screen.LeftImage.Width * __instance.Scale);
         var offsetForMatrix = (float)((Screen.LeftImage.Width - 1.6f) * __instance.Scale);
@@ -145,6 +160,11 @@ internal sealed class ScreenHooks : IHookable
 
     private static void Screen_DisableFullscreen_Postfix(Screen __instance)
     {
+        if (WiderSetModule.InsideOfTheEditor)
+        {
+            return;
+        }
+
         int x = Private.Field<Screen, Rectangle>("leftPadDrawRect", __instance).Read().Width;
         var offset = (int)(Screen.LeftImage.Width * __instance.Scale);
         UnsafeScreen.UpdatePadRects(__instance);
