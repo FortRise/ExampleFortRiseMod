@@ -1,0 +1,18 @@
+{
+	"version": "1.0.0",
+	"displayName": "Score Counter",
+	"author": "Terria",
+    "description": "Backports old score counter for Co-Op mode.",
+    "dll": "ScoreCounter.dll",
+	"dependencies": [
+		{
+			"name": "FortRise",
+			"version": "5.1.0"
+		}
+	],
+	"update": {
+		"gamebanana": {
+			"id": 619407
+		}
+	}
+}

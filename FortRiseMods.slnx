@@ -15,5 +15,6 @@
   <Project Path="MiasmaColors/MiasmaColors.csproj" />
   <Project Path="MoreReplay/MoreReplay.csproj" />
   <Project Path="MusicRestart/MusicRestart.csproj" />
+  <Project Path="ScoreCounter/ScoreCounter.csproj" />
   <Project Path="WiderSet/WiderSet.csproj" />
 </Solution>
