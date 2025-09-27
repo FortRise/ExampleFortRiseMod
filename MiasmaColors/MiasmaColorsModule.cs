@@ -1,66 +1,97 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using FortRise;
+using HarmonyLib;
+using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Monocle;
 using TowerFall;
 
 namespace MiasmaColors;
 
-public class MiasmaColorsModule : FortModule
+public class MiasmaColorsModule : Mod
 {
-    public override void Load()
+    public static MiasmaColorsModule Instance = null!;
+    
+    private static FieldInfo colorField;
+    private static FieldInfo lightField;
+
+    static MiasmaColorsModule()
     {
-        On.TowerFall.FloorMiasma.ctor += ApplyLightColorToMiasma;
+        colorField = typeof(Miasma).GetField("Color", BindingFlags.NonPublic | BindingFlags.Static);
+        lightField = typeof(Miasma).GetField("Light", BindingFlags.NonPublic | BindingFlags.Static);
     }
 
-    public override void Unload()
+    public MiasmaColorsModule(IModContent content, IModuleContext context, ILogger logger) : base(content, context, logger)
     {
-        On.TowerFall.FloorMiasma.ctor -= ApplyLightColorToMiasma;
+        Instance = this;
+
+        OnLoad = HandleGameLoad;
     }
 
-    private void ApplyLightColorToMiasma(On.TowerFall.FloorMiasma.orig_ctor orig, FloorMiasma self, Vector2 position, int width, int group)
+    private void HandleGameLoad(IModuleContext context)
     {
-        orig(self, position, width, group);
-        self.Add(new MiasmaColorComponent());
-    }
-}
-
-public class MiasmaColorComponent : Component
-{
-    public MiasmaColorComponent() : base(false, false)
-    {
+        context.Events.OnLevelLoaded += HandleLevelLoaded;
+        context.Harmony.Patch(AccessTools.Method(typeof(LevelSystem), nameof(LevelSystem.Dispose)), postfix: new HarmonyMethod(DisposePostfix));
     }
 
-    public override void EntityAdded()
+    private void HandleLevelLoaded(object sender, RoundLogic logic)
     {
-        base.EntityAdded();
-
-        var levelTag = ReadLevelTag(Scene.SceneTags);
-        if (string.IsNullOrEmpty(levelTag))
-            return;
-
-        (Entity as LevelEntity).LightColor = (levelTag switch 
+        if (logic.CanMiasma)
         {
-            "Sacred Ground" => Calc.HexToColor("ffd29e"),
-            "Twilight Spire" => Calc.HexToColor("e39eff"),
-            "Backfire" => Calc.HexToColor("9ecdff"),
-            "Flight" => Calc.HexToColor("ff9620"),
-            "Mirage" => Calc.HexToColor("ffff60"),
-            "Thornwood" => Calc.HexToColor("72ff66"),
-            "Frostfang Keep" => Calc.HexToColor("26fff5"),
-            "King's Court" => Calc.HexToColor("ff0000"),
-            "Sunken City" => Calc.HexToColor("50ffb1"),
-            "Moonstone" => Calc.HexToColor("7275dd"),
-            "Towerforge" => Calc.HexToColor("FF2000"),
-            "Ascension" => Calc.HexToColor("f8ffff"),
-            "Gauntlet" => Calc.HexToColor("616a9e"),
-            "Gauntlet II" => Calc.HexToColor("fbfcfc"),
-            _ => Calc.HexToColor("9ED1FF")
-        }).Invert();
+            var levelTag = ReadLevelTag(logic.Session.CurrentLevel.SceneTags);
+            if (string.IsNullOrEmpty(levelTag))
+                return;
+
+            float shiftAmount = GetHueShiftForLevel(levelTag);
+
+            Subtexture miasmaTexture = TFGame.Atlas["miasma/surface"];
+            Color[] surfaceColors = new Color[miasmaTexture.Width * miasmaTexture.Height];
+            miasmaTexture.Texture2D.GetData(0, miasmaTexture.Rect, surfaceColors, 0, surfaceColors.Length);
+            for (int i = 0; i < surfaceColors.Length; i++) 
+            {
+                if (surfaceColors[i].A == 0)
+                    continue;
+
+                HSV hsvColor = ColorUtils.ColorToHSV(surfaceColors[i]);
+                ColorUtils.HueShift(ref hsvColor, shiftAmount);
+                surfaceColors[i] = ColorUtils.HSVToColor(hsvColor, surfaceColors[i].A);
+            }
+            miasmaTexture.Texture2D.SetData(0, miasmaTexture.Rect, surfaceColors, 0, surfaceColors.Length);
+        
+            colorField.SetValue(null,surfaceColors[0]);
+            // lightField.SetValue(null, color.Invert());
+        }
     }
 
+    private static void DisposePostfix(LevelSystem __instance)
+    {
+       Instance.Logger.Log(LogLevel.Warning, "Disssposseeee");
+    }
 
+    private float GetHueShiftForLevel(string levelTag)
+    {
+        return levelTag switch 
+        {
+            "SacredGround" => 132.8f,
+            "TwilightSpire" => 27.4f,
+            "Backfire" => -81.2f,
+            "Flight" => 113f,
+            "Mirage" => 143.8f,
+            "Thornwood" => -128.4f,
+            "FrostfangKeep" => -96.6f,
+            "KingsCourt" => 80f,
+            "SunkenCity" => -125f,
+            "Moonstone" => -62f,
+            "TowerForge" => -92f,
+            "Ascension" => -95.5f,
+            "GauntletA" => -63.7f,
+            "GauntletB" => -95.5f,
+            _ => 0
+        };
+    }
+    
     private static string ReadLevelTag(List<string> tag) 
     {
         for (int i = 0; i < tag.Count; i++) 
