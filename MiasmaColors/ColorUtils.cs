@@ -122,4 +122,11 @@ public static class ColorUtils
         else if (hsv.H >= 360f)
             hsv.H -= 360f;
     }
+
+    public static Color HueShift(Color color, float amount)
+    {
+        HSV hsv = ColorToHSV(color);
+        HueShift(ref hsv, amount);
+        return HSVToColor(hsv, color.A);
+    }
 }

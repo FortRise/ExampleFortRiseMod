@@ -5,7 +5,7 @@ using FortRise;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
-using Monocle;
+using MonoMod.Utils;
 using TowerFall;
 
 namespace MiasmaColors;
@@ -13,61 +13,76 @@ namespace MiasmaColors;
 public class MiasmaColorsModule : Mod
 {
     public static MiasmaColorsModule Instance = null!;
-    
-    private static FieldInfo colorField;
-    private static FieldInfo lightField;
 
-    static MiasmaColorsModule()
-    {
-        colorField = typeof(Miasma).GetField("Color", BindingFlags.NonPublic | BindingFlags.Static);
-        lightField = typeof(Miasma).GetField("Light", BindingFlags.NonPublic | BindingFlags.Static);
-    }
+    private DynamicData miasmaData;
+    private DynamicData bottomMiasmaData;
+    private Color originalColor;
+    private Color originalLightColor;
+    
+    private SubTextureModifier surfaceModifier;
+    private SubTextureModifier tentaclesModifier;
+    private SubTextureModifier tentaclesHModifier;
+    private SubTextureModifier floorModfier;
+    
+    private bool colorsUpdated = false;
 
     public MiasmaColorsModule(IModContent content, IModuleContext context, ILogger logger) : base(content, context, logger)
     {
         Instance = this;
+        
+        miasmaData = new DynamicData(typeof(Miasma));
+        bottomMiasmaData = new DynamicData(typeof(BottomMiasma));
 
-        OnLoad = HandleGameLoad;
+        originalColor = miasmaData.Get<Color>("Color");
+        originalLightColor = miasmaData.Get<Color>("Light");
+        
+        OnInitialize = HandleInitialize;
     }
 
-    private void HandleGameLoad(IModuleContext context)
+    private void HandleInitialize(IModuleContext context)
     {
+        floorModfier = new SubTextureModifier("quest/floorMiasma");
+        surfaceModifier = new SubTextureModifier("miasma/surface");
+        tentaclesModifier = new SubTextureModifier("miasma/tentacles");
+        tentaclesHModifier = new SubTextureModifier("miasma/tentaclesH");
+        
         context.Events.OnLevelLoaded += HandleLevelLoaded;
-        context.Harmony.Patch(AccessTools.Method(typeof(LevelSystem), nameof(LevelSystem.Dispose)), postfix: new HarmonyMethod(DisposePostfix));
+        context.Harmony.Patch(AccessTools.Method(typeof(LevelSystem), nameof(LevelSystem.Dispose)), postfix: new HarmonyMethod(LevelSystemDisposePostfix));
     }
 
     private void HandleLevelLoaded(object sender, RoundLogic logic)
     {
-        if (logic.CanMiasma)
-        {
-            var levelTag = ReadLevelTag(logic.Session.CurrentLevel.SceneTags);
-            if (string.IsNullOrEmpty(levelTag))
-                return;
-
-            float shiftAmount = GetHueShiftForLevel(levelTag);
-
-            Subtexture miasmaTexture = TFGame.Atlas["miasma/surface"];
-            Color[] surfaceColors = new Color[miasmaTexture.Width * miasmaTexture.Height];
-            miasmaTexture.Texture2D.GetData(0, miasmaTexture.Rect, surfaceColors, 0, surfaceColors.Length);
-            for (int i = 0; i < surfaceColors.Length; i++) 
-            {
-                if (surfaceColors[i].A == 0)
-                    continue;
-
-                HSV hsvColor = ColorUtils.ColorToHSV(surfaceColors[i]);
-                ColorUtils.HueShift(ref hsvColor, shiftAmount);
-                surfaceColors[i] = ColorUtils.HSVToColor(hsvColor, surfaceColors[i].A);
-            }
-            miasmaTexture.Texture2D.SetData(0, miasmaTexture.Rect, surfaceColors, 0, surfaceColors.Length);
+        if (!logic.CanMiasma || colorsUpdated)
+            return;
         
-            colorField.SetValue(null,surfaceColors[0]);
-            // lightField.SetValue(null, color.Invert());
-        }
+        var levelTag = ReadLevelTag(logic.Session.CurrentLevel.SceneTags);
+        if (string.IsNullOrEmpty(levelTag))
+            return;
+
+        float shiftAmount = GetHueShiftForLevel(levelTag);
+        
+        surfaceModifier.ApplyHueShift(shiftAmount);
+        tentaclesModifier.ApplyHueShift(shiftAmount);
+        floorModfier.ApplyHueShift(shiftAmount);
+
+        Color newColor = ColorUtils.HueShift(originalColor, shiftAmount);
+        miasmaData.Set("Color", newColor);
+        bottomMiasmaData.Set("Color", newColor);
+        
+        Color newLightColor = ColorUtils.HueShift(originalLightColor, shiftAmount);
+        miasmaData.Set("Light", newLightColor);
+        bottomMiasmaData.Set("Light", newLightColor);
     }
 
-    private static void DisposePostfix(LevelSystem __instance)
+    private static void LevelSystemDisposePostfix(LevelSystem __instance)
     {
-       Instance.Logger.Log(LogLevel.Warning, "Disssposseeee");
+        if (!Instance.colorsUpdated)
+            return;
+        
+        Instance.surfaceModifier.Reset();
+        Instance.floorModfier.Reset();
+        Instance.tentaclesModifier.Reset();
+        Instance.tentaclesHModifier.Reset();
     }
 
     private float GetHueShiftForLevel(string levelTag)
@@ -84,10 +99,14 @@ public class MiasmaColorsModule : Mod
             "KingsCourt" => 80f,
             "SunkenCity" => -125f,
             "Moonstone" => -62f,
-            "TowerForge" => -92f,
+            "TowerForge" => 69.1f,
             "Ascension" => -95.5f,
             "GauntletA" => -63.7f,
             "GauntletB" => -95.5f,
+            "TheAmaranth" => -152.6f,
+            "Dreadwood" => -180f,
+            "Darkfang" => -92.2f,
+            "Cataclysm" => 40.6f, 
             _ => 0
         };
     }
