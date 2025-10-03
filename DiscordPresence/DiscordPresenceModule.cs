@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Reflection.Emit;
+using System.Collections.Generic;
 using FortRise;
+using FortRise.Transpiler;
 using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework;
 using Discord;
 using DisInst = Discord.Discord;
 using DisLogLevel = Discord.LogLevel;
 using HarmonyLib;
 using TowerFall;
-using System.Reflection.Emit;
-using System.Collections.Generic;
-using FortRise.Transpiler;
-using Microsoft.Xna.Framework;
 
 namespace DiscordPresence;
 
@@ -41,16 +41,16 @@ public class DiscordPresenceModule : Mod
             switch (level)
             {
                 case DisLogLevel.Info:
-                    logger.LogInformation(message);
+                    logger.LogInformation("[DISCORD]: {message}", message);
                     break;
                 case DisLogLevel.Warn:
-                    logger.LogWarning(message);
+                    logger.LogWarning("[DISCORD]: {message}", message);
                     break;
                 case DisLogLevel.Error:
-                    logger.LogError(message);
+                    logger.LogError("[DISCORD]: {message}", message);
                     break;
                 case DisLogLevel.Debug:
-                    logger.LogDebug(message);
+                    logger.LogDebug("[DISCORD]: {message}", message);
                     break;
             }
         });
@@ -74,6 +74,7 @@ public class DiscordPresenceModule : Mod
             AccessTools.DeclaredMethod(typeof(QuestControl), "SpawnWave"),
             new HarmonyMethod(QuestControl_SpawnWave_Prefix)
         );
+
         context.Harmony.Patch(
             AccessTools.DeclaredMethod(typeof(QuestRoundLogic), nameof(QuestRoundLogic.RegisterEnemyKill)),
             transpiler: new HarmonyMethod(QuestRoundLogic_RegisterEnemyKill_Transpiler)
@@ -115,10 +116,10 @@ public class DiscordPresenceModule : Mod
         case DarkWorldLevelSystem dwSystem:
         {
             var levelID = dwSystem.DarkWorldTowerData.GetLevelID() ?? "Official Level";
-            var index = levelID.IndexOf("/");
+            var index = levelID.IndexOf('/');
             if (index != -1) 
             {
-                levelID = levelID.Substring(index + 1);
+                levelID = levelID[(index + 1)..];
             }
             var deaths = session.DarkWorldState.Deaths;
             int totalDeaths = 0;
@@ -151,10 +152,10 @@ public class DiscordPresenceModule : Mod
         case VersusLevelSystem versus:
         {
             var levelID = versus.VersusTowerData.GetLevelID() ?? "Official Level";
-            var index = levelID.IndexOf("/");
+            var index = levelID.IndexOf('/');
             if (index != -1) 
             {
-                levelID = levelID.Substring(index + 1);
+                levelID = levelID[(index + 1)..];
             }
 
             ulong totalKills = 0;
@@ -183,10 +184,10 @@ public class DiscordPresenceModule : Mod
         case QuestLevelSystem questSystem:
         {
             var levelID = questSystem.QuestTowerData.GetLevelID() ?? "Official Level";
-            var index = levelID.IndexOf("/");
+            var index = levelID.IndexOf('/');
             if (index != -1) 
             {
-                levelID = levelID.Substring(index + 1);
+                levelID = levelID[(index + 1)..];
             }
 
             ChangePresence(new() 
@@ -207,7 +208,7 @@ public class DiscordPresenceModule : Mod
         {
             var trialTowerData = trialsSystem.TrialsLevelData;
             int typeCompletion = 0;
-            string bestTime = "";
+            string bestTime;
             if (trialTowerData.IsOfficialLevelSet()) 
             {
                 var data = SaveData.Instance.Trials.Levels[trialTowerData.ID.X][trialTowerData.ID.Y];
@@ -231,10 +232,10 @@ public class DiscordPresenceModule : Mod
                 bestTime = TrialsResults.GetTimeString(TimeSpan.FromTicks(data.BestTime));
             }
             var levelID = trialTowerData.GetLevelID() ?? "Official Level";
-            var index = levelID.IndexOf("/");
+            var index = levelID.IndexOf('/');
             if (index != -1) 
             {
-                levelID = levelID.Substring(index + 1);
+                levelID = levelID[(index + 1)..];
             }
 
             ChangePresence(new() 
@@ -289,10 +290,10 @@ public class DiscordPresenceModule : Mod
             return;
         }
         var levelID = questSystem.QuestTowerData.GetLevelID() ?? "Official Level";
-        var index = levelID.IndexOf("/");
+        var index = levelID.IndexOf('/');
         if (index != -1) 
         {
-            levelID = levelID.Substring(index + 1);
+            levelID = levelID[(index + 1)..];
         }
 
         ChangePresence(new() 
@@ -315,7 +316,7 @@ public class DiscordPresenceModule : Mod
 
         Label label = default;
 
-        if (DiscordPresenceModule.Instance.Context.Flags.IsWindows)
+        if (Instance.Context.Flags.IsWindows)
         {
             cursor.GotoNext([ILMatch.Brfalse()]);
         }
@@ -353,10 +354,10 @@ public class DiscordPresenceModule : Mod
             }
 
             var levelID = questSystem.QuestTowerData.GetLevelID() ?? "Official Level";
-            var index = levelID.IndexOf("/");
+            var index = levelID.IndexOf('/');
             if (index != -1) 
             {
-                levelID = levelID.Substring(index + 1);
+                levelID = levelID[(index + 1)..];
             }
 
             ChangePresence(new() 
@@ -412,7 +413,7 @@ public class DiscordPresenceModule : Mod
             return;
         }
 
-        ChangePresence(new Discord.Activity {
+        ChangePresence(new Activity {
             Details = "Selecting a Tower",
             Assets = new() {
                 LargeText = "FortRise",
@@ -445,13 +446,13 @@ public class DiscordPresenceModule : Mod
         if (dirty) 
         {
             DiscordInstance.GetActivityManager().UpdateActivity(Instance.NextPresence, (result) => {
-                if (result == Discord.Result.Ok) 
+                if (result == Result.Ok) 
                 {
-                    DiscordPresenceModule.Instance.Logger.LogDebug("Presence changed successfully!");
+                    Instance.Logger.LogDebug("Presence changed successfully!");
                 }
                 else 
                 {
-                    DiscordPresenceModule.Instance.Logger.LogWarning("Failed to change presence: {result}", result);
+                    Instance.Logger.LogWarning("Failed to change presence: {result}", result);
                 }
             });
             dirty = false;
@@ -461,12 +462,12 @@ public class DiscordPresenceModule : Mod
         {
             DiscordInstance.RunCallbacks();
         } 
-        catch (Discord.ResultException e) 
+        catch (ResultException e) 
         {
-            if (e.Message == nameof(Discord.Result.NotRunning)) 
+            if (e.Message == nameof(Result.NotRunning)) 
             {
-                DiscordPresenceModule.Instance.Logger.LogWarning("Discord was shut down! Disposing Game SDK.");
-                Unload(DiscordPresenceModule.Instance.Context);
+                Instance.Logger.LogWarning("Discord was shut down! Disposing Game SDK.");
+                Unload(Instance.Context);
                 return;
             }
             throw;
