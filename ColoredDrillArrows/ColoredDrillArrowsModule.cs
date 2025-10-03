@@ -2,15 +2,14 @@
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Monocle;
-using MonoMod.Utils;
 using TowerFall;
 
 namespace ColoredDrillArrows;
 
 public class ColoredDrillArrowsModule : Mod
 {
-    private ISubtextureEntry drillArrow;
-    private ISubtextureEntry buriedArrow;
+    private readonly ISubtextureEntry drillArrow;
+    private readonly ISubtextureEntry buriedArrow;
 
     public ColoredDrillArrowsModule(IModContent content, IModuleContext context, ILogger logger) : base(content, context, logger)
     {
@@ -36,9 +35,8 @@ public class ColoredDrillArrowsModule : Mod
 
     private static void DrillArrow_InitGraphics_Postfix(DrillArrow __instance)
     {
-        var dynSelf = DynamicData.For(__instance);
-        var normalSprite = dynSelf.Get<Sprite<int>>("normalSprite")!;
-        var buriedImage = dynSelf.Get<Image>("buriedImage")!;
+        var normalSprite = Private.Field<DrillArrow, Sprite<int>>("normalSprite", __instance).Read();
+        var buriedImage = Private.Field<DrillArrow, Image>("buriedImage", __instance).Read();
         if (__instance.CharacterIndex != -1)
         {
             normalSprite.Color = ArcherData.Archers[__instance.CharacterIndex].ColorB;
