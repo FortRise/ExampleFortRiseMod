@@ -1,10 +1,10 @@
 using System;
 using Teuria.BaronMode.Hooks;
-using Teuria.BaronMode.Interop;
 using Teuria.BaronMode.Pickups;
 using FortRise;
 using Teuria.BaronMode.GameModes;
 using Microsoft.Extensions.Logging;
+using Teuria.WiderSet;
 
 namespace Teuria.BaronMode;
 
@@ -26,7 +26,8 @@ internal class BaronModeModule : Mod
         typeof(TreasureSpawnerHooks),
         typeof(SessionHooks),
         typeof(RoundLogicHooks),
-        typeof(PlayerCorpseHooks)
+        typeof(PlayerCorpseHooks),
+        typeof(VersusRoundResultsHooks)
     ];
 
     public override ModuleSettings? CreateSettings()
@@ -43,7 +44,7 @@ internal class BaronModeModule : Mod
             register.GetMethod(nameof(IHookable.Load))?.Invoke(null, [context.Harmony]);
         }
 
-        WiderSetApi = context.Interop.GetApi<IWiderSetModApi>("Teuria.WiderSetMod");
+        WiderSetApi = context.Interop.GetApi<IWiderSetModApi>("Teuria.WiderSet");
         foreach (var register in Registerables)
         {
             register.GetMethod(nameof(IRegisterable.Register))?.Invoke(null, [content, context.Registry]);

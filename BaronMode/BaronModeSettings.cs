@@ -4,8 +4,7 @@ namespace Teuria.BaronMode;
 
 public class BaronModeSettings : ModuleSettings 
 {
-    [SettingsNumber(1, 20)]
-    public int BaronLivesCount = 3;
+    public int BaronLivesCount { get; set; } = 3;
 
     public override void Create(ISettingsCreate settings)
     {

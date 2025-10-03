@@ -1,5 +1,6 @@
 using FortRise;
 using HarmonyLib;
+using Teuria.BaronMode.GameModes;
 using Teuria.BaronMode.Pickups;
 using TowerFall;
 
@@ -15,18 +16,23 @@ public class TreasureSpawnerHooks : IHookable
         );
     }
 
-    private static void TreasureSpawner_ctor_Postfix(TowerFall.TreasureSpawner __instance)
+    private static void TreasureSpawner_ctor_Postfix(TreasureSpawner __instance)
     {
+        if (__instance.Session.MatchSettings.Mode != Baron.BaronGameMode.Modes)
+        {
+            return;
+        }
+
         var gemLivesPickup = GemLives.GemLivesMeta.Pickups;
 
-        if (BaronMatchVariants.TreasureLivesInfo.IsActive(__instance.Session.MatchSettings.Variants))
+        if (BaronMatchVariants.NoTreasureLives.IsActive(__instance.Session.MatchSettings.Variants!))
         {
-            __instance.TreasureRates[(int)gemLivesPickup] = 1f;
+            __instance.TreasureRates[(int)gemLivesPickup] = 0f;
         }
         else 
         {
             // Let's make sure it won't spawn at all
-            __instance.TreasureRates[(int)gemLivesPickup] = 0f;
+            __instance.TreasureRates[(int)gemLivesPickup] = 1f;
         }
     }
 }

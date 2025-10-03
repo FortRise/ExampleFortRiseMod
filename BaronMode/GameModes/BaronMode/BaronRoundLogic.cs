@@ -7,22 +7,24 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
 using TowerFall;
+using System.Linq;
 
 namespace Teuria.BaronMode.GameModes;
 
 public class BaronRoundLogic : RoundLogic
 {
-    private Counter endDelay;
-    private Entity coroutineHolder;
-    private float anotherTreasureSpawn;
-    private float[] autoReviveCounters;
-    private float[] reviverTimeoutCounters;
-    private BaronPlayerHUD[] PlayerHUDs;
-    private TeamReviver[] teamRevivers;
+    private readonly Counter endDelay;
+    private readonly Entity coroutineHolder;
+    private readonly float[] autoReviveCounters;
+    private readonly float[] reviverTimeoutCounters;
+    private readonly BaronPlayerHUD[] PlayerHUDs;
+    private readonly TeamReviver[] teamRevivers;
+
     private bool wasFinalKill;
     public int[] TotalLives;
     public int[] Lives;
     public bool Overtime;
+    private float anotherTreasureSpawn;
 
     public BaronRoundLogic(Session session, int[] totalLives) : base(session, false) 
     {
@@ -36,7 +38,7 @@ public class BaronRoundLogic : RoundLogic
         teamRevivers = new TeamReviver[playerCount];
         Lives = new int[playerCount];
         anotherTreasureSpawn = 1200;
-        this.TotalLives = totalLives;
+        TotalLives = totalLives;
     }
 
     public override void OnLevelLoadFinish()
@@ -54,10 +56,15 @@ public class BaronRoundLogic : RoundLogic
             if (TFGame.Players[k])
             {
                 if (TotalLives[k] > BaronModeModule.Instance.Settings.BaronLivesCount)
+                {
                     Lives[k] = BaronModeModule.Instance.Settings.BaronLivesCount;
+                }
                 else
+                {
                     Lives[k] = TotalLives[k];
-                Session.CurrentLevel.Add(this.PlayerHUDs[k] = new BaronPlayerHUD(this, (k == 0) ? Facing.Left : Facing.Right, k));
+                }
+
+                Session.CurrentLevel.Add(PlayerHUDs[k] = new BaronPlayerHUD(this, (k == 0) ? Facing.Left : Facing.Right, k));
             }
             else 
             {
@@ -69,14 +76,14 @@ public class BaronRoundLogic : RoundLogic
     public override void OnUpdate()
     {
         base.OnUpdate();
-        if (base.RoundStarted && base.Session.CurrentLevel.Ending && base.Session.CurrentLevel.CanEnd) 
+        if (RoundStarted && Session.CurrentLevel.Ending && Session.CurrentLevel.CanEnd) 
         {
-            if (this.endDelay) 
+            if (endDelay) 
             {
-                this.endDelay.Update();
+                endDelay.Update();
                 return;
             }
-            base.Session.EndRound();
+            Session.EndRound();
         }
         if (!Session.CurrentLevel.Ending) 
         {
@@ -170,7 +177,7 @@ public class BaronRoundLogic : RoundLogic
     private void DoAutoRevive(int playerIndex)
     {
         TeamReviver? selectedTeamReviver = null;
-        foreach (TeamReviver teamReviver in base.Session.CurrentLevel[GameTags.TeamReviver])
+        foreach (TeamReviver teamReviver in Session.CurrentLevel[GameTags.TeamReviver].Cast<TeamReviver>())
         {
             if (teamReviver.Corpse.PlayerIndex == playerIndex)
             {
@@ -225,7 +232,8 @@ public class BaronRoundLogic : RoundLogic
                     autoReviveCounters[i] = 60f;
                 }
             }
-            if (Session.MatchSettings.LevelSystem.Theme.World == TowerTheme.Worlds.Dark)
+
+            if (Session.MatchSettings.LevelSystem!.Theme.World == TowerTheme.Worlds.Dark)
             {
                 Music.Play("DarkBoss");
             }
@@ -233,7 +241,7 @@ public class BaronRoundLogic : RoundLogic
             {
                 Music.Play("Boss");
             }
-            Session.CurrentLevel.Add<FloatText>(
+            Session.CurrentLevel.Add(
                 new FloatText(corpse.Position + new Vector2(0f, -8f), "OVERTIME", 
                 Color.Red, Color.White, 1f, 1f, false));
             Overtime = true;
@@ -251,7 +259,7 @@ public class BaronRoundLogic : RoundLogic
             Lives[playerIndex]--;
             autoReviveCounters[playerIndex] = 60f;
             AddScore(playerIndex, -1);
-            Session.CurrentLevel.Add<FloatText>(
+            Session.CurrentLevel.Add(
                 new FloatText(corpse.Position + new Vector2(0f, -8f), "-1 LIFE", 
                 ArcherData.GetColorA(playerIndex), Color.Red, 1f, 1f, false));
             return;
@@ -261,7 +269,7 @@ public class BaronRoundLogic : RoundLogic
             TotalLives[playerIndex]--;
         }
         Lives[playerIndex] = -1;
-        Session.CurrentLevel.Add<FloatText>(
+        Session.CurrentLevel.Add(
             new FloatText(corpse.Position + new Vector2(0f, -3f), "DEAD", 
             ArcherData.GetColorA(playerIndex), Color.DarkRed, 1f, 1f, false));
 

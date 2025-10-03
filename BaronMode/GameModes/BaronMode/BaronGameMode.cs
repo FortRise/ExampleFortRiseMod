@@ -9,13 +9,14 @@ namespace Teuria.BaronMode.GameModes;
 
 public class Baron : IVersusGameMode, IRegisterable
 {
+    public static IVersusGameModeEntry BaronGameMode { get; private set; } = null!;
     private static ISubtextureEntry BaronIcon { get; set; } = null!;
     public static void Register(IModContent content, IModRegistry registry)
     {
         BaronIcon = registry.Subtextures.RegisterTexture(
             content.Root.GetRelativePath("Content/gameModes/baron.png")
         );
-        registry.GameModes.RegisterVersusGameMode(new Baron());
+        BaronGameMode = registry.GameModes.RegisterVersusGameMode(new Baron());
     }
 
     private int[] totalLives = null!;
