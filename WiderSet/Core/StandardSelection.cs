@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using FortRise;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Moments.Encoder;
 using Monocle;
 using TowerFall;
 
@@ -255,6 +257,8 @@ internal class LevelSetDisplay : MenuItem
     {
         // Clear the frame cache to fix the broken recording issue.
         ReplayRecorder.ClearFrameCache();
+        ref var encoder = ref UnsafeGifEncoder.GifEncoderColorCache(null!);
+        encoder = null;
     }
 
     public override void TweenOut()
@@ -277,3 +281,10 @@ internal class LevelSetDisplay : MenuItem
         throw new System.NotImplementedException();
     }
 }
+
+public static class UnsafeGifEncoder
+{
+    [UnsafeAccessor(UnsafeAccessorKind.StaticField, Name = "colorCache")]
+    public static extern ref Color[] GifEncoderColorCache(GifEncoder gifEncoder);
+}
+

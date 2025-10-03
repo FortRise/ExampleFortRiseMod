@@ -22,7 +22,7 @@ internal sealed class OrbLogicHooks : IHookable
         );
 
         harmony.Patch(
-            AccessTools.DeclaredMethod(typeof(OrbLogic), nameof(OrbLogic.DoSpaceOrb)),
+            AccessTools.DeclaredMethod(typeof(OrbLogic), nameof(OrbLogic.DoOffsetWorldVariant)),
             transpiler: new HarmonyMethod(OrbLogic_DoOffsetWorldVariant_Transpiler)
         );
 
@@ -49,6 +49,8 @@ internal sealed class OrbLogicHooks : IHookable
                 });
             }
         });
+
+        cursor.Index = 0;
 
         cursor.Encompass(x =>
         {

@@ -6,6 +6,7 @@ using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Monocle;
 using TowerFall;
+using TowerFall.Patching;
 
 namespace Teuria.WiderSet;
 
@@ -27,6 +28,36 @@ internal sealed class MapSceneHooks : IHookable
             AccessTools.DeclaredMethod(typeof(MapScene), nameof(MapScene.FixedClampCamera)),
             transpiler: new HarmonyMethod(MapScene_ClampCamera_Transpiler)
         );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(MapScene), nameof(MapScene.InitVersusButtons)),
+            transpiler: new HarmonyMethod(MapScene_InitVersusButtons_Transpiler)
+        );
+    }
+
+    private static IEnumerable<CodeInstruction> MapScene_InitVersusButtons_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        var cursor = new ILTranspilerCursor(generator, instructions);
+
+        cursor.Encompass(x => 
+        {
+            while (x.Next(MoveType.After, [ILMatch.Ldfld("Levels")]))
+            {
+                cursor.Emit(new CodeInstruction(OpCodes.Ldloc, 4));
+                cursor.EmitDelegate((List<VersusLevelData> levels, VersusTowerData data) => 
+                {
+                    if (WiderSetModule.IsWide)
+                    {
+                        string levelID = data.GetLevelID();
+                        return WideTowerManager.Instance.MappedLevels[levelID];
+                    }
+
+                    return levels;
+                });
+            }
+        });
+
+        return cursor.Generate();
     }
 
     private static IEnumerable<CodeInstruction> MapScene_ClampCamera_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)

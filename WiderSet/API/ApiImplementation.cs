@@ -1,3 +1,4 @@
+using FortRise;
 using Microsoft.Xna.Framework;
 
 namespace Teuria.WiderSet;
@@ -21,6 +22,8 @@ public sealed class ApiImplementation : IWiderSetModApi
     public Matrix WideIdentity => MatrixUtilities.IdentityFixed;
     public float UIXOffset => WiderSetModule.IsWide ? 50 : 0;
 
+    public IWiderSetModApi.IWiderVersusLevelApi WiderVersusLevelApi { get; } = new WiderVersusLevelApi();
+
     public void SetNotJoinedArcherOffset(int archerID, Vector2 offset, IWiderSetModApi.ArcherType type)
     {
         switch (type)
@@ -35,5 +38,28 @@ public sealed class ApiImplementation : IWiderSetModApi
                 WiderSetModule.NotJoinedSecretCharacterOffset[archerID] = offset;
                 break;
         }
+    }
+
+    public void SetJoinedArcherOffset(int archerID, Vector2 offset, IWiderSetModApi.ArcherType type)
+    {
+        switch (type)
+        {
+            case IWiderSetModApi.ArcherType.Normal:
+                WiderSetModule.JoinedCharacterOffset[archerID] = offset;
+                break;
+            case IWiderSetModApi.ArcherType.Alt:
+                WiderSetModule.JoinedAltCharacterOffset[archerID] = offset;
+                break;
+            case IWiderSetModApi.ArcherType.Secret:
+                WiderSetModule.JoinedSecretCharacterOffset[archerID] = offset;
+                break;
+        }
+    }
+}
+
+public sealed class WiderVersusLevelApi : IWiderSetModApi.IWiderVersusLevelApi
+{
+    public void RegisterWideLevelsForVersusTower(string levelID, IResourceInfo[] levels)
+    {
     }
 }

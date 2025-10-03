@@ -33,11 +33,21 @@ internal sealed class VersusLevelSystemHooks : IHookable
             return;
         }
 
-        ref IVersusTowerEntry level = ref CollectionsMarshal.GetValueRefOrNullRef(WiderSetModule.MapEntry, __instance.VersusTowerData.GetLevelID());
-        if (Unsafe.IsNullRef(ref level))
+        string levelID = __instance.VersusTowerData.GetLevelID();
+
+        if (__instance.VersusTowerData.IsOfficialLevelSet())
         {
+            ref IVersusTowerEntry level = ref CollectionsMarshal.GetValueRefOrNullRef(
+                WiderSetModule.MapEntry, 
+                levelID);
+
+            if (Unsafe.IsNullRef(ref level))
+            {
+                return;
+            }
+
+            UnsafeVersusLevelSystem.SetVersusTowerData(__instance, level.VersusTowerData);
             return;
         }
-        UnsafeVersusLevelSystem.SetVersusTowerData(__instance, level.VersusTowerData);
     }
 }

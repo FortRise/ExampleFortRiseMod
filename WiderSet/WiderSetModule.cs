@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Xml;
 using FortRise;
+using FortRise.Content;
+using FortRise.Transpiler;
+using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -88,6 +92,7 @@ public class WiderSetModule : Mod
         typeof(VersusMatchResultsHooks),
         typeof(VersusPlayerMatchResultsHooks),
         typeof(VersusRoundResultsHooks),
+        typeof(VersusTowerDataHooks),
         typeof(WrapHitboxHooks),
         typeof(WrapMathHooks)
     ];
@@ -121,12 +126,17 @@ public class WiderSetModule : Mod
     public static IMenuSpriteContainerEntry WideSetSprite { get; internal set; } = null!;
     public static IMenuStateEntry StandardSelectionEntry { get; internal set; } = null!;
 
-    public static Dictionary<int, Vector2> NotJoinedCharacterOffset = new Dictionary<int, Vector2>();
-    public static Dictionary<int, Vector2> NotJoinedSecretCharacterOffset = new Dictionary<int, Vector2>();
-    public static Dictionary<int, Vector2> NotJoinedAltCharacterOffset = new Dictionary<int, Vector2>();
-    public static Dictionary<string, XmlElement> WideBG = new Dictionary<string, XmlElement>();
-    public static Dictionary<string, string> WideRedirector = new Dictionary<string, string>();
-    public static Dictionary<string, IVersusTowerEntry> MapEntry = new Dictionary<string, IVersusTowerEntry>();
+    public static Dictionary<int, Vector2> NotJoinedCharacterOffset = [];
+    public static Dictionary<int, Vector2> NotJoinedSecretCharacterOffset = [];
+    public static Dictionary<int, Vector2> NotJoinedAltCharacterOffset = [];
+
+    public static Dictionary<int, Vector2> JoinedCharacterOffset = [];
+    public static Dictionary<int, Vector2> JoinedSecretCharacterOffset = [];
+    public static Dictionary<int, Vector2> JoinedAltCharacterOffset = [];
+
+    public static Dictionary<string, XmlElement> WideBG = [];
+    public static Dictionary<string, string> WideRedirector = [];
+    public static Dictionary<string, IVersusTowerEntry> MapEntry = [];
 
     public static ISubtextureEntry SilverPortrait { get; private set; } = null!; 
     public static ISubtextureEntry GoldPortrait { get; private set; } = null!;
@@ -234,7 +244,226 @@ public class WiderSetModule : Mod
         }
 
         LoadTextures(context.Registry, content);
+        LoadLevels(context.Registry, content);
         OnInitialize += (_) => Inject();
+
+        context.Events.OnBeforeModInstantiation += OnModBeforeLoaded;
+
+
+        context.Harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(CustomLevelCategoryButton), "CreateLevelSets"),
+            postfix: new HarmonyMethod(CustomLevelCategoryButton_CreateLevelSets_Postfix)
+        );
+
+        context.Registry.Commands.RegisterCommands("level_resize", new () 
+        {
+            Callback = LevelResizeCommand
+        });
+    }
+
+    private static void LevelResizeCommand(string[] args)
+    {
+        if (IsWide)
+        {
+            return;
+        }
+
+        if (Engine.Instance.Scene is not Level levelScene)
+        {
+            return;
+        }
+
+        if (levelScene.Session.MatchSettings.LevelSystem is not VersusLevelSystem system)
+        {
+            return;
+        }
+
+        var levelID = system.VersusTowerData.GetLevelID();
+        var towerEntry = TowerRegistry.VersusTowers[levelID];
+
+        foreach (var level in towerEntry.Configuration.Levels) 
+        {
+            var filename = Path.GetFileName(level.Path);
+            var dirName = Path.GetDirectoryName(level.Path);
+            var xml = level.Xml!["level"];
+
+            if (xml!.GetAttribute("width") == "320") 
+            {
+                xml.SetAttr("width", 420);
+                InsertColumns(xml["BG"]!, "00000");
+                InsertColumns(xml["BGTiles"]!, "-1,-1,-1,-1,-1,");
+                InsertColumns(xml["Solids"]!, "00000");
+                InsertColumns(xml["SolidTiles"]!, "-1,-1,-1,-1,-1,");
+                foreach (XmlElement item2 in xml["Entities"]!)
+                {
+                    int num6 = item2.AttrInt("x");
+                    num6 += 50;
+                    item2.SetAttr("x", num6);
+                    if (item2.Name == "Spawner") 
+                    {
+                        foreach (XmlElement node in item2) 
+                        {
+                            int nodeAttrX = node.AttrInt("x");
+                            nodeAttrX += 50;
+                            node.SetAttr("x", nodeAttrX);
+                        }
+                    }
+                }
+
+                var path = Path.Combine(AppContext.BaseDirectory, $"DumpLevels/Current/{dirName}/{filename}");
+                if (!Directory.Exists(Path.GetDirectoryName(path)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                }
+
+                xml.OwnerDocument.Save(path);
+            }
+        }
+
+        static void InsertColumns(XmlElement xml, string insert)
+        {
+            if (xml == null || !(xml.InnerText != ""))
+            {
+                return;
+            }
+            string text = xml.InnerText;
+            int num = 0;
+            while (num < text.Length)
+            {
+                if (text[num] == '\n')
+                {
+                    num++;
+                    continue;
+                }
+                text = text.Insert(num, insert);
+                num = text.IndexOf('\n', num);
+                if (num == -1)
+                {
+                    break;
+                }
+                num++;
+            }
+            xml.InnerText = text;
+        }
+    }
+
+
+    private static void CustomLevelCategoryButton_CreateLevelSets_Postfix(ref List<string> __result)
+    {
+        if (IsWide)
+        {
+            __result.Clear();
+            __result.AddRange(WideTowerManager.Instance.VersusLevelSets);
+        }
+    }
+
+    private void OnModBeforeLoaded(object? sender, BeforeModInstantiationEventArgs e)
+    {
+        if (!e.Context.Interop.IsModDepends(Meta))
+        {
+            return;
+        }
+
+        // get levels
+        if (e.ModContent.Root.TryGetRelativePath("Content/Levels/Versus", out var versusLocation)) 
+        {
+            foreach (var map in versusLocation.Childrens)
+            {
+                if (map.TryGetRelativePath("Wide", out var wideLevels))
+                {
+                    var levels = new List<IResourceInfo>();
+                    foreach (var child in wideLevels.Childrens)
+                    {
+                        if (child.Path.EndsWith("oel"))
+                        {
+                            levels.Add(child);
+                        }
+                    }
+
+                    WideTowerManager.Instance.AddEntry(
+                        e.ModContent.Metadata.Name + "/" + Path.GetFileName(map.Path), 
+                        [..levels]);
+                }
+            }
+        }
+
+        var api = Context.Interop.GetApi<IFortRiseContentApi>("FortRise.Content");
+        if (api is null)
+        {
+            return;
+        }
+
+        var content = api.LoaderApi.GetContentConfiguration(e.ModContent.Metadata);
+        if (content is null)
+        {
+            return;
+        }
+
+        var data = content.GetLoader("archerData");
+
+        if (data is null || data.Path is null)
+        {
+            return;
+        }
+
+        var enumeratedPaths = new List<IResourceInfo>();
+
+        foreach (var p in data.Path)
+        {
+            enumeratedPaths.AddRange(e.ModContent.Root.EnumerateChildrens(p));
+        }
+
+        foreach (var res in enumeratedPaths)
+        {
+            var r = res.Xml;
+
+            // TODO: validation
+            // TODO: alt
+            // TODO: secret
+            var archers = r!["Archers"]!;
+            foreach (XmlElement archer in archers.GetElementsByTagName("Archer"))
+            {
+                SetOffsetPortrait(archer);
+            }
+
+            foreach (XmlElement archer in archers.GetElementsByTagName("AltArcher"))
+            {
+                SetOffsetPortrait(archer);
+            }
+
+            foreach (XmlElement archer in archers.GetElementsByTagName("SecretArcher"))
+            {
+                SetOffsetPortrait(archer);
+            }
+
+            void SetOffsetPortrait(XmlElement archer)
+            {
+                var id = archer.Attr("id");
+                var offsetX = (int)archer.ChildFloat("WideNotJoinedOffsetX", 0);
+                var offsetY = (int)archer.ChildFloat("WideNotJoinedOffsetY", 0);
+
+                var joinedOffsetX = (int)archer.ChildFloat("WideJoinedOffsetX", 0);
+                var joinedOffsetY = (int)archer.ChildFloat("WideJoinedOffsetY", 0);
+
+                var isAlt = archer.Attr("Alt", string.Empty) != string.Empty;
+                var isSecret = archer.Attr("Secret", string.Empty) != string.Empty;
+
+                var archerEntry = Context.Registry.Archers.GetArcher(e.ModContent.Metadata.Name + "/" + id)!; // we are sure that this archer exists and registered
+
+                if (isAlt)
+                {
+                    NotJoinedAltCharacterOffset[archerEntry.Index] = new Vector2(offsetX, offsetY);
+                }
+                else if (isSecret)
+                {
+                    NotJoinedSecretCharacterOffset[archerEntry.Index] = new Vector2(offsetX, offsetY);
+                }
+                else 
+                {
+                    NotJoinedCharacterOffset[archerEntry.Index] = new Vector2(offsetX, offsetY);
+                }
+            }
+        }
     }
 
     public override object? GetApi() => new ApiImplementation();
@@ -244,32 +473,14 @@ public class WiderSetModule : Mod
         NotJoinedCharacterOffset[6] = new Vector2(0, 50);
     }
 
-    private static void LoadTextures(IModRegistry registry, IModContent content)
+    private static void LoadLevels(IModRegistry registry, IModContent content)
     {
-        var resource = content.Root.GetRelativePath("Content/images/bg");
-
-        foreach (var child in resource.Childrens)
-        {
-            registry.Subtextures.RegisterTexture(
-                Path.GetFileNameWithoutExtension(child.Path),
-                child,
-                SubtextureAtlasDestination.BGAtlas
-            );
-        }
-
-        var data = content.Root.GetRelativePath("Content/Atlas/GameData/sixPlayerBGData.xml").Xml!;
-
-        foreach (XmlElement xml in data!.GetElementsByTagName("BG"))
-        {
-            WideBG.Add(xml.Attr("id"), xml);
-        }
-
         var versusChapters = content.Root.GetRelativePath("Content/WideLevels/Versus");
 
         foreach (var chapter in versusChapters.Childrens)
         {
-            List<IResourceInfo> levels = new List<IResourceInfo>();
-            List<Treasure> treasures = new List<Treasure>();
+            List<IResourceInfo> levels = [];
+            List<Treasure> treasures = [];
             IResourceInfo? xml = null;
             foreach (var level in chapter.Childrens)
             {
@@ -311,14 +522,35 @@ public class WiderSetModule : Mod
                 themeName,
                 new()
                 {
-                    Levels = levels.ToArray(),
-                    Treasure = treasures.ToArray(),
+                    Levels = [.. levels],
+                    Treasure = [.. treasures],
                     Theme = themeName,
                     SpecialArrowRate = arrowRate,
                     ArrowShuffle = arrowShuffle,
                     Procedural = tow!.HasChild("procedural")
                 }
             );
+        }
+    }
+
+    private static void LoadTextures(IModRegistry registry, IModContent content)
+    {
+        var resource = content.Root.GetRelativePath("Content/images/bg");
+
+        foreach (var child in resource.Childrens)
+        {
+            registry.Subtextures.RegisterTexture(
+                Path.GetFileNameWithoutExtension(child.Path),
+                child,
+                SubtextureAtlasDestination.BGAtlas
+            );
+        }
+
+        var data = content.Root.GetRelativePath("Content/Atlas/GameData/sixPlayerBGData.xml").Xml!;
+
+        foreach (XmlElement xml in data!.GetElementsByTagName("BG"))
+        {
+            WideBG.Add(xml.Attr("id"), xml);
         }
     }
 

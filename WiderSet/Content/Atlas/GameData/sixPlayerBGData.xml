@@ -117,7 +117,7 @@
   <BG id="Thornwood">
     <Background bgColor="FFFFFF">
       <Backdrop x="0" y="0" opacity="1">Teuria.WiderSet/forestSky</Backdrop>
-      <WavyLayer x="-5" y="0" waveFrames="400" amplitude="5" sliceSize="30" sliceAdd="0.1" opacity="1">forestLeaves</WavyLayer>
+      <WavyLayer x="-5" y="0" waveFrames="400" amplitude="5" sliceSize="30" sliceAdd="0.1" opacity="1">Teuria.WiderSet/forestLeaves</WavyLayer>
       <Backdrop x="0" y="0" opacity="1">Teuria.WiderSet/frontTrees</Backdrop>
       <AnimatedLayer x="75" y="30" opacity="1">farSilhouette</AnimatedLayer>
       <AnimatedLayer x="246" y="58" opacity="1">farSilhouette2</AnimatedLayer>
@@ -206,7 +206,7 @@
   <BG id="TowerForge">
     <Background bgColor="FFFFFF">
       <WavyLayer x="-5" y="0" waveFrames="100" amplitude="2" sliceSize="20" opacity="1" sliceAdd=".05" horizontal="False">Teuria.WiderSet/coreBg2</WavyLayer>
-      <WavyLayer x="80" y="75" waveFrames="200" amplitude="2" sliceSize="20" opacity="1" sliceAdd=".05" horizontal="False">godHead</WavyLayer>
+      <WavyLayer x="80" y="75" waveFrames="200" amplitude="2" sliceSize="20" opacity="1" sliceAdd=".05" horizontal="False">Teuria.WiderSet/godHead</WavyLayer>
 
       <NodeLayer sprite="BGBat" endWarp="True">
         <Node x="-30" y="15" xRange="0" yRange="10" animID="0" speed="1" speedRange="0.5" delay="800" delayRange="5"/>
@@ -278,7 +278,8 @@
       <ScrollLayer x="0" y="0" speedX="3.5" speedY="5" opacity="0.15">Teuria.WiderSet/fastRain</ScrollLayer>
       <FadeMoveLayer x="80" y="0" xRange="40" yRange="0" maxAlpha=".1" time="2">LightRay</FadeMoveLayer>
       <FadeMoveLayer x="160" y="0" xRange="40" yRange="0" maxAlpha=".15" time="2">LightRay</FadeMoveLayer>
-      <FadeMoveLayer x="240" y="0" xRange="40" yRange="0" maxAlpha=".1" time="2">LightRay</FadeMoveLayer>
+      <FadeMoveLayer x="260" y="0" xRange="40" yRange="0" maxAlpha=".1" time="2">LightRay</FadeMoveLayer>
+      <FadeMoveLayer x="340" y="0" xRange="40" yRange="0" maxAlpha=".15" time="2">LightRay</FadeMoveLayer>
     </Foreground>
   </BG>
 

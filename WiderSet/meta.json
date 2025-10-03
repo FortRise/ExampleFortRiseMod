@@ -7,8 +7,12 @@
 	"dependencies": [
 		{
 			"name": "FortRise",
-			"version": "5.1.0"
-		}
+			"version": "5.1.1"
+		},
+        {
+            "name": "FortRise.Content",
+            "version": "5.1.1"
+        }
 	],
 	"update": {
 		"gamebanana": {
