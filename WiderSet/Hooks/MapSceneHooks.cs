@@ -6,7 +6,6 @@ using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Monocle;
 using TowerFall;
-using TowerFall.Patching;
 
 namespace Teuria.WiderSet;
 

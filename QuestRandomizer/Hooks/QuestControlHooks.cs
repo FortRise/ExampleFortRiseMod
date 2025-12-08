@@ -135,6 +135,7 @@ internal class QuestControlHooks
 
         cursor.Emit(new CodeInstruction(OpCodes.Stloc, 0));
         cursor.Emit(new CodeInstruction(OpCodes.Br, randomizer));
+        cursor.GotoPrev();
         cursor.MarkLabel(noRandomizer);
 
         cursor.GotoNext([ILMatch.Ldarg(0), ILMatch.Ldloc(0), ILMatch.Ldstr()]);

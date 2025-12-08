@@ -2,7 +2,6 @@
   <Import Project="../Configuration.props"/>
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ModName>Teuria.BaronMode</ModName>
     <ModVersion>2.1.1</ModVersion>

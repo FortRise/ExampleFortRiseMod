@@ -230,29 +230,3 @@ public class TriggerBrambleArrow : TriggerArrow
         }
     }
 }
-
-public class PatchEnemyBramble 
-{
-    public static void Load() 
-    {
-        On.TowerFall.Enemy.Update += EnemyUpdatePatch;
-    }
-
-    private static void EnemyUpdatePatch(On.TowerFall.Enemy.orig_Update orig, Enemy self)
-    {
-        orig(self);
-        self.CollideDo(GameTags.Brambles, e => {
-            if (e is Brambles brambles)
-            {
-                if (brambles.OwnerIndex < 0)
-                    return;
-                self.Hurt(new Vector2(0, 0), 1, brambles.OwnerIndex);
-            }
-        });
-    }
-
-    public static void Unload() 
-    {
-        On.TowerFall.Enemy.Update -= EnemyUpdatePatch;
-    }
-}

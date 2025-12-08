@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Reflection.Emit;
 using FortRise;
 using FortRise.Transpiler;
@@ -47,7 +45,6 @@ internal sealed class VersusRoundResultsHooks : IHookable
             AccessTools.DeclaredMethod(typeof(VersusRoundResults), "Sequence")
         );
 
-        var fiveEight = sequenceMethod.DeclaringType!.GetField("<i>5__8", BindingFlags.NonPublic | BindingFlags.Instance);
         var self = sequenceMethod.DeclaringType!.GetField("<>4__this");
 
         var cursor = new ILTranspilerCursor(generator, instructions);
@@ -58,8 +55,7 @@ internal sealed class VersusRoundResultsHooks : IHookable
         cursor.Emit(new CodeInstruction(OpCodes.Ldarg_0));
         cursor.Emit(new CodeInstruction(OpCodes.Ldfld, self));
 
-        cursor.Emit(new CodeInstruction(OpCodes.Ldarg_0));
-        cursor.Emit(new CodeInstruction(OpCodes.Ldfld, fiveEight));
+        cursor.Emit(new CodeInstruction(OpCodes.Ldloc_S, (byte)9));
         cursor.EmitDelegate((Sprite<int> sprite, VersusRoundResults __instance, int fiveEight) => 
         {
             if (__instance.Level.Session.MatchSettings.Mode != Baron.BaronGameMode.Modes)

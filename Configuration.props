@@ -1,6 +1,7 @@
 <Project>
   <!-- If Steam path cannot be found, try specifying the path. -->
   <PropertyGroup>
-      <ModLoaderPath>..\..\..\FortRise</ModLoaderPath>
+      <TargetFramework>net10.0</TargetFramework>
+      <ModLoaderPath>..\..\</ModLoaderPath>
   </PropertyGroup>
 </Project>
