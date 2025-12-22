@@ -42,6 +42,11 @@ internal sealed class VariantHooks : IHookable
         );
 
         harmony.Patch(
+            AccessTools.DeclaredPropertySetter(typeof(Variant), nameof(Variant.Value)),
+            transpiler: new HarmonyMethod(Variant_Value_Transpiler)
+        );
+
+        harmony.Patch(
             AccessTools.DeclaredPropertyGetter(typeof(Variant), nameof(Variant.AllTrue)),
             transpiler: new HarmonyMethod(Variant_AllTrue_Transpiler)
         );
