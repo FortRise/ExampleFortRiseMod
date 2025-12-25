@@ -1,5 +1,5 @@
 {
-	"version": "0.6.1",
+	"version": "0.7.0",
 	"displayName": "Wider Set",
 	"author": "Terria",
     "description": "Explore the world of TowerFall with Wider experience.",
@@ -7,11 +7,11 @@
 	"dependencies": [
 		{
 			"name": "FortRise",
-			"version": "5.1.1"
+			"version": "5.2.3"
 		},
         {
             "name": "FortRise.Content",
-            "version": "5.1.1"
+            "version": "5.2.3"
         }
 	],
 	"update": {
