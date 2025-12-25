@@ -25,6 +25,11 @@ internal sealed class VariantPerPlayerHooks : IHookable
     public static void Load(IHarmony harmony)
     {
         harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(VariantPerPlayer), "GetCursorTarget"),
+            transpiler: new HarmonyMethod(VariantPerPlayer_GetCursorTarget_Transpiler)
+        );
+
+        harmony.Patch(
             AccessTools.DeclaredConstructor(typeof(VariantPerPlayer), [typeof(VariantToggle), typeof(Vector2)]),
             transpiler: new HarmonyMethod(VariantPerPlayer_ctor_Transpiler)
         );
@@ -37,11 +42,6 @@ internal sealed class VariantPerPlayerHooks : IHookable
         harmony.Patch(
             AccessTools.DeclaredMethod(typeof(VariantPerPlayer), nameof(VariantPerPlayer.Render)),
             transpiler: new HarmonyMethod(VariantPerPlayer_Render_Transpiler)
-        );
-
-        harmony.Patch(
-            AccessTools.DeclaredMethod(typeof(VariantPerPlayer), "GetCursorTarget"),
-            transpiler: new HarmonyMethod(VariantPerPlayer_GetCursorTarget_Transpiler)
         );
     }
 

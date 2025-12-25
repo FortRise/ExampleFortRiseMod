@@ -84,6 +84,7 @@ public class WiderSetModule : Mod
         typeof(SessionHooks),
         typeof(SwitchBlockHooks),
         typeof(VariantHooks),
+        typeof(VariantToggleHooks),
 
         typeof(VariantPerPlayerHooks),
         typeof(VersusAwardsHooks),
