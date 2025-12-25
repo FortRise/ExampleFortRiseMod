@@ -174,7 +174,6 @@ public class WiderSetModule : Mod
         arrowTweenFrom += new Vector2(100, 0);
         titleTweenFrom -= new Vector2(100, 0);
 
-        SDL3.SDL.SDL_SetHint(SDL3.SDL.SDL_HINT_JOYSTICK_RAWINPUT, "1");
         Environment.SetEnvironmentVariable("FNA_GAMEPAD_NUM_GAMEPADS", "8");
 
         ref var colliders = ref UnsafePlayer.GetPlayerWasColliders(null!);
