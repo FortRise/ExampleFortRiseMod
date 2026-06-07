@@ -1,0 +1,12 @@
+{
+	"Version": "1.0.0",
+    "author": "Terria",
+    "description": "Added a fortfeit button to the game.",
+    "dll": "Fortfeit.dll",
+	"dependencies": [
+		{
+			"name": "FortRise",
+			"version": "5.2.5"
+		}
+	]
+}

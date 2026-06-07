@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../Configuration.props"/>
+
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <ModName>Teuria.Fortfeit</ModName>
+    <ModVersion>1.0.0</ModVersion>
+
+    <ModZipPath>..\release\$(ModName).zip</ModZipPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Content/**/*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FortRise.Configuration" Version="*" />
+  </ItemGroup>
+</Project>
+
+
