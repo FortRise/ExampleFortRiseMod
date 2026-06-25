@@ -1,5 +1,5 @@
 {
-	"Version": "1.0.1",
+	"Version": "1.1.0",
     "author": "Terria",
     "description": "Added a fortfeit button to the game.",
     "dll": "Fortfeit.dll",
@@ -14,5 +14,10 @@
             "name": "Teuria.WiderSet",
             "version": "0.6.1"
       }
-    ]
+    ],
+	"update": {
+		"gamebanana": {
+			"id": 688948
+		}
+	}
 }

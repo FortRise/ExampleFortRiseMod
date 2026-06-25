@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Nullable>enable</Nullable>
     <ModName>Teuria.Fortfeit</ModName>
-    <ModVersion>1.0.1</ModVersion>
+    <ModVersion>1.1.0</ModVersion>
 
     <ModZipPath>..\release\$(ModName).zip</ModZipPath>
   </PropertyGroup>
