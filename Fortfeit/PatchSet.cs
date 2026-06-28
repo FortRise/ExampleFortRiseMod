@@ -70,25 +70,12 @@ public static class PatchSet
 
         bool pressed = false;
 
-        PlayerInput? playerInput = null;
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < MenuInput.MenuInputs.Length; i++)
         {
-            if (TFGame.PlayerInputs[i] != null)
+            if (MenuInput.MenuInputs[i] != null && MenuInput.MenuInputs[i].MenuArrows)
             {
-                playerInput = TFGame.PlayerInputs[i];
+                pressed = true;
                 break;
-            }
-        }
-
-        if (playerInput is not null)
-        {
-            if (playerInput is KeyboardInput keyInput)
-            {
-                pressed = MInput.Keyboard.Pressed(keyInput.Config.Arrows[0]);
-            }
-            else if (playerInput is XGamepadInput xGamepadInput)
-            {
-                pressed = xGamepadInput.XGamepad.Pressed(Buttons.Y);
             }
         }
 
