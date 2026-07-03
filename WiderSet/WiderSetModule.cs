@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Xml;
 using FortRise;
 using FortRise.Content;
-using FortRise.Transpiler;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
@@ -41,6 +39,7 @@ public class WiderSetModule : Mod
         typeof(EnemyHooks),
         typeof(FightButtonHooks),
         typeof(GameplayLayerHooks),
+        typeof(GamepadConfigHooks),
         typeof(GifExporterHooks),
         typeof(GifEncoderHooks),
         typeof(HUDFadeHooks),
@@ -66,7 +65,9 @@ public class WiderSetModule : Mod
         typeof(MatchTeamsHooks),
         typeof(MatchSettingsHooks),
         typeof(MenuBackgroundHooks),
+        typeof(MenuButtonsHooks),
         typeof(MenuButtonGuideHooks),
+        typeof(MenuInputHooks),
 
         typeof(MiasmaHooks),
         typeof(MInputHooks),
@@ -79,6 +80,7 @@ public class WiderSetModule : Mod
         typeof(RoundLogicHooks),
         typeof(TFGameHooks),
         typeof(TreasureSpawnerHooks),
+        typeof(SaveDataHooks),
         typeof(SavingInfoSceneHooks),
         typeof(ScreenHooks),
         typeof(SessionHooks),
@@ -278,7 +280,7 @@ public class WiderSetModule : Mod
             return;
         }
 
-        var levelID = system.VersusTowerData.GetLevelID();
+        var levelID = system.VersusTowerData.LevelID;
         var towerEntry = TowerRegistry.VersusTowers[levelID];
 
         foreach (var level in towerEntry.Configuration.Levels) 
@@ -453,14 +455,17 @@ public class WiderSetModule : Mod
                 if (isAlt)
                 {
                     NotJoinedAltCharacterOffset[archerEntry.Index] = new Vector2(offsetX, offsetY);
+                    JoinedAltCharacterOffset[archerEntry.Index] = new Vector2(joinedOffsetX, joinedOffsetY);
                 }
                 else if (isSecret)
                 {
                     NotJoinedSecretCharacterOffset[archerEntry.Index] = new Vector2(offsetX, offsetY);
+                    JoinedSecretCharacterOffset[archerEntry.Index] = new Vector2(joinedOffsetX, joinedOffsetY);
                 }
                 else 
                 {
                     NotJoinedCharacterOffset[archerEntry.Index] = new Vector2(offsetX, offsetY);
+                    JoinedCharacterOffset[archerEntry.Index] = new Vector2(joinedOffsetX, joinedOffsetY);
                 }
             }
         }

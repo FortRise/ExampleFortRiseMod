@@ -1,17 +1,18 @@
 {
-	"version": "0.7.0",
+	"version": "0.8.0-beta.2",
 	"displayName": "Wider Set",
 	"author": "Terria",
     "description": "Explore the world of TowerFall with Wider experience.",
     "dll": "WiderSet.dll",
+	"priority": "High",
 	"dependencies": [
 		{
 			"name": "FortRise",
-			"version": "5.2.3"
+			"version": "5.3.0-beta.1"
 		},
         {
             "name": "FortRise.Content",
-            "version": "5.2.3"
+            "version": "5.3.0-beta.1"
         }
 	],
 	"update": {
