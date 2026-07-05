@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Nullable>enable</Nullable>
     <ModName>Teuria.BaronMode</ModName>
-    <ModVersion>2.1.1</ModVersion>
+    <ModVersion>2.2.0</ModVersion>
 
     <ModZipPath>..\release\$(ModName).zip</ModZipPath>
   </PropertyGroup>

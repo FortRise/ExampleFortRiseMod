@@ -115,7 +115,7 @@ public class DiscordPresenceModule : Mod
         {
         case DarkWorldLevelSystem dwSystem:
         {
-            var levelID = dwSystem.DarkWorldTowerData.GetLevelID() ?? "Official Level";
+            var levelID = dwSystem.DarkWorldTowerData.LevelID ?? "Official Level";
             var index = levelID.IndexOf('/');
             if (index != -1) 
             {
@@ -151,7 +151,7 @@ public class DiscordPresenceModule : Mod
             break;
         case VersusLevelSystem versus:
         {
-            var levelID = versus.VersusTowerData.GetLevelID() ?? "Official Level";
+            var levelID = versus.VersusTowerData.LevelID ?? "Official Level";
             var index = levelID.IndexOf('/');
             if (index != -1) 
             {
@@ -183,7 +183,7 @@ public class DiscordPresenceModule : Mod
             break;
         case QuestLevelSystem questSystem:
         {
-            var levelID = questSystem.QuestTowerData.GetLevelID() ?? "Official Level";
+            var levelID = questSystem.QuestTowerData.LevelID ?? "Official Level";
             var index = levelID.IndexOf('/');
             if (index != -1) 
             {
@@ -209,29 +209,17 @@ public class DiscordPresenceModule : Mod
             var trialTowerData = trialsSystem.TrialsLevelData;
             int typeCompletion = 0;
             string bestTime;
-            if (trialTowerData.IsOfficialLevelSet()) 
-            {
-                var data = SaveData.Instance.Trials.Levels[trialTowerData.ID.X][trialTowerData.ID.Y];
-                if (data.UnlockedGold)
-                    typeCompletion++;
-                if (data.UnlockedDiamond)
-                    typeCompletion++;
-                if (data.UnlockedDevTime)
-                    typeCompletion++;
-                bestTime = TrialsResults.GetTimeString(TimeSpan.FromTicks(data.BestTime));
-            }
-            else 
-            {
-                var data = FortRiseModule.SaveData.AdventureTrials.AddOrGet(trialTowerData.GetLevelID());
-                if (data.UnlockedGold)
-                    typeCompletion++;
-                if (data.UnlockedDiamond)
-                    typeCompletion++;
-                if (data.UnlockedDevTime)
-                    typeCompletion++;
-                bestTime = TrialsResults.GetTimeString(TimeSpan.FromTicks(data.BestTime));
-            }
-            var levelID = trialTowerData.GetLevelID() ?? "Official Level";
+
+            var data = SaveData.Instance.Trials.Levels[trialTowerData.ID.X][trialTowerData.ID.Y];
+            if (data.UnlockedGold)
+                typeCompletion++;
+            if (data.UnlockedDiamond)
+                typeCompletion++;
+            if (data.UnlockedDevTime)
+                typeCompletion++;
+            bestTime = TrialsResults.GetTimeString(TimeSpan.FromTicks(data.BestTime));
+
+            var levelID = trialTowerData.LevelID ?? "Official Level";
             var index = levelID.IndexOf('/');
             if (index != -1) 
             {
@@ -289,7 +277,7 @@ public class DiscordPresenceModule : Mod
         {
             return;
         }
-        var levelID = questSystem.QuestTowerData.GetLevelID() ?? "Official Level";
+        var levelID = questSystem.QuestTowerData.LevelID ?? "Official Level";
         var index = levelID.IndexOf('/');
         if (index != -1) 
         {
@@ -353,7 +341,7 @@ public class DiscordPresenceModule : Mod
                 return;
             }
 
-            var levelID = questSystem.QuestTowerData.GetLevelID() ?? "Official Level";
+            var levelID = questSystem.QuestTowerData.LevelID ?? "Official Level";
             var index = levelID.IndexOf('/');
             if (index != -1) 
             {

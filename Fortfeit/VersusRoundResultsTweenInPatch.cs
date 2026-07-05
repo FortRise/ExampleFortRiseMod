@@ -30,7 +30,7 @@ public static class VersusRoundResultsTweenInPatch
 
         if (TempLifetime.RoundReults.TryGetTarget(out var guide))
         {
-            guide?.Visible = true;
+            guide.Visible = true;
         }
     }
 }

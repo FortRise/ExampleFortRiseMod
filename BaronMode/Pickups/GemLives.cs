@@ -15,11 +15,11 @@ public class GemLives : Pickup, IRegisterable
         GemPickupTexture = registry.Subtextures.RegisterTexture(
             content.Root.GetRelativePath("Content/pickups/gemCoin.png")
         );
-        GemLivesMeta = registry.Pickups.RegisterPickups("GemLives", new() 
+        GemLivesMeta = registry.Pickups.RegisterPickup("GemLives", new()
         {
-            Name = "Gem Lives",
-            PickupType = typeof(GemLives)
+            CreatePickup = (e) => new GemLives(e.Position, e.TargetPosition)
         });
+
     }
 
     private Sprite<int> sprite;

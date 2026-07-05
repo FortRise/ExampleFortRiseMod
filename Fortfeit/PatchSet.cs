@@ -16,7 +16,7 @@ public static class PatchSet
     {
         if (TempLifetime.RoundReults.TryGetTarget(out var guide))
         {
-            guide?.Visible = false;
+            guide.Visible = false;
         }
     }
 
@@ -38,7 +38,7 @@ public static class PatchSet
 
         if (TempLifetime.RoundReults.TryGetTarget(out var guide))
         {
-            guide?.Visible = true;
+            guide.Visible = true;
         }
     }
 
@@ -48,7 +48,7 @@ public static class PatchSet
     {
         if (TempLifetime.RoundReults.TryGetTarget(out var guide))
         {
-            guide?.Visible = false;
+            guide.Visible = false;
         }
     }
 

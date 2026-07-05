@@ -27,11 +27,11 @@ public class TreasureSpawnerHooks : IHookable
 
         if (BaronMatchVariants.NoTreasureLives.IsActive(__instance.Session.MatchSettings.Variants!))
         {
+            // Let's make sure it won't spawn at all
             __instance.TreasureRates[(int)gemLivesPickup] = 0f;
         }
         else 
         {
-            // Let's make sure it won't spawn at all
             __instance.TreasureRates[(int)gemLivesPickup] = 1f;
         }
     }
