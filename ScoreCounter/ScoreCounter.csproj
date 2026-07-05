@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Nullable>enable</Nullable>
     <ModName>Teuria.ScoreCounter</ModName>
-    <ModVersion>1.0.0</ModVersion>
+    <ModVersion>1.1.0</ModVersion>
 
     <!-- If Steam path cannot be found, try specifying the path. -->
     <ModZipPath>..\release\$(ModName)-$(ModVersion).zip</ModZipPath>

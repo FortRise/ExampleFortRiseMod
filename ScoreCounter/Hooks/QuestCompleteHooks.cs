@@ -34,24 +34,15 @@ internal sealed class QuestCompleteHooks : IHookable
             AccessTools.EnumeratorMoveNext(
                 AccessTools.DeclaredMethod(typeof(QuestComplete), "Sequence")
             ),
+            prefix: new HarmonyMethod(QuestComplete_Sequence_Prefix),
             transpiler: new HarmonyMethod(QuestComplete_Sequence_Transpiler)
         );
     }
 
-    private static IEnumerable<CodeInstruction> QuestComplete_Sequence_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    private static void QuestComplete_Sequence_Prefix(object __instance)
     {
-        var cursor = new ILTranspilerCursor(generator, instructions);
-
-        cursor.GotoNext(MoveType.After, [ILMatch.Callvirt("TweenNextGemTo")]);
-        cursor.EmitDelegate(() => 
-        {
-            ScoreCounterModule.Instance.ScoreData.ScoreBonuses += 1000;
-            totalScore.DrawText = ScoreCounterModule.Instance.ScoreData.TotalScore.ToString();
-            totalWiggler.Start();
-        });
-
-        cursor.GotoNext(MoveType.After, [ILMatch.Call("InvokeQuestComplete_Result")]);
-        cursor.EmitDelegate(() => 
+        var state = Traverse.Create(__instance).Field<int>("<>1__state").Value;
+        if (state == 12)
         {
             var roundLogic = Private.Field<QuestComplete, QuestRoundLogic>("quest", instance).Read();
             int bonus = (int)Calc.Snap((float)(600.0 - TimeSpan.FromTicks(roundLogic.Time).TotalSeconds) * 10f, 10f);
@@ -78,6 +69,19 @@ internal sealed class QuestCompleteHooks : IHookable
                         Math.Max(towerStats.TeamScore, ScoreCounterModule.Instance.ScoreData.TotalScore);
                 }
             }
+        }
+    }
+
+    private static IEnumerable<CodeInstruction> QuestComplete_Sequence_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        var cursor = new ILTranspilerCursor(generator, instructions);
+
+        cursor.GotoNext(MoveType.After, [ILMatch.Callvirt("TweenNextGemTo")]);
+        cursor.EmitDelegate(() => 
+        {
+            ScoreCounterModule.Instance.ScoreData.ScoreBonuses += 1000;
+            totalScore.DrawText = ScoreCounterModule.Instance.ScoreData.TotalScore.ToString();
+            totalWiggler.Start();
         });
 
         cursor.GotoNext([ILMatch.Ldsfld("sfx_complete6timeTally")]);
@@ -105,13 +109,14 @@ internal sealed class QuestCompleteHooks : IHookable
         return cursor.Generate();
     }
 
-    private static void QuestComplete_Sequence_Postfix(QuestComplete __instance, ref IEnumerator __result)
+    private static void QuestComplete_Sequence_Postfix(QuestComplete __instance)
     {
         instance = __instance;
     }
 
     private static void QuestComplete_ShowPlayerStats_Postfix(QuestComplete __instance, ref IEnumerator __result)
     {
+        instance = __instance;
         __result = EnumeratorHandlerShowPlayerStats(__result);
     }
     
