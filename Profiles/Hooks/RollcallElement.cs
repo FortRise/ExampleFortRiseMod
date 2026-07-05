@@ -86,6 +86,17 @@ internal static class RollcallElementHooks
                 {
                     ChangeSelection(__instance, profile.ArcherID, profile.ArcherTypes);
                 }
+                if (input is XGamepadInput xGamepadInput)
+                {
+                    xGamepadInput.Config = profile.GamepadConfig;
+                    xGamepadInput.RefreshButton();
+                }
+                else if (input is KeyboardInput keyboardInput)
+                {
+                    keyboardInput.Config = profile.KeyboardConfig;
+                }
+
+
                 Close();
                 return;
             }
