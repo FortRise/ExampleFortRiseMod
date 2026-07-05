@@ -74,43 +74,43 @@ public sealed class ManageGamepadProfileState : CustomMenuState
         );
         buttons.Add(moveYDeadzone);
 
-        InputOptionsButton jumpButton = new InputOptionsButton("JUMP", gamepadConfig.Jump, (x) =>
+        var jumpButton = new GamepadInputOptionsButton("JUMP", gamepadConfig.Jump, (x) =>
         {
             gamepadConfig.Jump = x;
         });
         buttons.Add(jumpButton);
 
-        InputOptionsButton shootButton = new InputOptionsButton("SHOOT", gamepadConfig.Shoot, (x) =>
+        var shootButton = new GamepadInputOptionsButton("SHOOT", gamepadConfig.Shoot, (x) =>
         {
             gamepadConfig.Shoot = x;
         });
         buttons.Add(shootButton);
 
-        InputOptionsButton arrowsButton = new InputOptionsButton("ARROWS SWAP", gamepadConfig.Arrows, (x) =>
+        var arrowsButton = new GamepadInputOptionsButton("ARROWS SWAP", gamepadConfig.Arrows, (x) =>
         {
             gamepadConfig.Arrows = x;
         });
         buttons.Add(arrowsButton);
 
-        InputOptionsButton altShootButton = new InputOptionsButton("ALT SHOOT", gamepadConfig.AltShoot, (x) =>
+        var altShootButton = new GamepadInputOptionsButton("ALT SHOOT", gamepadConfig.AltShoot, (x) =>
         {
             gamepadConfig.AltShoot = x;
         });
         buttons.Add(altShootButton);
 
-        InputOptionsButton dodgeButton = new InputOptionsButton("DODGE", gamepadConfig.Dodge, (x) =>
+        var dodgeButton = new GamepadInputOptionsButton("DODGE", gamepadConfig.Dodge, (x) =>
         {
             gamepadConfig.Dodge = x;
         });
         buttons.Add(dodgeButton);
 
-        InputOptionsButton altDodgeButton = new InputOptionsButton("ALT DODGE", gamepadConfig.MenuAlt, (x) =>
+        var altDodgeButton = new GamepadInputOptionsButton("ALT DODGE", gamepadConfig.MenuAlt, (x) =>
         {
             gamepadConfig.MenuAlt = x;
         });
         buttons.Add(altDodgeButton);
 
-        InputOptionsButton startButton = new InputOptionsButton("START", gamepadConfig.Start, (x) =>
+        var startButton = new GamepadInputOptionsButton("START", gamepadConfig.Start, (x) =>
         {
             gamepadConfig.Start = x;
         });
@@ -128,9 +128,6 @@ public sealed class ManageGamepadProfileState : CustomMenuState
             dodgeButton.Buttons = gamepadConfig.Dodge;
             altDodgeButton.Buttons = gamepadConfig.MenuAlt;
             startButton.Buttons = gamepadConfig.Start;
-            // applyAction.Clear();
-            // ButtonGuideC.Clear();
-            // xGamepadInput.RefreshButton();
             return true;
         });
 
