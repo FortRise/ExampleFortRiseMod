@@ -10,6 +10,7 @@ namespace Teuria.Profiles;
 public sealed class ProfilesModule : Mod
 {
     public static ProfilesModule Instance { get; private set; } = null!;
+    public PlayerProfile[] ProfileActive;
     public bool[] RollcallProfileActive;
     public IMenuStateEntry ManageProfileState;
     public IMenuStateEntry SelectArcherState;
@@ -30,10 +31,12 @@ public sealed class ProfilesModule : Mod
         if (widerSetApi is not null)
         {
             RollcallProfileActive = new bool[8];
+            ProfileActive = new PlayerProfile[8];
         }
         else
         {
             RollcallProfileActive = new bool[4];
+            ProfileActive = new PlayerProfile[4];
         }
 
         ManageProfileState = context.Registry.MenuStates.RegisterMenuState("ManageProfile", new()

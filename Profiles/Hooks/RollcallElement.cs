@@ -96,6 +96,7 @@ internal static class RollcallElementHooks
                     keyboardInput.Config = profile.KeyboardConfig;
                 }
 
+                ProfilesModule.Instance.ProfileActive[playerIndex] = profile;
 
                 Close();
                 return;
@@ -184,17 +185,19 @@ internal static class RollcallElementHooks
     [HarmonyPostfix]
     public static void Render_Postfix(RollcallElement __instance)
     {
-        var controlIconPos = Traverse.Create(__instance).Field<Vector2>("ControlIconPos").Value;
         var input = Private.Field<RollcallElement, PlayerInput>("input", __instance).Read();
         var shakeOffset = Private.Field<RollcallElement, Vector2>("shakeOffset", __instance).Read();
         var playerIndex = Private.Field<RollcallElement, int>("playerIndex", __instance).Read();
 
         if (input != null)
         {
+            var profile = ProfilesModule.Instance.ProfileActive[playerIndex];
+            var text = profile is not null ? profile.Name.ToUpperInvariant() : "PROFILE";
             Color color = ArcherData.Archers[__instance.CharacterIndex].ColorA;
-            var pos = controlIconPos + Vector2.UnitY * 20f;
+            var pos = new Vector2(-11f, -70);
+
             Draw.OutlineTextureJustify(input.ArrowsIcon, __instance.Position + pos + shakeOffset, new Vector2(1.1f, 0));
-            Draw.OutlineTextJustify(TFGame.Font, "PROFILE", __instance.Position + pos + shakeOffset, color, Color.Black, new Vector2(0, -1));
+            Draw.OutlineTextJustify(TFGame.Font, text, __instance.Position + pos + shakeOffset, color, Color.Black, new Vector2(0, -1));
         }
 
         if (!ProfilesModule.Instance.RollcallProfileActive[playerIndex])
