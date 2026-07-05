@@ -14,6 +14,7 @@ public sealed class ProfilesModule : Mod
     public IMenuStateEntry ManageProfileState;
     public IMenuStateEntry SelectArcherState;
     public IMenuStateEntry GamepadProfileState;
+    public IMenuStateEntry KeyboardProfileState;
     public List<PlayerProfile> Profiles { get; private set; }
 
     public BundleStateManager bundleStateManager;
@@ -48,6 +49,11 @@ public sealed class ProfilesModule : Mod
         GamepadProfileState = context.Registry.MenuStates.RegisterMenuState("ManageGamepadProfile", new()
         {
             MenuStateType = typeof(ManageGamepadProfileState)
+        });
+
+        KeyboardProfileState = context.Registry.MenuStates.RegisterMenuState("ManageKeyboardProfile", new()
+        {
+            MenuStateType = typeof(ManageKeyboardProfileState)
         });
 
 

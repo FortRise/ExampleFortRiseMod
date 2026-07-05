@@ -32,11 +32,13 @@ public sealed class ManageProfileMenuState : CustomMenuState
                 construct.ArcherID = profile.ArcherID;
             }
             construct.ArcherTypes = profile.ArcherTypes;
-            construct.GamepadConfig = profile.GamepadConfig;
+            construct.GamepadConfig = profile.GamepadConfig ?? GamepadConfig.GetDefault();
+            construct.KeyboardConfig = profile.KeyboardConfig ?? KeyboardConfig.GetDefault();
         }
         else
         {
             construct.GamepadConfig = GamepadConfig.GetDefault();
+            construct.KeyboardConfig = KeyboardConfig.GetDefault();
         }
 
         if (bundle.TryGet("construct", out PlayerProfileConstruct? newConstr))
@@ -91,6 +93,26 @@ public sealed class ManageProfileMenuState : CustomMenuState
             Main.State = ProfilesModule.Instance.GamepadProfileState.MenuState;
         });
         buttons.Add(gamepadConfig);
+
+        var keyboardConfig = new OptionsButton("KEYBOARD CONFIGURATION");
+        keyboardConfig.SetCallbacks(() =>
+        {
+            var movingBundle = BundleStateManager.Instance.CreateBundle();
+            movingBundle.Set("state", state);
+            if (state == ProfileSelectState.Edit)
+            {
+                var profile = bundle.Get<PlayerProfile>("profile");
+                movingBundle.Set("profile", profile);
+            }
+            BundleStateManager.Instance.Push(movingBundle);
+
+            var archerBundle = BundleStateManager.Instance.CreateBundle();
+            archerBundle.Set("construct", construct);
+            BundleStateManager.Instance.Push(archerBundle);
+
+            Main.State = ProfilesModule.Instance.KeyboardProfileState.MenuState;
+        });
+        buttons.Add(keyboardConfig);
 
         if (state == ProfileSelectState.Edit)
         {

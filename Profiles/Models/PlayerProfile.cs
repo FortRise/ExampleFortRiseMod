@@ -11,6 +11,7 @@ public class PlayerProfile
     public ArcherData.ArcherTypes ArcherTypes { get; set; } = ArcherData.ArcherTypes.Normal;
 
     public GamepadConfig GamepadConfig { get; set; } = GamepadConfig.GetDefault();
+    public KeyboardConfig KeyboardConfig { get; set; } = KeyboardConfig.GetDefault();
 }
 
 public class PlayerProfileConstruct
@@ -20,4 +21,5 @@ public class PlayerProfileConstruct
     public ArcherData.ArcherTypes ArcherTypes { get; set; } = ArcherData.ArcherTypes.Normal;
 
     public GamepadConfig GamepadConfig { get; set; } = null!;
+    public KeyboardConfig KeyboardConfig { get; set; } = null!;
 }
