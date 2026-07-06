@@ -143,7 +143,8 @@ public sealed class ManageProfileMenuState : CustomMenuState
                 {
                     Name = construct.Name,
                     ArcherID = construct.ArcherID,
-                    ArcherTypes = construct.ArcherTypes
+                    ArcherTypes = construct.ArcherTypes,
+                    GamepadConfig = construct.GamepadConfig
                 });
                 Main.State = MainMenu.MenuState.Options;
             });
