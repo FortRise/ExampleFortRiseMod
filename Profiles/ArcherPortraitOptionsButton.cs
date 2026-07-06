@@ -11,28 +11,82 @@ internal sealed class ArcherPortraitOptionsButton : MenuItem
     private ArcherData archerData;
     private Vector2 tweenFrom;
     private Vector2 tweenTo;
-    private Action<string, ArcherData.ArcherTypes> action;
+    private ProfileArcher profileArcher;
+    private PlayerProfile profile;
 
-    public ArcherPortraitOptionsButton(Vector2 position, Vector2 tweenFrom, ArcherData archerData, Action<string, ArcherData.ArcherTypes> action) : base(position)
+    public bool HasArcher => profile.SelectedArchers.Contains(profileArcher);
+    public int ArcherIndex => profile.SelectedArchers.IndexOf(profileArcher);
+    
+
+    public ArcherPortraitOptionsButton(
+        Vector2 position, 
+        Vector2 tweenFrom, 
+        ArcherData archerData, 
+        PlayerProfile profile
+    ) : base(position)
     {
         this.archerData = archerData;
         this.tweenFrom = tweenFrom;
         tweenTo = position;
-        this.action = action;
+        this.profile = profile;
+
+        var archerTypes = ArcherData.ArcherTypes.Normal;
+
+        int idx = Array.IndexOf(ArcherData.Archers, archerData);
+        if (idx == -1)
+        {
+            idx = Array.IndexOf(ArcherData.AltArchers, archerData);
+            archerTypes = ArcherData.ArcherTypes.Alt;
+            if (idx == -1)
+            {
+                idx = Array.IndexOf(ArcherData.SecretArchers, archerData);
+                archerTypes = ArcherData.ArcherTypes.Secret;
+            }
+        }
+
+
+        var entry = ProfilesModule.Instance.Context.Registry.Archers.RegisteredArchers
+            .Select(x => x.Value)
+            .FirstOrDefault(x => x.Index == idx);
+
+        if (entry is null)
+        {
+            profileArcher = new ProfileArcher(archerData.Name0 + archerData.Name1, archerTypes);
+            return;
+        }
+
+        profileArcher = new ProfileArcher(entry.Name, archerTypes);
     }
 
     public override void Render()
     {
         Color color = Selected ? OptionsButton.SelectedColor : OptionsButton.NotSelectedColor;
-        Color portraitColor = Color.White;
-        Subtexture currentPortrait = archerData.Portraits.Win;
+        Color portraitColor = HasArcher ? Color.White : Color.Black * 0.5f;
 
-        Draw.Texture(currentPortrait, Position, Color.White, 1f);
-        Draw.Texture(currentPortrait, Position, portraitColor, 1f);
+        Subtexture currentPortrait = HasArcher ? archerData.Portraits.Win : archerData.Portraits.Lose;
+
+
+        if (HasArcher)
+        {
+            Draw.Rect(
+                new Rectangle((int)Position.X - 2, (int)Position.Y - 2,
+                54, 54),
+                OptionsButton.SelectedColor);
+        }
+
         Draw.HollowRect(
-            new Rectangle((int)Position.X, (int)Position.Y,
-            50, 50),
+            new Rectangle((int)Position.X - 1, (int)Position.Y - 1,
+            52, 52),
             color);
+        Draw.Texture(currentPortrait, Position + new Vector2(25, 25), Color.White, new Vector2(currentPortrait.Width / 2, currentPortrait.Height / 2), 1f, 0f);
+        Draw.Texture(currentPortrait, Position + new Vector2(25, 25), portraitColor, new Vector2(currentPortrait.Width / 2, currentPortrait.Height / 2), 1f, 0f);
+
+        var archerIndex = ArcherIndex;
+
+        if (archerIndex != -1)
+        {
+            Draw.OutlineTextCentered(TFGame.Font, (archerIndex + 1).ToString(), new Vector2(Position.X + 45, Position.Y + 45), Color.White, Color.Black);
+        }
     }
 
     public override void TweenIn()
@@ -60,30 +114,11 @@ internal sealed class ArcherPortraitOptionsButton : MenuItem
     protected override void OnConfirm()
     {
         Sounds.ui_click.Play();
-        var archerTypes = ArcherData.ArcherTypes.Normal;
 
-        int idx = Array.IndexOf(ArcherData.Archers, archerData);
-        if (idx == -1)
+        if (!profile.SelectedArchers.Remove(profileArcher))
         {
-            idx = Array.IndexOf(ArcherData.AltArchers, archerData);
-            archerTypes = ArcherData.ArcherTypes.Alt;
-            if (idx == -1)
-            {
-                idx = Array.IndexOf(ArcherData.SecretArchers, archerData);
-                archerTypes = ArcherData.ArcherTypes.Secret;
-            }
+            profile.SelectedArchers.Add(profileArcher);
         }
-
-
-        var entry = ProfilesModule.Instance.Context.Registry.Archers.RegisteredArchers
-            .Select(x => x.Value)
-            .FirstOrDefault(x => x.Index == idx);
-        if (entry is null)
-        {
-            action(archerData.Name0 + archerData.Name1, archerTypes);
-            return;
-        }
-        action(entry.Name, archerTypes);
     }
 
     protected override void OnDeselect()

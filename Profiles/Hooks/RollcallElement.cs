@@ -24,6 +24,138 @@ internal static class RollcallElementHooks
         DynamicData.For(__instance).Set("Teuria.Profiles/ease", 0f);
     }
 
+    [HarmonyPatch("ChangeSelectionRight")]
+    [HarmonyTranspiler]
+    public static IEnumerable<CodeInstruction> ChangeSelectionRight_Prefix(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        var cursor = new ILTranspilerCursor(generator, instructions);
+
+        cursor.GotoNext(MoveType.After, [ILMatch.LdcI4(1), ILMatch.Match(OpCodes.Add)]);
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate((int subbed, RollcallElement __instance) =>
+        {
+            var playerIndex = Private.Field<RollcallElement, int>("playerIndex", __instance).Read();
+            var profileActive = ProfilesModule.Instance.ProfileActive[playerIndex];           
+            var archerTypePtr = Private.Field<RollcallElement, ArcherData.ArcherTypes>("archerType", __instance);
+            if (profileActive is null or { SelectedArchers.Count: 0 })
+            {
+                return subbed;
+            }
+            var indexes = profileActive.SelectedArchers.Select(x => x.CharacterIndex).ToHashSet();
+            var altIndexes = profileActive.SelectedArchers
+                .Where(x => x.ArcherType == ArcherData.ArcherTypes.Alt)
+                .Select(x => x.CharacterIndex)
+                .ToHashSet();
+
+            while (!indexes.Contains(subbed))
+            {
+                subbed = (subbed + 1) % ArcherData.Amount;
+            }
+
+            if (altIndexes.Contains(subbed))
+            {
+                archerTypePtr.Write(ArcherData.ArcherTypes.Alt);
+            }
+            else
+            {
+                archerTypePtr.Write(ArcherData.ArcherTypes.Normal);
+            }
+
+            return subbed;
+        });
+
+        cursor.GotoNext([ILMatch.Br_S()]);
+
+        var label = cursor.CreateLabel();
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate((RollcallElement __instance) =>
+        {
+            var playerIndex = Private.Field<RollcallElement, int>("playerIndex", __instance).Read();
+            var profileActive = ProfilesModule.Instance.ProfileActive[playerIndex];
+            
+            return profileActive is not null;
+        });
+        cursor.Emit(OpCodes.Brtrue_S, label);
+
+        cursor.GotoNext(MoveType.After, [ILMatch.CallOrCallvirt("IsArcherBlacklisted"), ILMatch.Brtrue_S()]);
+        cursor.GotoPrev();
+        cursor.MarkLabel(label);
+
+        return cursor.Generate();
+    }
+
+    [HarmonyPatch("ChangeSelectionLeft")]
+    [HarmonyTranspiler]
+    public static IEnumerable<CodeInstruction> ChangeSelectionLeft_Prefix(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        var cursor = new ILTranspilerCursor(generator, instructions);
+
+        cursor.GotoNext(MoveType.After, [ILMatch.LdcI4(1), ILMatch.Match(OpCodes.Sub)]);
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate((int subbed, RollcallElement __instance) =>
+        {
+            var playerIndex = Private.Field<RollcallElement, int>("playerIndex", __instance).Read();
+            var archerTypePtr = Private.Field<RollcallElement, ArcherData.ArcherTypes>("archerType", __instance);
+            var profileActive = ProfilesModule.Instance.ProfileActive[playerIndex];           
+            if (profileActive is null or { SelectedArchers.Count: 0 })
+            {
+                return subbed;
+            }
+            var indexes = profileActive.SelectedArchers.Select(x => x.CharacterIndex).ToHashSet();
+            var altIndexes = profileActive.SelectedArchers
+                .Where(x => x.ArcherType == ArcherData.ArcherTypes.Alt)
+                .Select(x => x.CharacterIndex)
+                .ToHashSet();
+
+            while (!indexes.Contains(subbed))
+            {
+                subbed = (subbed - 1) % ArcherData.Amount;
+                if (subbed < 0)
+                {
+                    subbed = ArcherData.Amount;
+                }
+            }
+
+            if (altIndexes.Contains(subbed))
+            {
+                archerTypePtr.Write(ArcherData.ArcherTypes.Alt);
+            }
+            else
+            {
+                archerTypePtr.Write(ArcherData.ArcherTypes.Normal);
+            }
+
+            return subbed;
+        });
+
+        cursor.GotoNext([ILMatch.Br_S()]);
+
+        var label = cursor.CreateLabel();
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate((RollcallElement __instance) =>
+        {
+            var playerIndex = Private.Field<RollcallElement, int>("playerIndex", __instance).Read();
+            var profileActive = ProfilesModule.Instance.ProfileActive[playerIndex];
+            
+            return profileActive is not null;
+        });
+        cursor.Emit(OpCodes.Brtrue_S, label);
+
+        cursor.GotoNext(MoveType.After, [ILMatch.CallOrCallvirt("IsArcherBlacklisted"), ILMatch.Brtrue_S()]);
+        cursor.GotoPrev();
+        cursor.MarkLabel(label);
+
+        return cursor.Generate();
+    }
+
+    [HarmonyPatch("EnforceCharacterLock")]
+    [HarmonyPrefix]
+    public static bool EnforceCharacterLock_Prefix(RollcallElement __instance)
+    {
+        var playerIndex = Private.Field<RollcallElement, int>("playerIndex", __instance).Read();
+        return ProfilesModule.Instance.ProfileActive[playerIndex] is null;
+    }
+
     [HarmonyPatch("NotJoinedUpdate")]
     [HarmonyPrefix]
     public static bool NotJoinedUpdate_Prefix(RollcallElement __instance)
@@ -33,7 +165,41 @@ internal static class RollcallElementHooks
         {
             return false;
         }
+
+        var input = Private.Field<RollcallElement, PlayerInput>("input", __instance).Read();
+        if (input is not null && input.MenuConfirmOrStart && TFGame.CharacterTaken(__instance.CharacterIndex))
+        {
+            var portrait = Private.Field<RollcallElement, ArcherPortrait>("portrait", __instance).Read();
+            Private.Field<RollcallElement, float>("shakeTimer", __instance).Write(30);
+            Sounds.ui_invalid.Play(__instance.X, 1f);
+            input.Rumble(1f, 20);
+
+            portrait.Shake();
+        }
+
+
         return true;
+    }
+
+    [HarmonyPatch("NotJoinedUpdate")]
+    [HarmonyTranspiler]
+    public static IEnumerable<CodeInstruction> NotJoinedUpdate_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        var cursor = new ILTranspilerCursor(generator, instructions);
+
+        cursor.GotoNext(MoveType.After, [ILMatch.Ldfld("input"), ILMatch.CallOrCallvirt("get_MenuAlt"), ILMatch.Brfalse_S()]);
+        var blocks = cursor.Prev.operand;
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate((RollcallElement __instance) =>
+        {
+            var playerIndex = Private.Field<RollcallElement, int>("playerIndex", __instance).Read();
+            var profile = ProfilesModule.Instance.ProfileActive[playerIndex];
+            
+            return profile is null;
+        });
+        cursor.Emit(OpCodes.Brfalse_S, blocks);
+
+        return cursor.Generate();
     }
 
     [HarmonyPatch("NotJoinedUpdate")]
@@ -82,9 +248,9 @@ internal static class RollcallElementHooks
             if (MenuInput.Confirm)
             {
                 var profile = ProfilesModule.Instance.Profiles[selection];
-                if (profile.ArcherID != null)
+                if (profile.SelectedArchers.Count > 0)
                 {
-                    ChangeSelection(__instance, profile.ArcherID, profile.ArcherTypes);
+                    ChangeSelection(__instance, profile.SelectedArchers[0].ArcherID, profile.SelectedArchers[0].ArcherType);
                 }
                 if (input is XGamepadInput xGamepadInput)
                 {
@@ -212,6 +378,13 @@ internal static class RollcallElementHooks
                 Draw.OutlineTextureJustify(input.ArrowsIcon, __instance.Position + pos + shakeOffset, new Vector2(1.1f, 0));
                 Draw.OutlineTextJustify(TFGame.Font, text, __instance.Position + pos + shakeOffset, color, Color.Black, new Vector2(0, -1));
             }
+
+            var state = Private.Field<RollcallElement, StateMachine>("state", __instance).Read();
+
+            if (state != 1 && TFGame.CharacterTaken(__instance.CharacterIndex))
+            {
+                Draw.OutlineTextureCentered(ProfilesModule.Instance.SingleLock, __instance.Position + shakeOffset, Color.White);
+            }
         }
 
         if (!ProfilesModule.Instance.RollcallProfileActive[playerIndex])
@@ -262,7 +435,7 @@ internal static class RollcallElementHooks
         cursor.EmitDelegate((RollcallElement __instance) =>
         {
             var playerIndex = Private.Field<RollcallElement, int>("playerIndex", __instance).Read();
-            return ProfilesModule.Instance.RollcallProfileActive[playerIndex];
+            return ProfilesModule.Instance.RollcallProfileActive[playerIndex] || TFGame.CharacterTaken(__instance.CharacterIndex);
         });
 
         cursor.Emit(OpCodes.Brtrue, op);
@@ -275,7 +448,15 @@ internal static class RollcallElementHooks
         cursor.EmitDelegate((RollcallElement __instance) =>
         {
             var playerIndex = Private.Field<RollcallElement, int>("playerIndex", __instance).Read();
-            return ProfilesModule.Instance.RollcallProfileActive[playerIndex];
+
+            var active = ProfilesModule.Instance.ProfileActive[playerIndex];
+
+            if (active is null)
+            {
+                return ProfilesModule.Instance.RollcallProfileActive[playerIndex];
+            }
+
+            return active.SelectedArchers.Count > 0;
         });
 
         cursor.Emit(OpCodes.Brtrue, nextLabel);

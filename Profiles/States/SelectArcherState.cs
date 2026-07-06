@@ -36,13 +36,7 @@ public sealed class SelectArcherState : CustomMenuState
 
             var tweenFrom = (gridY & 1) == 0 ? new Vector2(posX + 400, posY + 50) : new Vector2(posX - 400, posY + 50);
 
-            var portrait = new ArcherPortraitOptionsButton(new Vector2(posX + (160 - 110), posY + 50), tweenFrom, archer, (x, y) =>
-            {
-                profile.ArcherID = x;
-                profile.ArcherTypes = y;
-
-                Main.State = ProfilesModule.Instance.ManageProfileState.MenuState;
-            });
+            var portrait = new ArcherPortraitOptionsButton(new Vector2(posX + (160 - 110), posY + 50), tweenFrom, archer, profile);
             portraits.Add(portrait);
 
             sum += posY;

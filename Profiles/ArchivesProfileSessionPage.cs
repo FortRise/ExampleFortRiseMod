@@ -23,15 +23,25 @@ public class ArchivesProfileSessionPage : ArchivesPage
         for (int i = 0; i < ProfilesModule.Instance.Profiles.Count; i += 1)
         {
             var profile = ProfilesModule.Instance.Profiles[i];
-            ArcherData archerData = profile.ArcherTypes switch
-            {
-                ArcherData.ArcherTypes.Normal => ArcherData.Archers[profile.ArcherIndex],
-                ArcherData.ArcherTypes.Alt => ArcherData.AltArchers[profile.ArcherIndex],
-                ArcherData.ArcherTypes.Secret => ArcherData.SecretArchers[profile.ArcherIndex],
-                _ => throw new UnreachableException()
-            };
 
-            Color colorB = archerData.ColorB;
+            Color colorB;
+            if (profile.SelectedArchers.Count > 0)
+            {
+                ArcherData archerData = profile.SelectedArchers[0].ArcherType switch
+                {
+                    ArcherData.ArcherTypes.Normal => ArcherData.Archers[profile.FirstArcherIndex],
+                    ArcherData.ArcherTypes.Alt => ArcherData.AltArchers[profile.FirstArcherIndex],
+                    ArcherData.ArcherTypes.Secret => ArcherData.SecretArchers[profile.FirstArcherIndex],
+                    _ => throw new UnreachableException()
+                };
+
+                colorB = archerData.ColorB;
+            }
+            else
+            {
+                colorB = Color.White;
+            }
+
             float offsetX = -125f;
 
             Add(new OutlineText(TFGame.Font, profile.Name.ToUpperInvariant(), new Vector2(offsetX + 25, offsetY))

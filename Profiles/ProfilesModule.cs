@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using FortRise;
 using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework;
+using Monocle;
 using Teuria.WiderSet;
+using TowerFall;
 
 namespace Teuria.Profiles;
 
@@ -17,6 +21,7 @@ public sealed class ProfilesModule : Mod
     public IMenuStateEntry GamepadProfileState;
     public IMenuStateEntry KeyboardProfileState;
     public List<PlayerProfile> Profiles { get; private set; }
+    public Subtexture SingleLock = null!;
 
     public IWiderSetModApi? IWiderSetModAPI;
 
@@ -60,6 +65,13 @@ public sealed class ProfilesModule : Mod
 
         context.Events.OnBeforeDataLoad += BeforeDataLoad;
         context.Events.OnBeforeSaveSaveData += BeforeSaveData;
+        context.Events.OnModInitialize += OnModInitialize;
+    }
+
+    private void OnModInitialize(object? sender, ModuleMetadata e)
+    {
+        var singleLock = TFGame.MenuAtlas["portraits/archerLock"];
+        SingleLock = new Subtexture(singleLock.Texture, new Rectangle(singleLock.X, singleLock.Y, 60, 60));
     }
 
     private void BeforeDataLoad(object? sender, DataLoadEventArgs e)

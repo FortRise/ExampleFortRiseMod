@@ -55,7 +55,7 @@ public sealed class ManageProfileMenuState : CustomMenuState
 
         buttons.Add(nameButton);
 
-        var selectArcher = new ArcherOptionsButton("ARCHER", profile.ArcherID);
+        var selectArcher = new OptionsButton("ARCHER");
         selectArcher.SetCallbacks(() =>
         {
             var movingBundle = BundleStateManager.Instance.CreateBundle();
