@@ -48,6 +48,10 @@ internal static class VersusRoundResultsHooks
         cursor.Emit(new CodeInstruction(OpCodes.Ldloca, playerIndex.Value));
         cursor.EmitDelegate((Text text, in int playerIndex) =>
         {
+            if (ProfilesModule.Instance.GetSettings<ProfileSettings>()!.HideProfileNameOnRoundResult)
+            {
+                return text;
+            }
             var profile = ProfilesModule.Instance.ProfileActive[playerIndex];
             if (profile is not null)
             {
@@ -69,6 +73,11 @@ internal static class VersusRoundResultsHooks
         cursor.Emit(new CodeInstruction(OpCodes.Ldloca, pos.Value));
         cursor.EmitDelegate((Image image, in int crownIndex, in int textPosX) =>
         {
+            if (ProfilesModule.Instance.GetSettings<ProfileSettings>()!.HideProfileNameOnRoundResult)
+            {
+                return image;
+            }
+
             var profile = ProfilesModule.Instance.ProfileActive[crownIndex];
             if (profile is not null)
             {

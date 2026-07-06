@@ -6,6 +6,10 @@ namespace Teuria.Profiles;
 
 public sealed class ProfileSettings : ModuleSettings
 {
+    public bool HideProfileNameOnPlayer { get; set; }
+    public bool HideProfileNameOnRoundResult { get; set; }
+    public bool HideProfileNameOnMatchResult { get; set; }
+
     public override void Create(ISettingsCreate settings)
     {
         if (Engine.Instance.Scene is MainMenu menu)
@@ -34,5 +38,9 @@ public sealed class ProfileSettings : ModuleSettings
                 }
             });
         }
+
+        settings.CreateOnOff("HIDE PROFILE NAME ON PLAYER", HideProfileNameOnPlayer, (x) => HideProfileNameOnPlayer = x);
+        settings.CreateOnOff("HIDE PROFILE NAME ON ROUND RESULT", HideProfileNameOnRoundResult, (x) => HideProfileNameOnRoundResult = x);
+        settings.CreateOnOff("HIDE PROFILE NAME ON MATCH RESULT", HideProfileNameOnMatchResult, (x) => HideProfileNameOnMatchResult = x);
     }
 }

@@ -13,6 +13,11 @@ internal static class PlayerIndicatorHooks
     [HarmonyPostfix]
     public static void PlayerIndicatorConstructor_Postfix(PlayerIndicator __instance, int playerIndex)
     {
+        if (ProfilesModule.Instance.GetSettings<ProfileSettings>()!.HideProfileNameOnPlayer)
+        {
+            return;
+        }
+
         var profile = ProfilesModule.Instance.ProfileActive[playerIndex];
         if (profile is not null)
         {

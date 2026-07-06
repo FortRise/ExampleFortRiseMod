@@ -13,6 +13,11 @@ internal static class VersusPlayerMatchResultsHook
     [HarmonyPostfix]
     public static void Render_Postfix(VersusPlayerMatchResults __instance)
     {
+        if (!ProfilesModule.Instance.GetSettings<ProfileSettings>()!.HideProfileNameOnMatchResult)
+        {
+            return;
+        }
+
         var playerIndex = Private.Field<VersusPlayerMatchResults, int>("playerIndex", __instance).Read();
         var characterIndex = Private.Field<VersusPlayerMatchResults, int>("characterIndex", __instance).Read();
 
