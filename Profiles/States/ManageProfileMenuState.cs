@@ -20,7 +20,8 @@ public sealed class ManageProfileMenuState : CustomMenuState
 
         PlayerProfileConstruct construct = new PlayerProfileConstruct()
         {
-            Name = string.Empty
+            Name = string.Empty,
+            FollowsDefaultKeyboardConfig = true
         };
 
         if (state == ProfileSelectState.Edit)
@@ -34,6 +35,7 @@ public sealed class ManageProfileMenuState : CustomMenuState
             construct.ArcherTypes = profile.ArcherTypes;
             construct.GamepadConfig = profile.GamepadConfig ?? GamepadConfig.GetDefault();
             construct.KeyboardConfig = profile.KeyboardConfig ?? KeyboardConfig.GetDefault();
+            construct.FollowsDefaultKeyboardConfig = profile.FollowsDefaultKeyboardConfig;
         }
         else
         {
@@ -97,6 +99,13 @@ public sealed class ManageProfileMenuState : CustomMenuState
         var keyboardConfig = new OptionsButton("KEYBOARD CONFIGURATION");
         keyboardConfig.SetCallbacks(() =>
         {
+            if (construct.FollowsDefaultKeyboardConfig)
+            {
+                var alert = new UIFollowDefaultKeyboardConfigAlert(keyboardConfig);
+                Main.Add(alert);
+                return;
+            }
+
             var movingBundle = BundleStateManager.Instance.CreateBundle();
             movingBundle.Set("state", state);
             if (state == ProfileSelectState.Edit)
@@ -114,6 +123,14 @@ public sealed class ManageProfileMenuState : CustomMenuState
         });
         buttons.Add(keyboardConfig);
 
+        var followsDefaultKeyboardConfig = new OptionsButton("FOLLOWS DEFAULT KEYBOARD CONFIG");
+        followsDefaultKeyboardConfig.SetCallbacks(() => followsDefaultKeyboardConfig.State = construct.FollowsDefaultKeyboardConfig ? "ON" : "OFF", null, null, () =>
+        {
+            construct.FollowsDefaultKeyboardConfig = !construct.FollowsDefaultKeyboardConfig;
+            return construct.FollowsDefaultKeyboardConfig;
+        });
+        buttons.Add(followsDefaultKeyboardConfig);
+
         if (state == ProfileSelectState.Edit)
         {
             var createButton = new OptionsButton("APPLY CHANGE");
@@ -128,6 +145,7 @@ public sealed class ManageProfileMenuState : CustomMenuState
                 profile.Name = construct.Name;
                 profile.ArcherID = construct.ArcherID;
                 profile.ArcherTypes = construct.ArcherTypes;
+                profile.FollowsDefaultKeyboardConfig = construct.FollowsDefaultKeyboardConfig;
 
                 Main.State = MainMenu.MenuState.Options;
             });
@@ -166,7 +184,9 @@ public sealed class ManageProfileMenuState : CustomMenuState
                     Name = construct.Name,
                     ArcherID = construct.ArcherID,
                     ArcherTypes = construct.ArcherTypes,
-                    GamepadConfig = construct.GamepadConfig
+                    GamepadConfig = construct.GamepadConfig,
+                    KeyboardConfig = construct.KeyboardConfig,
+                    FollowsDefaultKeyboardConfig = followsDefaultKeyboardConfig,
                 });
                 Main.State = MainMenu.MenuState.Options;
             });

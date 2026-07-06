@@ -91,7 +91,7 @@ internal static class RollcallElementHooks
                     xGamepadInput.Config = profile.GamepadConfig;
                     xGamepadInput.RefreshButton();
                 }
-                else if (input is KeyboardInput keyboardInput)
+                else if (!profile.FollowsDefaultKeyboardConfig && input is KeyboardInput keyboardInput)
                 {
                     keyboardInput.Config = profile.KeyboardConfig;
                 }

@@ -12,6 +12,8 @@ public class PlayerProfile
 
     public GamepadConfig GamepadConfig { get; set; } = GamepadConfig.GetDefault();
     public KeyboardConfig KeyboardConfig { get; set; } = KeyboardConfig.GetDefault();
+
+    public bool FollowsDefaultKeyboardConfig { get; set; }
 }
 
 public class PlayerProfileConstruct
@@ -22,4 +24,6 @@ public class PlayerProfileConstruct
 
     public GamepadConfig GamepadConfig { get; set; } = null!;
     public KeyboardConfig KeyboardConfig { get; set; } = null!;
+
+    public bool FollowsDefaultKeyboardConfig { get; set; }
 }
