@@ -192,12 +192,26 @@ internal static class RollcallElementHooks
         if (input != null)
         {
             var profile = ProfilesModule.Instance.ProfileActive[playerIndex];
-            var text = profile is not null ? profile.Name.ToUpperInvariant() : "PROFILE";
+            var text = profile is {} ? profile.Name.ToUpperInvariant() : "PROFILE";
             Color color = ArcherData.Archers[__instance.CharacterIndex].ColorA;
             var pos = new Vector2(-11f, -70);
 
-            Draw.OutlineTextureJustify(input.ArrowsIcon, __instance.Position + pos + shakeOffset, new Vector2(1.1f, 0));
-            Draw.OutlineTextJustify(TFGame.Font, text, __instance.Position + pos + shakeOffset, color, Color.Black, new Vector2(0, -1));
+            if (ProfilesModule.Instance.IWiderSetModAPI is { IsWide: true })
+            {
+                pos += new Vector2(-18f, 30);
+                Draw.OutlineTextureJustify(input.ArrowsIcon, __instance.Position + pos + shakeOffset, new Vector2(1.1f, 0));
+                var offsetY = new Vector2(-8, 6);
+                for (int i = 0; i < text.Length; i += 1)
+                {
+                    Draw.OutlineTextJustify(TFGame.Font, text[i].ToString(), __instance.Position + pos + offsetY + shakeOffset, color, Color.Black, new Vector2(0, -1));
+                    offsetY.Y += 6;
+                }
+            }
+            else
+            {
+                Draw.OutlineTextureJustify(input.ArrowsIcon, __instance.Position + pos + shakeOffset, new Vector2(1.1f, 0));
+                Draw.OutlineTextJustify(TFGame.Font, text, __instance.Position + pos + shakeOffset, color, Color.Black, new Vector2(0, -1));
+            }
         }
 
         if (!ProfilesModule.Instance.RollcallProfileActive[playerIndex])
@@ -211,16 +225,17 @@ internal static class RollcallElementHooks
         foreach (var mockup in ProfilesModule.Instance.Profiles)
         {
             float index = ProfilesModule.Instance.Profiles.IndexOf(mockup);
+            int maxItem = ProfilesModule.Instance.IWiderSetModAPI is { IsWide: true } ? 2 : 4;
 
             float alpha;
             Vector2 posY = -(Vector2.UnitY * (ease - index) * 10);
             if (index < selection)
             {
-                alpha = Math.Max(0f, (1f - ease + index + 4) / 1.5f);
+                alpha = Math.Max(0f, (1f - ease + index + maxItem) / 1.5f);
             }
             else
             {
-                alpha = Math.Max(0f, (1f + ease - index + 4) / 1.5f);
+                alpha = Math.Max(0f, (1f + ease - index + maxItem) / 1.5f);
             }
 
             Color color = Color.White;

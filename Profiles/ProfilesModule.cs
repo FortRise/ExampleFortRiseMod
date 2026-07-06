@@ -18,6 +18,8 @@ public sealed class ProfilesModule : Mod
     public IMenuStateEntry KeyboardProfileState;
     public List<PlayerProfile> Profiles { get; private set; }
 
+    public IWiderSetModApi? IWiderSetModAPI;
+
     public BundleStateManager bundleStateManager;
 
 
@@ -27,17 +29,11 @@ public sealed class ProfilesModule : Mod
         Profiles = [];
         Instance = this;
 
-        var widerSetApi = context.Interop.GetApi<IWiderSetModApi>("Teuria.WiderSet");
-        if (widerSetApi is not null)
-        {
-            RollcallProfileActive = new bool[8];
-            ProfileActive = new PlayerProfile[8];
-        }
-        else
-        {
-            RollcallProfileActive = new bool[4];
-            ProfileActive = new PlayerProfile[4];
-        }
+        IWiderSetModAPI = context.Interop.GetApi<IWiderSetModApi>("Teuria.WiderSet");
+        int playerCount = IWiderSetModAPI is not null ? 8 : 4;
+
+        RollcallProfileActive = new bool[playerCount];
+        ProfileActive = new PlayerProfile[playerCount];
 
         ManageProfileState = context.Registry.MenuStates.RegisterMenuState("ManageProfile", new()
         {
