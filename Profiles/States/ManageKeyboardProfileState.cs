@@ -7,8 +7,6 @@ namespace Teuria.Profiles;
 
 public sealed class ManageKeyboardProfileState : CustomMenuState
 {
-    private PlayerProfileConstruct? profileConstruct = null;
-
     public ManageKeyboardProfileState(MainMenu main) : base(main)
     {
     }
@@ -16,7 +14,7 @@ public sealed class ManageKeyboardProfileState : CustomMenuState
     public override void Create()
     {
         var archerBundle = BundleStateManager.Instance.Pop();
-        profileConstruct = archerBundle.Get<PlayerProfileConstruct>("construct");
+        var profileConstruct = archerBundle.Get<PlayerProfile>("profile");
 
         var keyboardconfig = profileConstruct.KeyboardConfig;
         var buttons = new List<OptionsButton>();
@@ -90,13 +88,6 @@ public sealed class ManageKeyboardProfileState : CustomMenuState
 
     public override void Destroy()
     {
-        if (profileConstruct is null)
-        {
-            return;
-        }
-
-        var movingBundle = BundleStateManager.Instance.Peek();
-        movingBundle.Set("construct", profileConstruct);
     }
 
     private static void InitOptions(List<OptionsButton> buttons, out int offset)

@@ -15,7 +15,7 @@ public sealed class SelectArcherState : CustomMenuState
     public override void Create()
     {
         var archerBundle = BundleStateManager.Instance.Pop();
-        PlayerProfileConstruct construct = archerBundle.Get<PlayerProfileConstruct>("construct");
+        var profile = archerBundle.Get<PlayerProfile>("profile");
 
         const int GridAmount = 4;
         List<ArcherPortraitOptionsButton> portraits = [];
@@ -38,11 +38,9 @@ public sealed class SelectArcherState : CustomMenuState
 
             var portrait = new ArcherPortraitOptionsButton(new Vector2(posX + (160 - 110), posY + 50), tweenFrom, archer, (x, y) =>
             {
-                construct.ArcherID = x;
-                construct.ArcherTypes = y;
+                profile.ArcherID = x;
+                profile.ArcherTypes = y;
 
-                var movingBundle = BundleStateManager.Instance.Peek();
-                movingBundle.Set("construct", construct);
                 Main.State = ProfilesModule.Instance.ManageProfileState.MenuState;
             });
             portraits.Add(portrait);

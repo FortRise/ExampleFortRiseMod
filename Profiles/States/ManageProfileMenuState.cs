@@ -18,58 +18,61 @@ public sealed class ManageProfileMenuState : CustomMenuState
         var bundle = BundleStateManager.Instance.Pop();
         var state = bundle.Get<ProfileSelectState>("state");
 
-        PlayerProfileConstruct construct = new PlayerProfileConstruct()
-        {
-            Name = string.Empty,
-            FollowsDefaultKeyboardConfig = true
-        };
+        PlayerProfile profile;
 
-        if (state == ProfileSelectState.Edit)
+        if (state == ProfileSelectState.Edit || (bundle.TryGet("alreadyinside", out bool v) && v))
         {
-            var profile = bundle.Get<PlayerProfile>("profile");
-            construct.Name = profile.Name;
-            if (profile.ArcherID != null)
+            profile = bundle.Get<PlayerProfile>("profile");
+        }
+        else 
+        {
+            profile = new PlayerProfile
             {
-                construct.ArcherID = profile.ArcherID;
-            }
-            construct.ArcherTypes = profile.ArcherTypes;
-            construct.GamepadConfig = profile.GamepadConfig ?? GamepadConfig.GetDefault();
-            construct.KeyboardConfig = profile.KeyboardConfig ?? KeyboardConfig.GetDefault();
-            construct.FollowsDefaultKeyboardConfig = profile.FollowsDefaultKeyboardConfig;
-        }
-        else
-        {
-            construct.GamepadConfig = GamepadConfig.GetDefault();
-            construct.KeyboardConfig = KeyboardConfig.GetDefault();
+                Name = string.Empty,
+                GamepadConfig = GamepadConfig.GetDefault(),
+                KeyboardConfig = KeyboardConfig.GetDefault()
+            };
         }
 
-        if (bundle.TryGet("construct", out PlayerProfileConstruct? newConstr))
-        {
-            construct = newConstr;
-        }
 
         var buttons = new List<OptionsButton>();
-        var nameButton = CreateInputText("PROFILE NAME", InputBehavior.None, construct.Name, (x) =>
+        var nameButton = CreateInputText("PROFILE NAME", InputBehavior.None, profile.Name, (x) =>
         {
-            construct.Name = x;
+            if (state == ProfileSelectState.Edit && profile.Name != x)
+            {
+                ProfilesModule.Instance.Context.Storage.Delete($"Profiles/{profile.Name}.json", false);
+            }
+            ProfilesModule.Instance.Profiles.Remove(profile);
+            profile.Name = x;
+            ProfilesModule.Instance.Profiles.Add(profile);
+
+            if (state == ProfileSelectState.Edit)
+            {
+                var saver = new Saver(true);
+                Main.Add(saver);
+            }
         });
 
         buttons.Add(nameButton);
 
-        var selectArcher = new ArcherOptionsButton("ARCHER", construct.ArcherID);
+        var selectArcher = new ArcherOptionsButton("ARCHER", profile.ArcherID);
         selectArcher.SetCallbacks(() =>
         {
             var movingBundle = BundleStateManager.Instance.CreateBundle();
             movingBundle.Set("state", state);
-            if (state == ProfileSelectState.Edit)
+            movingBundle.Set("alreadyinside", true);
+            if (bundle.TryGet<PlayerProfile>("profile", out var prof))
             {
-                var profile = bundle.Get<PlayerProfile>("profile");
+                movingBundle.Set("profile", prof);
+            }
+            else
+            {
                 movingBundle.Set("profile", profile);
             }
             BundleStateManager.Instance.Push(movingBundle);
 
             var archerBundle = BundleStateManager.Instance.CreateBundle();
-            archerBundle.Set("construct", construct);
+            archerBundle.Set("profile", profile);
             BundleStateManager.Instance.Push(archerBundle);
 
             Main.State = ProfilesModule.Instance.SelectArcherState.MenuState;
@@ -81,15 +84,19 @@ public sealed class ManageProfileMenuState : CustomMenuState
         {
             var movingBundle = BundleStateManager.Instance.CreateBundle();
             movingBundle.Set("state", state);
-            if (state == ProfileSelectState.Edit)
+            movingBundle.Set("alreadyinside", true);
+            if (bundle.TryGet<PlayerProfile>("profile", out var prof))
             {
-                var profile = bundle.Get<PlayerProfile>("profile");
+                movingBundle.Set("profile", prof);
+            }
+            else
+            {
                 movingBundle.Set("profile", profile);
             }
             BundleStateManager.Instance.Push(movingBundle);
 
             var archerBundle = BundleStateManager.Instance.CreateBundle();
-            archerBundle.Set("construct", construct);
+            archerBundle.Set("profile", profile);
             BundleStateManager.Instance.Push(archerBundle);
 
             Main.State = ProfilesModule.Instance.GamepadProfileState.MenuState;
@@ -99,7 +106,7 @@ public sealed class ManageProfileMenuState : CustomMenuState
         var keyboardConfig = new OptionsButton("KEYBOARD CONFIGURATION");
         keyboardConfig.SetCallbacks(() =>
         {
-            if (construct.FollowsDefaultKeyboardConfig)
+            if (profile.FollowsDefaultKeyboardConfig)
             {
                 var alert = new UIFollowDefaultKeyboardConfigAlert(keyboardConfig);
                 Main.Add(alert);
@@ -108,15 +115,19 @@ public sealed class ManageProfileMenuState : CustomMenuState
 
             var movingBundle = BundleStateManager.Instance.CreateBundle();
             movingBundle.Set("state", state);
-            if (state == ProfileSelectState.Edit)
+            movingBundle.Set("alreadyinside", true);
+            if (bundle.TryGet<PlayerProfile>("profile", out var prof))
             {
-                var profile = bundle.Get<PlayerProfile>("profile");
+                movingBundle.Set("profile", prof);
+            }
+            else
+            {
                 movingBundle.Set("profile", profile);
             }
             BundleStateManager.Instance.Push(movingBundle);
 
             var archerBundle = BundleStateManager.Instance.CreateBundle();
-            archerBundle.Set("construct", construct);
+            archerBundle.Set("profile", profile);
             BundleStateManager.Instance.Push(archerBundle);
 
             Main.State = ProfilesModule.Instance.KeyboardProfileState.MenuState;
@@ -124,34 +135,15 @@ public sealed class ManageProfileMenuState : CustomMenuState
         buttons.Add(keyboardConfig);
 
         var followsDefaultKeyboardConfig = new OptionsButton("FOLLOWS DEFAULT KEYBOARD CONFIG");
-        followsDefaultKeyboardConfig.SetCallbacks(() => followsDefaultKeyboardConfig.State = construct.FollowsDefaultKeyboardConfig ? "ON" : "OFF", null, null, () =>
+        followsDefaultKeyboardConfig.SetCallbacks(() => followsDefaultKeyboardConfig.State = profile.FollowsDefaultKeyboardConfig ? "ON" : "OFF", null, null, () =>
         {
-            construct.FollowsDefaultKeyboardConfig = !construct.FollowsDefaultKeyboardConfig;
-            return construct.FollowsDefaultKeyboardConfig;
+            profile.FollowsDefaultKeyboardConfig = !profile.FollowsDefaultKeyboardConfig;
+            return profile.FollowsDefaultKeyboardConfig;
         });
         buttons.Add(followsDefaultKeyboardConfig);
 
         if (state == ProfileSelectState.Edit)
         {
-            var createButton = new OptionsButton("APPLY CHANGE");
-            createButton.SetCallbacks(() =>
-            {
-                var profile = bundle.Get<PlayerProfile>("profile");
-                if (profile.Name != construct.Name)
-                {
-                    ProfilesModule.Instance.Context.Storage.Delete($"Profiles/{profile.Name}.json", false);
-                }
-
-                profile.Name = construct.Name;
-                profile.ArcherID = construct.ArcherID;
-                profile.ArcherTypes = construct.ArcherTypes;
-                profile.FollowsDefaultKeyboardConfig = construct.FollowsDefaultKeyboardConfig;
-
-                Main.State = MainMenu.MenuState.Options;
-            });
-
-            buttons.Add(createButton);
-
             var dangerZone = new OptionsButtonHeader("DANGER ZONE");
             buttons.Add(dangerZone);
 
@@ -173,21 +165,13 @@ public sealed class ManageProfileMenuState : CustomMenuState
             var createButton = new OptionsButton("CREATE");
             createButton.SetCallbacks(() =>
             {
-                if (string.IsNullOrEmpty(construct.Name))
+                if (string.IsNullOrEmpty(profile.Name))
                 {
                     ShowAlert(createButton, "Name field is required");
                     return;
                 }
                 
-                ProfilesModule.Instance.Profiles.Add(new PlayerProfile()
-                {
-                    Name = construct.Name,
-                    ArcherID = construct.ArcherID,
-                    ArcherTypes = construct.ArcherTypes,
-                    GamepadConfig = construct.GamepadConfig,
-                    KeyboardConfig = construct.KeyboardConfig,
-                    FollowsDefaultKeyboardConfig = followsDefaultKeyboardConfig,
-                });
+                ProfilesModule.Instance.Profiles.Add(profile);
                 Main.State = MainMenu.MenuState.Options;
             });
 
