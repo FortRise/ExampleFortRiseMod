@@ -20,9 +20,14 @@ public class ArchivesProfileSessionPage : ArchivesPage
         }
 
         float offsetY = 20f;
-        for (int i = 0; i < ProfilesModule.Instance.Profiles.Count; i += 1)
+        var activeProfiles = ProfilesModule.Instance.EnabledProfile;
+
+        
+        for (int j = 0; j < activeProfiles.Count; j += 1)
         {
-            var profile = ProfilesModule.Instance.Profiles[i];
+            var profile = activeProfiles[j];
+
+            var i = ProfilesModule.Instance.Profiles.IndexOf(profile);
 
             Color colorB;
             if (profile.SelectedArchers.Count > 0)

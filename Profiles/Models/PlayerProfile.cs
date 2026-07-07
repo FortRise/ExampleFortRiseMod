@@ -14,6 +14,7 @@ public class PlayerProfile
     public KeyboardConfig KeyboardConfig { get; set; } = KeyboardConfig.GetDefault();
 
     public bool FollowsDefaultKeyboardConfig { get; set; } = true;
+    public bool Disabled { get; set; }
 
     [JsonIgnore]
     public int FirstArcherIndex => SelectedArchers[0].CharacterIndex;

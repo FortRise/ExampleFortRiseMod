@@ -147,6 +147,16 @@ public sealed class ManageProfileMenuState : CustomMenuState
             var dangerZone = new OptionsButtonHeader("DANGER ZONE");
             buttons.Add(dangerZone);
 
+            var disableButton = new OptionsButton("DISABLE PROFILE");
+            disableButton.SetCallbacks(() => disableButton.State = bundle.Get<PlayerProfile>("profile").Disabled ? "ON" : "OFF", null, null, () =>
+            {
+                var profile = bundle.Get<PlayerProfile>("profile");
+                profile.Disabled = !profile.Disabled;
+                return profile.Disabled;
+            });
+
+            buttons.Add(disableButton);
+
             var deleteButton = new OptionsButton("DELETE PROFILE");
             deleteButton.SetCallbacks(() =>
             {

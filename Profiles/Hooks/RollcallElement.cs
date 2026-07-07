@@ -173,7 +173,6 @@ internal static class RollcallElementHooks
             Private.Field<RollcallElement, float>("shakeTimer", __instance).Write(30);
             Sounds.ui_invalid.Play(__instance.X, 1f);
             input.Rumble(1f, 20);
-
             portrait.Shake();
         }
 
@@ -222,6 +221,14 @@ internal static class RollcallElementHooks
 
         if (input.MenuArrows)
         {
+            if (ProfilesModule.Instance.EnabledProfile.Count == 0)
+            {
+                Private.Field<RollcallElement, float>("shakeTimer", __instance).Write(30);
+                Sounds.ui_invalid.Play(__instance.X, 1f);
+                input.Rumble(1f, 20);
+                portrait.Shake();
+                return;
+            }
             ProfilesModule.Instance.RollcallProfileActive[playerIndex] = true;
             portrait.ShowTitle = false;
             Sounds.ui_click.Play();
@@ -237,17 +244,25 @@ internal static class RollcallElementHooks
 
             if (MenuInput.Up)
             {
-                DynamicData.For(__instance).Set("Teuria.Profiles/selection", (int)MathHelper.Clamp(selection - 1, 0, ProfilesModule.Instance.Profiles.Count - 1));
+                DynamicData.For(__instance).Set("Teuria.Profiles/selection", (int)MathHelper.Clamp(selection - 1, 0, ProfilesModule.Instance.EnabledProfile.Count - 1));
             }
 
             if (MenuInput.Down)
             {
-                DynamicData.For(__instance).Set("Teuria.Profiles/selection", (int)MathHelper.Clamp(selection + 1, 0, ProfilesModule.Instance.Profiles.Count - 1));
+                DynamicData.For(__instance).Set("Teuria.Profiles/selection", (int)MathHelper.Clamp(selection + 1, 0, ProfilesModule.Instance.EnabledProfile.Count - 1));
             }
 
             if (MenuInput.Confirm)
             {
-                var profile = ProfilesModule.Instance.Profiles[selection];
+                var profile = ProfilesModule.Instance.EnabledProfile[selection];
+                var actProfile = ProfilesModule.Instance.ProfileActive[playerIndex];
+                if (actProfile is not null && profile.Name == actProfile.Name)
+                {
+                    ProfilesModule.Instance.ProfileActive[playerIndex] = null;
+                    Close();
+                    return;
+                }
+
                 if (profile.SelectedArchers.Count > 0)
                 {
                     ChangeSelection(__instance, profile.SelectedArchers[0].ArcherID, profile.SelectedArchers[0].ArcherType);
@@ -381,7 +396,7 @@ internal static class RollcallElementHooks
 
             var state = Private.Field<RollcallElement, StateMachine>("state", __instance).Read();
 
-            if (state != 1 && TFGame.CharacterTaken(__instance.CharacterIndex))
+            if (profile is not null && state == 0 && TFGame.CharacterTaken(__instance.CharacterIndex))
             {
                 Draw.OutlineTextureCentered(ProfilesModule.Instance.SingleLock, __instance.Position + shakeOffset, Color.White);
             }
@@ -391,13 +406,16 @@ internal static class RollcallElementHooks
         {
             return;
         }
+        var actProfile = ProfilesModule.Instance.ProfileActive[playerIndex];
 
         int selection = DynamicData.For(__instance).Get<int>("Teuria.Profiles/selection");
         float ease = DynamicData.For(__instance).Get<float>("Teuria.Profiles/ease");
 
-        foreach (var mockup in ProfilesModule.Instance.Profiles)
+        var activeProfile = ProfilesModule.Instance.EnabledProfile;
+
+        foreach (var mockup in activeProfile)
         {
-            float index = ProfilesModule.Instance.Profiles.IndexOf(mockup);
+            float index = activeProfile.IndexOf(mockup);
             int maxItem = ProfilesModule.Instance.IWiderSetModAPI is { IsWide: true } ? 2 : 4;
 
             float alpha;
@@ -413,10 +431,15 @@ internal static class RollcallElementHooks
 
             Color color = Color.White;
 
-            if (selection == index)
+            if (actProfile?.Name == mockup.Name)
+            {
+                color = Color.Red;
+            }
+            else if (selection == index)
             {
                 color = Color.Yellow;
             }
+
             Draw.OutlineTextCentered(TFGame.Font, mockup.Name.ToUpperInvariant(), __instance.Position + posY, color * alpha, Color.Black * alpha);
         }
     }

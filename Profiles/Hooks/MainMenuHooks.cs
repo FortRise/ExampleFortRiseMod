@@ -11,6 +11,16 @@ namespace Teuria.Profiles;
 [HarmonyPatch(typeof(MainMenu))]
 internal static class MainMenuHooks
 {
+    [HarmonyPatch(nameof(MainMenu.CreateMain))]
+    [HarmonyPostfix]
+    public static void CreateMain_Prefix()
+    {
+        for (int i = 0; i < ProfilesModule.Instance.ProfileActive.Length; i += 1)
+        {
+            ProfilesModule.Instance.ProfileActive[i] = null;
+        }
+    }
+
     [HarmonyPatch(nameof(MainMenu.CreateArchives))]
     [HarmonyPostfix]
     public static void CreateArchives_Postfix(MainMenu __instance)

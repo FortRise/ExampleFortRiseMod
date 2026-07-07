@@ -38,12 +38,12 @@ public static class ProfileSessionStats
         if (killerIndex != -1)
         {
             var killerProfile = ProfilesModule.Instance.ProfileActive[killerIndex];
-            killerIndexP = ProfilesModule.Instance.Profiles.IndexOf(killerProfile);
+            killerIndexP = ProfilesModule.Instance.Profiles.IndexOf(killerProfile!);
         }
 
         var killedProfile = ProfilesModule.Instance.ProfileActive[killedIndex];
 
-        int killedIndexP = ProfilesModule.Instance.Profiles.IndexOf(killedProfile);
+        int killedIndexP = ProfilesModule.Instance.Profiles.IndexOf(killedProfile!);
 
         if (killedIndexP != -1)
         {
@@ -69,7 +69,7 @@ public static class ProfileSessionStats
     public static void RegisterArcherWin(int playerIndex)
     {
         var winner = ProfilesModule.Instance.ProfileActive[playerIndex];
-        int winnerIndex = ProfilesModule.Instance.Profiles.IndexOf(winner);
+        int winnerIndex = ProfilesModule.Instance.Profiles.IndexOf(winner!);
         if (winnerIndex != -1)
         {
             ArcherWins[winnerIndex]++;

@@ -26,16 +26,26 @@ public sealed class ProfileSettings : ModuleSettings
 
         foreach (var profile in ProfilesModule.Instance.Profiles)
         {
-            settings.CreateButton(profile.Name.ToUpperInvariant(), () =>
+            settings.CreateCustomOptions(() =>
             {
-                if (Engine.Instance.Scene is MainMenu menu)
+                var optionsButton = new QuickOptionsButton(profile.Name.ToUpperInvariant())
                 {
-                    var bundle = BundleStateManager.Instance.CreateBundle();
-                    bundle.Set("state", ProfileSelectState.Edit);
-                    bundle.Set("profile", profile);
-                    BundleStateManager.Instance.Push(bundle);
-                    menu.State = ProfilesModule.Instance.ManageProfileState.MenuState;
-                }
+                    OnToggle = (x) => profile.Disabled = x
+                };
+                optionsButton.Disabled = profile.Disabled;
+                optionsButton.SetCallbacks(() =>
+                {
+                    if (Engine.Instance.Scene is MainMenu menu)
+                    {
+                        var bundle = BundleStateManager.Instance.CreateBundle();
+                        bundle.Set("state", ProfileSelectState.Edit);
+                        bundle.Set("profile", profile);
+                        BundleStateManager.Instance.Push(bundle);
+                        menu.State = ProfilesModule.Instance.ManageProfileState.MenuState;
+                    }                   
+                });
+
+                return optionsButton;
             });
         }
 

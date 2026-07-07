@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using FortRise;
@@ -14,7 +13,7 @@ namespace Teuria.Profiles;
 public sealed class ProfilesModule : Mod
 {
     public static ProfilesModule Instance { get; private set; } = null!;
-    public PlayerProfile[] ProfileActive;
+    public PlayerProfile?[] ProfileActive;
     public bool[] RollcallProfileActive;
     public IMenuStateEntry ManageProfileState;
     public IMenuStateEntry SelectArcherState;
@@ -26,6 +25,25 @@ public sealed class ProfilesModule : Mod
     public IWiderSetModApi? IWiderSetModAPI;
 
     public BundleStateManager bundleStateManager;
+
+    public List<PlayerProfile> EnabledProfile
+    {
+        get
+        {
+            var list = new List<PlayerProfile>();
+            foreach (var prof in Profiles)
+            {
+                if (prof.Disabled)
+                {
+                    continue;
+                }
+
+                list.Add(prof);
+            }
+
+            return list;
+        }
+    }
 
 
     public ProfilesModule(IModContent content, IModuleContext context, ILogger logger) : base(content, context, logger)
