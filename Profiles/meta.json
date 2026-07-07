@@ -1,20 +1,14 @@
 {
-	"version": "1.0.0",
+	"version": "1.0.0-beta.1",
 	"displayName": "Profiles",
 	"author": "Terria",
     "description": "Create and select profile on character selection with archers, and keybind choice.",
     "dll": "Profiles.dll",
 	"priority": "High",
 	"dependencies": [
-		{
-			"name": "FortRise",
-			"version": "5.3.0-beta.2"
-		}
+		"FortRise:5.3.0-beta.3"
 	],
 	"optionalDependencies": [
-		{
-			"name": "Teuria.WiderSet",
-			"version": "0.7.0"
-		}
+		"Teuria.WiderSet:0.7.0"
 	]
 }
