@@ -239,7 +239,7 @@ internal static class RollcallElementHooks
         {
             var selection = DynamicData.For(__instance).Get<int>("Teuria.Profiles/selection");
             var ease = DynamicData.For(__instance).Get<float>("Teuria.Profiles/ease");
-            ease = MathHelper.Lerp(ease, selection, Ease.SineIn(Engine.TimeMult * 0.8f));
+            ease = MathHelper.Lerp(ease, selection, Ease.SineIn(Engine.TimeMult * 5f));
             DynamicData.For(__instance).Set("Teuria.Profiles/ease", ease);
 
             if (MenuInput.Up)

@@ -4,11 +4,13 @@ using TowerFall;
 
 namespace Teuria.Profiles;
 
+
 public sealed class ProfileSettings : ModuleSettings
 {
     public bool HideProfileNameOnPlayer { get; set; }
     public bool HideProfileNameOnRoundResult { get; set; }
     public bool HideProfileNameOnMatchResult { get; set; }
+    public string ProfileStatsChartType { get; set; } = "Relative";
 
     public override void Create(ISettingsCreate settings)
     {
@@ -52,5 +54,9 @@ public sealed class ProfileSettings : ModuleSettings
         settings.CreateOnOff("HIDE PROFILE NAME ON PLAYER", HideProfileNameOnPlayer, (x) => HideProfileNameOnPlayer = x);
         settings.CreateOnOff("HIDE PROFILE NAME ON ROUND RESULT", HideProfileNameOnRoundResult, (x) => HideProfileNameOnRoundResult = x);
         settings.CreateOnOff("HIDE PROFILE NAME ON MATCH RESULT", HideProfileNameOnMatchResult, (x) => HideProfileNameOnMatchResult = x);
+        settings.CreateOptions("PROFILE STATS CHART TYPE", ProfileStatsChartType, ["Relative", "Incremental"], a =>
+        {
+            ProfileStatsChartType = a.Item1;
+        });
     }
 }

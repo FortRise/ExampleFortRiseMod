@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using FortRise;
 using Microsoft.Xna.Framework;
 using MonoMod.Utils;
@@ -41,13 +42,30 @@ public sealed class ManageProfileMenuState : CustomMenuState
             if (state == ProfileSelectState.Edit && profile.Name != x)
             {
                 ProfilesModule.Instance.Context.Storage.Delete($"Profiles/{profile.Name}.json", false);
+                var profileSaveData = ProfilesModule.Instance.GetSaveData<ProfileSaveData>()!;
+
+                int wins = 0;
+                int kills = 0;
+
+                foreach (var p in profileSaveData.ProfileStats.ToList())
+                {
+                    if (p.Name == profile.Name)
+                    {
+                        profileSaveData.ProfileStats.Remove(p);
+                        wins = p.Wins;
+                        kills = p.Kills;
+                        break;
+                    }
+                }
+
+                profileSaveData.ProfileStats.Add(new ProfileStats() { Name = profile.Name, Wins = wins, Kills = kills });
+                ProfilesModule.Instance.Profiles.Remove(profile);
             }
-            ProfilesModule.Instance.Profiles.Remove(profile);
             profile.Name = x;
-            ProfilesModule.Instance.Profiles.Add(profile);
 
             if (state == ProfileSelectState.Edit)
             {
+                ProfilesModule.Instance.Profiles.Add(profile);
                 var saver = new Saver(true);
                 Main.Add(saver);
             }
@@ -166,6 +184,16 @@ public sealed class ManageProfileMenuState : CustomMenuState
                 Main.State = MainMenu.MenuState.Options;
 
                 ProfilesModule.Instance.Context.Storage.Delete($"Profiles/{profile.Name}.json", false);
+
+                var profileSaveData = ProfilesModule.Instance.GetSaveData<ProfileSaveData>()!;
+                foreach (var p in profileSaveData.ProfileStats.ToList())
+                {
+                    if (p.Name == profile.Name)
+                    {
+                        profileSaveData.ProfileStats.Remove(p);
+                        break;
+                    }
+                }
             });
 
             buttons.Add(deleteButton);
@@ -180,6 +208,9 @@ public sealed class ManageProfileMenuState : CustomMenuState
                     ShowAlert(createButton, "Name field is required");
                     return;
                 }
+
+                var profileSaveData = ProfilesModule.Instance.GetSaveData<ProfileSaveData>()!;
+                profileSaveData.ProfileStats.Add(new ProfileStats() { Name = profile.Name });
                 
                 ProfilesModule.Instance.Profiles.Add(profile);
                 Main.State = MainMenu.MenuState.Options;

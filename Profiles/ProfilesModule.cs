@@ -132,4 +132,9 @@ public sealed class ProfilesModule : Mod
     {
         return new ProfileSettings();
     }
+
+    public override ModuleSaveData? CreateSaveData()
+    {
+        return new ProfileSaveData();
+    }
 }

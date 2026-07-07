@@ -1,3 +1,4 @@
+using System;
 using HarmonyLib;
 using TowerFall;
 
@@ -21,6 +22,28 @@ internal static class RoundLogicHooks
         {
             deathType = DeathType.Team;
         }
+
+        if (killerIndex != -1 && !__instance.Session.MatchSettings.SoloMode)
+        {
+            var killerProfile = ProfilesModule.Instance.ProfileActive[killerIndex];
+            if (killerProfile is not null)
+            {
+                var saveData = ProfilesModule.Instance.GetSaveData<ProfileSaveData>()!;
+
+                foreach (var data in saveData.ProfileStats)
+                {
+                    if (data.Name == killerProfile.Name)
+                    {
+                        data.Kills += 1;
+                        goto BREAKOUT;
+                    }
+                }
+
+                saveData.ProfileStats.Add(new ProfileStats() { Name = killerProfile.Name, Kills = 1 });
+            }
+        }
+
+    BREAKOUT:
 
         if (!__instance.Session.MatchSettings.SoloMode)
         {
