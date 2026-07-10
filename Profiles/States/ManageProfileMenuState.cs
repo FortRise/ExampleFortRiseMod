@@ -58,7 +58,11 @@ public sealed class ManageProfileMenuState : CustomMenuState
                     }
                 }
 
-                profileSaveData.ProfileStats.Add(new ProfileStats() { Name = profile.Name, Wins = wins, Kills = kills });
+                var index = ProfilesModule.Instance.Profiles.IndexOf(profile);
+
+                ProfileSessionStats.RemoveOne(index);
+                ProfileSessionStats.AddOne();
+                profileSaveData.ProfileStats.Add(new ProfileStats() { Name = x, Wins = wins, Kills = kills });
                 ProfilesModule.Instance.Profiles.Remove(profile);
             }
             profile.Name = x;
@@ -179,11 +183,13 @@ public sealed class ManageProfileMenuState : CustomMenuState
             deleteButton.SetCallbacks(() =>
             {
                 var profile = bundle.Get<PlayerProfile>("profile");
+                var index = ProfilesModule.Instance.Profiles.IndexOf(profile);
 
                 ProfilesModule.Instance.Profiles.Remove(profile);
                 Main.State = MainMenu.MenuState.Options;
 
                 ProfilesModule.Instance.Context.Storage.Delete($"Profiles/{profile.Name}.json", false);
+                ProfileSessionStats.RemoveOne(index);
 
                 var profileSaveData = ProfilesModule.Instance.GetSaveData<ProfileSaveData>()!;
                 foreach (var p in profileSaveData.ProfileStats.ToList())
@@ -212,6 +218,7 @@ public sealed class ManageProfileMenuState : CustomMenuState
                 var profileSaveData = ProfilesModule.Instance.GetSaveData<ProfileSaveData>()!;
                 profileSaveData.ProfileStats.Add(new ProfileStats() { Name = profile.Name });
                 
+                ProfileSessionStats.AddOne();
                 ProfilesModule.Instance.Profiles.Add(profile);
                 Main.State = MainMenu.MenuState.Options;
             });

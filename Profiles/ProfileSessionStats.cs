@@ -1,22 +1,50 @@
+using System.Collections.Generic;
 using TowerFall;
 
 namespace Teuria.Profiles;
 
 public static class ProfileSessionStats
 {
-    public static int[] ArcherPlays = null!;
-    public static int[] ArcherKills = null!;
-    public static int[] ArcherDeaths = null!;
-    public static int[] ArcherSelfKills = null!;
-    public static int[] ArcherWins = null!;
+    public static List<int> ArcherPlays = null!;
+    public static List<int> ArcherKills = null!;
+    public static List<int> ArcherDeaths = null!;
+    public static List<int> ArcherSelfKills = null!;
+    public static List<int> ArcherWins = null!;
 
     public static void Initialize()
     {
-        ArcherPlays = new int[ProfilesModule.Instance.Profiles.Count];
-        ArcherKills = new int[ProfilesModule.Instance.Profiles.Count];
-        ArcherDeaths = new int[ProfilesModule.Instance.Profiles.Count];
-        ArcherSelfKills = new int[ProfilesModule.Instance.Profiles.Count];
-        ArcherWins = new int[ProfilesModule.Instance.Profiles.Count];
+        ArcherPlays = new (ProfilesModule.Instance.Profiles.Count);
+        ArcherKills = new (ProfilesModule.Instance.Profiles.Count);
+        ArcherDeaths = new (ProfilesModule.Instance.Profiles.Count);
+        ArcherSelfKills = new (ProfilesModule.Instance.Profiles.Count);
+        ArcherWins = new (ProfilesModule.Instance.Profiles.Count);
+
+        for (int i = 0; i < ProfilesModule.Instance.Profiles.Count; i += 1)
+        {
+            ArcherPlays.Add(0);
+            ArcherKills.Add(0);
+            ArcherDeaths.Add(0);
+            ArcherSelfKills.Add(0);
+            ArcherWins.Add(0);
+        }
+    }
+
+    public static void AddOne()
+    {
+        ArcherPlays.Add(0);
+        ArcherKills.Add(0);
+        ArcherDeaths.Add(0);
+        ArcherSelfKills.Add(0);
+        ArcherWins.Add(0);
+    }
+
+    public static void RemoveOne(int index)
+    {
+        ArcherPlays.RemoveAt(index);
+        ArcherKills.RemoveAt(index);
+        ArcherDeaths.RemoveAt(index);
+        ArcherSelfKills.RemoveAt(index);
+        ArcherWins.RemoveAt(index);
     }
 
     public static void RegisterArcherPlays()
