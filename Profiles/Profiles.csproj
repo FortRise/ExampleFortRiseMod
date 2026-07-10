@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Nullable>enable</Nullable>
     <ModName>Teuria.Profiles</ModName>
-    <ModVersion>1.0.0-beta.1</ModVersion>
+    <ModVersion>1.0.0-beta.2</ModVersion>
     <ModZipPath>..\release\$(ModName)-$(ModVersion).zip</ModZipPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
