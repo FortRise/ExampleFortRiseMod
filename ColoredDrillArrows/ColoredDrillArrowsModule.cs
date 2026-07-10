@@ -42,5 +42,10 @@ public class ColoredDrillArrowsModule : Mod
             normalSprite.Color = ArcherData.Archers[__instance.CharacterIndex].ColorB;
             buriedImage.Color = ArcherData.Archers[__instance.CharacterIndex].ColorB;
         }
+        else
+        {
+            normalSprite.Color = ArcherData.Enemies.ColorB;
+            buriedImage.Color = ArcherData.Enemies.ColorB;
+        }
     }
 }
