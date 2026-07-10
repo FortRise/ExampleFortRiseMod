@@ -19,6 +19,30 @@ public sealed class ManageKeyboardProfileState : CustomMenuState
         var keyboardconfig = profileConstruct.KeyboardConfig;
         var buttons = new List<OptionsButton>();
 
+        var leftButton = new KeyboardInputOptionsButton("LEFT", keyboardconfig.Left, (x) =>
+        {
+            keyboardconfig.Left = x;
+        });
+        buttons.Add(leftButton);
+
+        var upButton = new KeyboardInputOptionsButton("UP", keyboardconfig.Up, (x) =>
+        {
+            keyboardconfig.Up = x;
+        });
+        buttons.Add(upButton);
+
+        var downButton = new KeyboardInputOptionsButton("DOWN", keyboardconfig.Down, (x) =>
+        {
+            keyboardconfig.Down = x;
+        });
+        buttons.Add(downButton);
+
+        var rightButton = new KeyboardInputOptionsButton("RIGHT", keyboardconfig.Right, (x) =>
+        {
+            keyboardconfig.Right = x;
+        });
+        buttons.Add(rightButton);
+
         var jumpButton = new KeyboardInputOptionsButton("JUMP", keyboardconfig.Jump, (x) =>
         {
             keyboardconfig.Jump = x;
