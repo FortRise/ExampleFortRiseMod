@@ -381,6 +381,7 @@ internal static class RollcallElementHooks
         portrait.SetCharacter(__instance.CharacterIndex, archerTypes, 1);
         GamePad.SetLightBarEXT((PlayerIndex)playerIndex, portrait.ArcherData.LightbarColor);
         rightArrow.Color = leftArrow.Color = Color.Lerp(ArcherData.Archers[__instance.CharacterIndex].ColorB, Color.White, 0.5f);
+        TFGame.AltSelect[playerIndex] = archerType;
     }
 
 
