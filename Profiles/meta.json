@@ -1,5 +1,5 @@
 {
-	"version": "1.0.0-beta.3",
+	"version": "1.0.0",
 	"displayName": "Profiles",
 	"author": "Terria",
     "description": "Create and select profile on character selection with archers, and keybind choice.",
@@ -10,5 +10,10 @@
 	],
 	"optionalDependencies": [
 		"Teuria.WiderSet:0.7.0"
-	]
+	],
+	"update": {
+		"gamebanana": {
+			"id": 693658
+		}
+	}
 }
