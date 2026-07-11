@@ -126,6 +126,8 @@ public sealed class ManageGamepadProfileState : CustomMenuState
             dodgeButton.Buttons = gamepadConfig.Dodge;
             altDodgeButton.Buttons = gamepadConfig.MenuAlt;
             startButton.Buttons = gamepadConfig.Start;
+
+            profileConstruct.GamepadConfig = gamepadConfig;
             return true;
         });
 

@@ -97,6 +97,7 @@ public sealed class ManageKeyboardProfileState : CustomMenuState
             dodgeButton.Buttons = keyboardconfig.Dodge;
             altDodgeButton.Buttons = keyboardconfig.MenuAlt;
             startButton.Buttons = keyboardconfig.Start;
+            profileConstruct.KeyboardConfig = keyboardconfig;
             return true;
         });
 
