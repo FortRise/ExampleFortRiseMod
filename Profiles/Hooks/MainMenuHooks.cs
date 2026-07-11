@@ -17,7 +17,7 @@ internal static class MainMenuHooks
     {
         for (int i = 0; i < ProfilesModule.Instance.ProfileActive.Length; i += 1)
         {
-            ProfilesModule.Instance.ProfileActive[i] = null;
+            ProfilesModule.Instance.DeactivateProfile(i);
         }
     }
 

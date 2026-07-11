@@ -242,24 +242,38 @@ internal static class RollcallElementHooks
             ease = MathHelper.Lerp(ease, selection, Ease.SineIn(Engine.TimeMult * 5f));
             DynamicData.For(__instance).Set("Teuria.Profiles/ease", ease);
 
-            if (MenuInput.Up)
+            if (input.MenuUp)
             {
                 DynamicData.For(__instance).Set("Teuria.Profiles/selection", (int)MathHelper.Clamp(selection - 1, 0, ProfilesModule.Instance.EnabledProfile.Count - 1));
             }
 
-            if (MenuInput.Down)
+            if (input.MenuDown)
             {
                 DynamicData.For(__instance).Set("Teuria.Profiles/selection", (int)MathHelper.Clamp(selection + 1, 0, ProfilesModule.Instance.EnabledProfile.Count - 1));
             }
 
-            if (MenuInput.Confirm)
+            if (input.MenuConfirm)
             {
                 var profile = ProfilesModule.Instance.EnabledProfile[selection];
                 var actProfile = ProfilesModule.Instance.ProfileActive[playerIndex];
                 if (actProfile is not null && profile.Name == actProfile.Name)
                 {
-                    ProfilesModule.Instance.ProfileActive[playerIndex] = null;
+                    if (input is KeyboardInput keyboardInput)
+                    {
+                        keyboardInput.Config = SaveData.Instance.Keyboard[playerIndex];
+                    }
+
+                    ProfilesModule.Instance.DeactivateProfile(playerIndex);
                     Close();
+                    return;
+                }
+
+                if (ProfilesModule.Instance.NamesActive.Contains(profile.Name))
+                {
+                    Private.Field<RollcallElement, float>("shakeTimer", __instance).Write(30);
+                    Sounds.ui_invalid.Play(__instance.X, 1f);
+                    input.Rumble(1f, 20);
+                    portrait.Shake();
                     return;
                 }
 
@@ -272,12 +286,21 @@ internal static class RollcallElementHooks
                     xGamepadInput.Config = profile.GamepadConfig;
                     xGamepadInput.RefreshButton();
                 }
-                else if (!profile.FollowsDefaultKeyboardConfig && input is KeyboardInput keyboardInput)
+                else if (input is KeyboardInput keyboardInput)
                 {
-                    keyboardInput.Config = profile.KeyboardConfig;
+                    if (profile.FollowsDefaultKeyboardConfig)
+                    {
+                        keyboardInput.Config = SaveData.Instance.Keyboard[playerIndex];
+                    }
+                    else
+                    {
+                        keyboardInput.Config = profile.KeyboardConfig;
+                    }
+
+                    DynamicData.For(keyboardInput).Invoke("InitIcons");
                 }
 
-                ProfilesModule.Instance.ProfileActive[playerIndex] = profile;
+                ProfilesModule.Instance.ActivateProfile(playerIndex, profile);
 
                 Close();
                 return;
@@ -433,6 +456,10 @@ internal static class RollcallElementHooks
 
             if (actProfile?.Name == mockup.Name)
             {
+                color = Color.Cyan;
+            }
+            else if (ProfilesModule.Instance.NamesActive.Contains(mockup.Name))
+            {
                 color = Color.Red;
             }
             else if (selection == index)
@@ -440,7 +467,7 @@ internal static class RollcallElementHooks
                 color = Color.Yellow;
             }
 
-            Draw.OutlineTextCentered(TFGame.Font, mockup.Name.ToUpperInvariant(), __instance.Position + posY, color * alpha, Color.Black * alpha);
+            Draw.OutlineTextCentered(TFGame.Font, mockup.Name.ToUpperInvariant(), __instance.Position + posY + shakeOffset, color * alpha, Color.Black * alpha);
         }
     }
 

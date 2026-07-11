@@ -14,6 +14,7 @@ public sealed class ProfilesModule : Mod
 {
     public static ProfilesModule Instance { get; private set; } = null!;
     public PlayerProfile?[] ProfileActive;
+    public HashSet<string> NamesActive = [];
     public bool[] RollcallProfileActive;
     public IMenuStateEntry ManageProfileState;
     public IMenuStateEntry SelectArcherState;
@@ -84,6 +85,30 @@ public sealed class ProfilesModule : Mod
         context.Events.OnBeforeDataLoad += BeforeDataLoad;
         context.Events.OnBeforeSaveSaveData += BeforeSaveData;
         context.Events.OnModInitialize += OnModInitialize;
+    }
+
+    public void ActivateProfile(int playerIndex, PlayerProfile profile)
+    {
+        var previousActiveProfile = ProfileActive[playerIndex];
+        if (previousActiveProfile is not null)
+        {
+            NamesActive.Remove(previousActiveProfile.Name);
+        }
+
+        ProfileActive[playerIndex] = profile;
+        NamesActive.Add(profile.Name);
+    }
+
+    public void DeactivateProfile(int playerIndex)
+    {
+        var profile = ProfileActive[playerIndex];
+        if (profile is null)
+        {
+            return;
+        }
+
+        ProfileActive[playerIndex] = null;
+        NamesActive.Remove(profile.Name);
     }
 
     private void OnModInitialize(object? sender, ModuleMetadata e)
