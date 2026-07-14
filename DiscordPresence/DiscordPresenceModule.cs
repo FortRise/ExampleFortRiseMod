@@ -306,7 +306,7 @@ public class DiscordPresenceModule : Mod
 
         if (Instance.Context.Flags.IsWindows)
         {
-            cursor.GotoNext([ILMatch.Brfalse()]);
+            cursor.GotoNext([ILMatch.Brfalse_S()]);
         }
         else 
         {
