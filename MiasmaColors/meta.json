@@ -1,7 +1,7 @@
 {
 	"name": "Teuria.MiasmaColors",
 	"version": "2.0.0",
-	"author": "Terria",
+	"author": "Terria, Lync",
 	"description": "A mod that changes miasma colors in different level with different colors.",
 	"dll": "MiasmaColors.dll",
 	"dependencies": [
