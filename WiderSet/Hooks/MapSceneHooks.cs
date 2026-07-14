@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
 using FortRise;
 using FortRise.Transpiler;
@@ -27,36 +29,29 @@ internal sealed class MapSceneHooks : IHookable
             AccessTools.DeclaredMethod(typeof(MapScene), nameof(MapScene.FixedClampCamera)),
             transpiler: new HarmonyMethod(MapScene_ClampCamera_Transpiler)
         );
-
+       
+        MethodBase methodBase = null!;
+        var methods = typeof(MapScene).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance);
+        foreach (var method in methods)
+        {
+            if (method.Name.Contains("<InitVersusButtons>"))
+            {
+                methodBase = method;
+            }
+        }
+        
         harmony.Patch(
-            AccessTools.DeclaredMethod(typeof(MapScene), nameof(MapScene.InitVersusButtons)),
-            transpiler: new HarmonyMethod(MapScene_InitVersusButtons_Transpiler)
+            methodBase,
+            postfix: new HarmonyMethod(InitVersusButtons_Postfix)
         );
     }
 
-    private static IEnumerable<CodeInstruction> MapScene_InitVersusButtons_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    private static void InitVersusButtons_Postfix(MapScene __instance, VersusTowerData x, ref bool __result)
     {
-        var cursor = new ILTranspilerCursor(generator, instructions);
-
-        cursor.Encompass(x => 
+        if (WiderSetModule.IsWide)
         {
-            while (x.Next(MoveType.After, [ILMatch.Ldfld("Levels")]))
-            {
-                cursor.Emit(new CodeInstruction(OpCodes.Ldloc, 4));
-                cursor.EmitDelegate((List<VersusLevelData> levels, VersusTowerData data) => 
-                {
-                    if (WiderSetModule.IsWide)
-                    {
-                        string levelID = data.GetLevelID();
-                        return WideTowerManager.Instance.MappedLevels[levelID];
-                    }
-
-                    return levels;
-                });
-            }
-        });
-
-        return cursor.Generate();
+            __result = __result && x.TowerSet.Contains("<Teuria.WiderSet>");
+        }
     }
 
     private static IEnumerable<CodeInstruction> MapScene_ClampCamera_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)

@@ -53,6 +53,22 @@ internal sealed class MainMenuHooks : IHookable
             AccessTools.DeclaredMethod(typeof(MainMenu), nameof(MainMenu.CreateTeamSelect)),
             transpiler: new HarmonyMethod(MainMenu_CreateTeamSelect_Transpiler)
         );
+
+        harmony.Patch(
+            AccessTools.DeclaredMethod(typeof(MainMenu), nameof(MainMenu.GotoVersusLevelSelect)),
+            postfix: new HarmonyMethod(MainMenu_GotoVersusLevelSelect_Postfix)
+        );
+    }
+
+    private static void MainMenu_GotoVersusLevelSelect_Postfix()
+    {
+        if (!WiderSetModule.IsWide)
+        {
+            return;
+        }
+
+        var nextScene = (MapScene)Private.Field<Engine, Scene>("nextScene", Engine.Instance).Read();
+        nextScene.TowerSet = "Teuria.WiderSet/<Teuria.WiderSet>/TowerFall";
     }
 
     private static IEnumerable<CodeInstruction> MainMenu_CreateRollcall_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)

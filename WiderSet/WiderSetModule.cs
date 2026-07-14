@@ -5,7 +5,6 @@ using System.Runtime.CompilerServices;
 using System.Xml;
 using FortRise;
 using FortRise.Content;
-using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -31,6 +30,7 @@ public class UnsafeLogo
 public class WiderSetModule : Mod
 {
     private static readonly Type[] Hookables = [
+        typeof(CustomLevelCategoryButtonHooks),
         typeof(EditorBaseHooks),
 
         typeof(ActorHooks),
@@ -90,12 +90,10 @@ public class WiderSetModule : Mod
 
         typeof(VariantPerPlayerHooks),
         typeof(VersusAwardsHooks),
-        typeof(VersusLevelSystemHooks),
         typeof(VersusStartHooks),
         typeof(VersusMatchResultsHooks),
         typeof(VersusPlayerMatchResultsHooks),
         typeof(VersusRoundResultsHooks),
-        typeof(VersusTowerDataHooks),
         typeof(WrapHitboxHooks),
         typeof(WrapMathHooks)
     ];
@@ -146,6 +144,8 @@ public class WiderSetModule : Mod
 
     public static WiderSetModule Instance { get; private set; } = null!;
 
+    public static IFortRiseContentApi ContentApi { get; private set; } = null!;
+
     public WiderSetModule(IModContent content, IModuleContext context, ILogger logger) : base(content, context, logger)
     {
         IsWide = false;
@@ -176,6 +176,8 @@ public class WiderSetModule : Mod
 
         arrowTweenFrom += new Vector2(100, 0);
         titleTweenFrom -= new Vector2(100, 0);
+
+        ContentApi = context.Interop.GetApi<IFortRiseContentApi>("FortRise.Content")!;
 
         Environment.SetEnvironmentVariable("FNA_GAMEPAD_NUM_GAMEPADS", "8");
 
@@ -250,12 +252,6 @@ public class WiderSetModule : Mod
         OnInitialize += (_) => Inject();
 
         context.Events.OnBeforeModInstantiation += OnModBeforeLoaded;
-
-
-        context.Harmony.Patch(
-            AccessTools.DeclaredMethod(typeof(CustomLevelCategoryButton), "CreateLevelSets"),
-            postfix: new HarmonyMethod(CustomLevelCategoryButton_CreateLevelSets_Postfix)
-        );
 
         context.Registry.Commands.RegisterCommands("level_resize", new () 
         {
@@ -349,16 +345,6 @@ public class WiderSetModule : Mod
         }
     }
 
-
-    private static void CustomLevelCategoryButton_CreateLevelSets_Postfix(ref List<string> __result)
-    {
-        if (IsWide)
-        {
-            __result.Clear();
-            __result.AddRange(WideTowerManager.Instance.VersusLevelSets);
-        }
-    }
-
     private void OnModBeforeLoaded(object? sender, BeforeModInstantiationEventArgs e)
     {
         if (!e.Context.Interop.IsModDepends(Meta))
@@ -367,35 +353,42 @@ public class WiderSetModule : Mod
         }
 
         // get levels
-        if (e.ModContent.Root.TryGetRelativePath("Content/Levels/Versus", out var versusLocation)) 
+        if (e.ModContent.Root.TryGetRelativePath("Content/WideLevels/Versus", out var versusLocation)) 
         {
             foreach (var map in versusLocation.Childrens)
             {
-                if (map.TryGetRelativePath("Wide", out var wideLevels))
+                var levels = new List<IResourceInfo>();
+                IResourceInfo xmlResource = null!;
+                foreach (var child in map.Childrens)
                 {
-                    var levels = new List<IResourceInfo>();
-                    foreach (var child in wideLevels.Childrens)
+                    if (child.Path.EndsWith("oel"))
                     {
-                        if (child.Path.EndsWith("oel"))
-                        {
-                            levels.Add(child);
-                        }
+                        levels.Add(child);
                     }
-
-                    WideTowerManager.Instance.AddEntry(
-                        e.ModContent.Metadata.Name + "/" + Path.GetFileName(map.Path), 
-                        [..levels]);
+                    else if (child.Path.EndsWith("json"))
+                    {
+                        levels.Add(child);
+                    }
+                    else if (child.Path.EndsWith("tower.xml"))
+                    {
+                        xmlResource = child;
+                    }
                 }
+
+                var xmlDoc = xmlResource.Xml;
+                var xml = xmlDoc!["tower"]!;
+
+                string towerSet = xml.Attr("towerSet", e.ModContent.Metadata.Name);
+
+                var path = Path.GetFileName(map.Path);
+
+                ContentApi.VersusLoaders.RegisterVersusTowerWithXml(
+                    e.ModContent, e.Context.Registry, xml, path, 
+                    "<Teuria.WiderSet>/" + towerSet, [..levels]);
             }
         }
 
-        var api = Context.Interop.GetApi<IFortRiseContentApi>("FortRise.Content");
-        if (api is null)
-        {
-            return;
-        }
-
-        var content = api.LoaderApi.GetContentConfiguration(e.ModContent.Metadata);
+        var content = ContentApi.LoaderApi.GetContentConfiguration(e.ModContent.Metadata);
         if (content is null)
         {
             return;
@@ -525,6 +518,7 @@ public class WiderSetModule : Mod
 
             MapEntry[themeName] = registry.Towers.RegisterVersusTower(
                 themeName,
+                "<Teuria.WiderSet>/TowerFall",
                 new()
                 {
                     Levels = [.. levels],
