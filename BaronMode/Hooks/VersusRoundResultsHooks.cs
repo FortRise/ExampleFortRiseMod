@@ -30,7 +30,14 @@ internal sealed class VersusRoundResultsHooks : IHookable
     {
         var cursor = new ILTranspilerCursor(generator, instructions);
 
-        cursor.GotoNext(MoveType.After, [ILMatch.Brtrue()]);
+        if (!BaronModeModule.Instance.Context.Flags.IsWindows)
+        {
+            cursor.GotoNext(MoveType.After, [ILMatch.Brtrue()]);
+        }
+        else 
+        {
+            cursor.GotoNext(MoveType.After, [ILMatch.Brfalse_S()]);
+        }
         var operand = cursor.Prev.operand;
         cursor.Emit(new CodeInstruction(OpCodes.Ldarg_0));
         cursor.EmitDelegate((VersusRoundResults __instance) => __instance.Level.Session.MatchSettings.Mode == Baron.BaronGameMode.Modes);
