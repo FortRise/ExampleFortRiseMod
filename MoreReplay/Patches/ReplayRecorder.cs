@@ -22,7 +22,16 @@ public class ReplayRecorderPatch : IHookable
         var cursor = new ILTranspilerCursor(generator, instructions);
 
         cursor.GotoNext(MoveType.After, [ILMatch.LdcI4(210)]);
-        cursor.EmitDelegate((int x) => MoreReplayModule.Settings.FrameCount);
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate((int x, ReplayRecorder recorder) =>
+        {
+            var level = Private.Field<ReplayRecorder, Level>("level", recorder).Read();
+            if (level.Session.MatchSettings.Mode == Modes.Trials)
+            {
+                return MoreReplayModule.Settings.TrialsFrameCount;
+            }
+            return MoreReplayModule.Settings.FrameCount;
+        });
 
         return cursor.Generate();
     }

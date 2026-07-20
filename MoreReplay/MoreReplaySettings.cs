@@ -5,9 +5,11 @@ namespace Teuria.MoreReplay;
 public class MoreReplaySettings : ModuleSettings
 {
     public int FrameCount { get; set; } = 210;
+    public int TrialsFrameCount { get; set; } = 210 * 8;
 
     public override void Create(ISettingsCreate settings)
     {
         settings.CreateNumber("Frame Count", FrameCount, (x) => FrameCount = x, 10, 3000, 10);
+        settings.CreateNumber("Trials Frame Count", TrialsFrameCount, (x) => TrialsFrameCount = x, 10, 3000, 10);
     }
 }

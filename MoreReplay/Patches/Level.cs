@@ -19,7 +19,9 @@ public class LevelPatch : IHookable
     private static void Level_ctor_Postfix(TowerFall.Level __instance, TowerFall.Session session)
     {
         var dynSelf = DynamicData.For(__instance);
-        if (session.MatchSettings.SoloMode && SaveData.Instance.Options.ReplayMode != Options.ReplayModes.Off)
+        if (session.MatchSettings.SoloMode 
+            && SaveData.Instance.Options.ReplayMode != Options.ReplayModes.Off
+            && session.MatchSettings.Mode != Modes.Trials)
         {
             dynSelf.Invoke("set_ReplayRecorder", new ReplayRecorder(__instance));
         }

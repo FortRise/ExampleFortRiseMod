@@ -1,13 +1,13 @@
 {
 	"displayName": "More Replay",
-	"version": "2.2.0",
+	"version": "2.3.0",
 	"author": "Terria",
 	"description": "Replay your death moment in Co-Op and Dark World",
 	"dll": "MoreReplay.dll",
 	"dependencies": [
 		{
 			"name": "FortRise",
-			"version": "5.0.0"
+			"version": "5.3.0"
 		}
 	],
 	"update": {

@@ -13,8 +13,14 @@ public sealed class MoreReplayModule : Mod
     internal Type[] Hookables = [
         typeof(DarkWorldRoundLogicPatch),
         typeof(DarkWorldGameOverPatch),
+
         typeof(QuestGameOverPatch),
         typeof(QuestRoundLogicPatch),
+
+        typeof(TrialsControlPatch),
+        typeof(TrialsStartPatch),
+        typeof(TrialsResultPatch),
+
         typeof(LevelPatch),
         typeof(ReplayRecorderPatch)
     ];

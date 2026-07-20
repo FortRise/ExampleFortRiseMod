@@ -7,9 +7,44 @@ public class ReplayMenuComponent : Component
 {
     private bool replaySaved;
     private bool saving;
+    private readonly MenuButtonGuide confirmGuide;
+    private readonly MenuButtonGuide replayGuide;
+    private readonly MenuButtonGuide saveReplayGuide;
 
-    public ReplayMenuComponent() : base(true, true)
+    private readonly bool shouldBefrozen;
+    private readonly bool resetEffects;
+
+    public ReplayMenuComponent(
+        bool shouldBefrozen = false, bool resetEffects = true) : base(true, true)
     {
+        this.shouldBefrozen = shouldBefrozen;
+        this.resetEffects = resetEffects;
+
+        confirmGuide = new MenuButtonGuide(
+                0, MenuButtonGuide.ButtonModes.Confirm, "CONTINUE");
+
+        replayGuide = new MenuButtonGuide(
+                1, MenuButtonGuide.ButtonModes.Alt, "REPLAY");
+
+        saveReplayGuide = new MenuButtonGuide(
+                2, MenuButtonGuide.ButtonModes.SaveReplay, "SAVE REPLAY");
+    }
+
+    public override void Added()
+    {
+        base.Added();
+
+        Alarm.Set(Entity, 180, () => {
+            Entity.Add(confirmGuide);
+            Entity.Add(replayGuide);
+            Entity.Add(saveReplayGuide);
+
+            if (SaveData.Instance.Options.ReplayMode == Options.ReplayModes.Off)
+            {
+                replayGuide.Clear();
+                saveReplayGuide.Clear();
+            }
+        });
     }
 
     public override void Update()
@@ -53,8 +88,10 @@ public class ReplayMenuComponent : Component
         pauseMenu.Visible = false;
         pauseMenu.Active = false;
         replaySaved = true;
+
+        confirmGuide.Visible = replayGuide.Visible = saveReplayGuide.Visible = false;
         Sounds.ui_click.Play(160f, 1f);
-        Scene.Add<GifExporter>(new GifExporter(level.ReplayRecorder.Data, FinishSaveReplay));
+        Scene.Add(new GifExporter(level.ReplayRecorder.Data, FinishSaveReplay));
     }
 
     private void FinishSaveReplay(bool success) 
@@ -63,6 +100,13 @@ public class ReplayMenuComponent : Component
         {
             replaySaved = false;
         }
+        else 
+        {
+            saveReplayGuide.Clear();
+        }
+
+
+        confirmGuide.Visible = replayGuide.Visible = saveReplayGuide.Visible = true;
         saving = false;
 
         var level = (Scene as Level)!;
@@ -75,8 +119,11 @@ public class ReplayMenuComponent : Component
 
     private void ReplayFinish()
     {
-        ScreenEffects.Reset();
-        (Scene as Level)!.Frozen = false;
-        Entity.Visible = (Entity.Active = true);
+        if (resetEffects)
+        {
+            ScreenEffects.Reset();
+        }
+        (Scene as Level)!.Frozen = shouldBefrozen;
+        Entity.Visible = Entity.Active = true;
     }
 }

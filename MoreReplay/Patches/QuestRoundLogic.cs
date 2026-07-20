@@ -107,8 +107,16 @@ public class QuestRoundLogicPatch : IHookable
             Alarm.Set(entity, 90, () =>
             {
                 entity.RemoveSelf();
+                if (self.Session.CurrentLevel.ReplayRecorder is null)
+                {
+                    AfterReplay();
+                    return;
+                }
+
                 self.Session.CurrentLevel.ReplayRecorder.End();
-                self.Session.CurrentLevel.ReplayViewer.Watch(self.Session.CurrentLevel.ReplayRecorder, ReplayViewer.ReplayType.Rewind, () =>
+                self.Session.CurrentLevel.ReplayViewer.Watch(self.Session.CurrentLevel.ReplayRecorder, ReplayViewer.ReplayType.Rewind, AfterReplay);
+
+                void AfterReplay()
                 {
                     ScreenEffects.Reset();
                     self.Session.CurrentLevel.OrbLogic.CancelSlowMo();
@@ -116,7 +124,7 @@ public class QuestRoundLogicPatch : IHookable
                     QuestRoundLogic_OnPlayerDeath_ReversePatch(self);
                     // self.Session.CurrentLevel.Ending = true;
                     // self.Session.CurrentLevel.Add(new QuestGameOver(self));
-                });
+                }
             });
             self.Session.CurrentLevel.Add(entity);
         });
