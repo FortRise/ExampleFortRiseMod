@@ -7,6 +7,7 @@ public sealed class AutolockModifierSettings : ModuleSettings
     public bool DisableAutoLock { get; set; }
     public int MaxAngle { get; set; } = 65;
     public int MaxDistanceInPixels { get; set; } = 36;
+    public string AutolockBehavior { get; set; } = "Normal";
     public bool AllowTrials { get; set; }
 
     public override void Create(ISettingsCreate settings)
@@ -15,12 +16,19 @@ public sealed class AutolockModifierSettings : ModuleSettings
         settings.CreateNumber("Max Angle", MaxAngle, (x) => MaxAngle = x, 0, 360);
         settings.CreateNumber("Max Pixel Distance", MaxDistanceInPixels, (x) => MaxDistanceInPixels = x, 0, 420);
         settings.CreateOnOff("Allow Trials", AllowTrials, (x) => AllowTrials = x);
+        settings.CreateOptions(
+            "Autolock Behavior", 
+            AutolockBehavior, ["Normal", "Smart"], 
+            (x) => AutolockBehavior = x.Item1
+        );
+
         settings.CreateButton("Reset to Defaults", () => 
         {
             DisableAutoLock = false;
             MaxAngle = 65;
             MaxDistanceInPixels = 36;
             AllowTrials = false;
+            AutolockBehavior = "NORMAL";
             settings.Refresh();
         });
 

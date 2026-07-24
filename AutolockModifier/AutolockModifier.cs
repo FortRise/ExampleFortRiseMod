@@ -30,6 +30,13 @@ public sealed class AutolockModifier : Mod
     {
         var cursor = new ILTranspilerCursor(generator, instructions);
 
+        cursor.GotoNext([
+            ILMatch.Ldloc().TryGetLocalIndex(out var vector), 
+            ILMatch.Ldloc().TryGetLocalIndex(out var levelEntity2), 
+            ILMatch.Ldfld("Position"), 
+            ILMatch.CallOrCallvirt("DistanceSquared"), 
+            ILMatch.Stloc().TryGetLocalIndex(out var num3)]);
+
         cursor.GotoNext(MoveType.After, ILMatch.LdcR4(1296));
         cursor.Emit(new CodeInstruction(OpCodes.Ldarg_0));
         cursor.EmitDelegate((float x, Player player) => {
@@ -39,6 +46,54 @@ public sealed class AutolockModifier : Mod
             }
 
             return Instance.Settings.MaxDistanceInPixels * Instance.Settings.MaxDistanceInPixels;
+        });
+
+        cursor.GotoNext(MoveType.After, ILMatch.Ldfld("Position"));
+        cursor.Emit(OpCodes.Ldloca, vector.Value);
+        cursor.Emit(OpCodes.Ldloc, levelEntity2.Value);
+        cursor.Emit(OpCodes.Ldloca, num3.Value);
+        cursor.EmitDelegate((Vector2 targetPosition, in Vector2 vector, LevelEntity levelEntity2, in float num3) => 
+        {
+            if (Instance.Settings.AutolockBehavior != "Smart" 
+                || (levelEntity2.Level.Session.MatchSettings.Mode == Modes.Trials 
+                    && !Instance.Settings.AllowTrials))
+            {
+                return targetPosition;
+            }
+
+            Vector2 speed;
+
+            if (levelEntity2 is Player player) // not all actors has Speed oh gosh, pretty sure enemies don't have a velocity anyway
+            {
+                speed = player.Speed;
+            }
+            else if (levelEntity2 is Enemy enemy)
+            {
+                speed = enemy.Speed;
+            }
+            else 
+            {
+                return targetPosition;
+            }
+
+            Vector2 target = targetPosition;
+
+            const float ArrowSpeed = 4f;
+
+            float dist2 = num3;
+            float t = 0;
+
+            for (int i = 0; i < 5; i += 1)
+            {
+                dist2 = Vector2.DistanceSquared(vector, target);
+                t = (float)Math.Sqrt(dist2) / ArrowSpeed;
+                target = new Vector2(
+                    levelEntity2.Position.X + speed.X * t, 
+                    levelEntity2.Position.Y + speed.Y * t);
+
+            }
+
+            return target;
         });
 
         cursor.GotoNext(MoveType.After, ILMatch.LdcR4(1.134464f));
