@@ -1,11 +1,8 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using FortRise;
 using FortRise.Transpiler;
 using HarmonyLib;
-using Monocle;
 using TowerFall;
 
 namespace Teuria.WiderSet;

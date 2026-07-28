@@ -16,9 +16,36 @@ public sealed class AutolockModifier : Mod
     public static AutolockModifier Instance { get; private set; } = null!;
     public AutolockModifierSettings Settings => GetSettings<AutolockModifierSettings>()!;
 
+    private static IVariantEntry noAutolock = null!;
+    private static IVariantEntry smartAutolock = null!;
+
     public AutolockModifier(IModContent content, IModuleContext context, ILogger logger) : base(content, context, logger)
     {
         Instance = this;
+
+        smartAutolock = context.Registry.Variants.RegisterVariant(
+            "SmartAutolock",
+            new() 
+            {
+                Title = "SMART AUTOLOCK",
+                Icon = context.Registry.Subtextures.RegisterTexture(
+                    content.Root.GetRelativePath("Content/variants/smartAutolock.png")),
+                Description = "PREDICTS THE TARGET BASED ON ITS VELOCITY"
+            }
+        );
+        
+        noAutolock = context.Registry.Variants.RegisterVariant(
+            "NoAutolock",
+            new() 
+            {
+                Title = "NO AUTOLOCK",
+                Icon = context.Registry.Subtextures.RegisterTexture(
+                    content.Root.GetRelativePath("Content/variants/noAutolock.png")),
+                Links = [smartAutolock]
+            }
+        );
+
+
         context.Harmony.Patch(
             AccessTools.DeclaredMethod(typeof(Player), "FindAutoLockAngle"),
             prefix: new HarmonyMethod(Player_FindAutoLockAngle_Prefix, priority: -400),
@@ -39,7 +66,7 @@ public sealed class AutolockModifier : Mod
 
         cursor.GotoNext(MoveType.After, ILMatch.LdcR4(1296));
         cursor.Emit(new CodeInstruction(OpCodes.Ldarg_0));
-        cursor.EmitDelegate((float x, Player player) => {
+        cursor.EmitDelegate(static (float x, Player player) => {
             if (player.Level.Session.MatchSettings.Mode == Modes.Trials && !Instance.Settings.AllowTrials)
             {
                 return x;
@@ -49,23 +76,24 @@ public sealed class AutolockModifier : Mod
         });
 
         cursor.GotoNext(MoveType.After, ILMatch.Ldfld("Position"));
+        cursor.Emit(OpCodes.Ldarg_0);
         cursor.Emit(OpCodes.Ldloca, vector.Value);
         cursor.Emit(OpCodes.Ldloc, levelEntity2.Value);
         cursor.Emit(OpCodes.Ldloca, num3.Value);
-        cursor.EmitDelegate((Vector2 targetPosition, in Vector2 vector, LevelEntity levelEntity2, in float num3) => 
+        cursor.EmitDelegate(static (Vector2 targetPosition, Player p, in Vector2 vector, LevelEntity levelEntity2, in float num3) => 
         {
-            if (Instance.Settings.AutolockBehavior != "Smart" 
+            if (!smartAutolock.IsActive() && (Instance.Settings.AutolockBehavior != "Smart" 
                 || (levelEntity2.Level.Session.MatchSettings.Mode == Modes.Trials 
-                    && !Instance.Settings.AllowTrials))
+                    && !Instance.Settings.AllowTrials)))
             {
                 return targetPosition;
             }
 
             Vector2 speed;
 
-            if (levelEntity2 is Player player) // not all actors has Speed oh gosh, pretty sure enemies don't have a velocity anyway
+            if (levelEntity2 is Player)
             {
-                speed = player.Speed;
+                speed = p.Speed;
             }
             else if (levelEntity2 is Enemy enemy)
             {
@@ -83,6 +111,8 @@ public sealed class AutolockModifier : Mod
             float dist2 = num3;
             float t = 0;
 
+            //Console.WriteLine("INITIAL TARGET: " + target);
+
             for (int i = 0; i < 5; i += 1)
             {
                 dist2 = Vector2.DistanceSquared(vector, target);
@@ -91,9 +121,15 @@ public sealed class AutolockModifier : Mod
                     levelEntity2.Position.X + speed.X * t, 
                     levelEntity2.Position.Y + speed.Y * t);
 
+                //Console.WriteLine("PREDICTION TARGET: " + target);
             }
 
-            return target;
+            //Console.WriteLine("FINAL TARGET: " + target);
+            //Console.WriteLine("FINAL ANGLE: " + (levelEntity2.Position - vector).Angle() * Calc.RAD_TO_DEG);
+            //Console.WriteLine("AIM DIRECTION: " + p.AimDirection * Calc.RAD_TO_DEG);
+            //Console.WriteLine("PLAYER POSITION: " + p.Speed);
+
+            return target + levelEntity2.SeekOffset;
         });
 
         cursor.GotoNext(MoveType.After, ILMatch.LdcR4(1.134464f));
@@ -111,6 +147,12 @@ public sealed class AutolockModifier : Mod
 
     private static bool Player_FindAutoLockAngle_Prefix(Player __instance, ref float __result)
     {
+        if (noAutolock.IsActive())
+        {
+            __result = __instance.AimDirection;
+            return false;
+        }
+
         if (__instance.Level.Session.MatchSettings.Mode == Modes.Trials && !Instance.Settings.AllowTrials)
         {
             return true;
