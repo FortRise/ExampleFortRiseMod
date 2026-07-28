@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TowerFall;
 
@@ -70,7 +71,6 @@ public static class ProfileSessionStats
         }
 
         var killedProfile = ProfilesModule.Instance.ProfileActive[killedIndex];
-
         int killedIndexP = ProfilesModule.Instance.Profiles.IndexOf(killedProfile!);
 
         if (killedIndexP != -1)
@@ -82,7 +82,7 @@ public static class ProfileSessionStats
         {
             if (killedIndexP != -1)
             {
-                ArcherSelfKills[killedIndex] += 1;
+                ArcherSelfKills[killedIndexP] += 1;
             }
         }
         else
