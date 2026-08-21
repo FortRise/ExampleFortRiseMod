@@ -1,0 +1,11 @@
+{
+	"version": "5.0.0",
+	"displayName": "TowerBall",
+	"author": "Suyooo, CoolModder",
+    "description": "",
+    "dll": "TowerBall.dll",
+	"dependencies": [
+      "FortRise:5.3.0",
+      "FortRise.Content:5.3.0"
+	]
+}

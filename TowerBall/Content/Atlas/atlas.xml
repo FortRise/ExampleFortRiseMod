@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:5c68cf7f1b64d09b937a6ce421d71f19:afba0946cfc98ffa9d6671be5d72da41:cde709370900f12288f3449eded86f07$ -->
+<TextureAtlas imagePath="atlas.png">
+    <SubTexture name="towerball/ball" x="2" y="4" width="10" height="10" />
+    <SubTexture name="towerball/net" x="12" y="4" width="11" height="9" />
+    <SubTexture name="towerball/rim" x="23" y="4" width="16" height="9" />
+</TextureAtlas>

@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="menuAtlas.png">
+  <SubTexture name="gamemodes/TowerBall" x="9" y="224" width="42" height="65" />
+  <SubTexture name="variants/timedRounds" x="81" y="225" width="14" height="14"/>
+  <SubTexture name="variants/hoopTreasure" x="97" y="225" width="14" height="14"/>
+  <SubTexture name="variants/noDunking" x="113" y="225" width="14" height="14"/>
+</TextureAtlas>

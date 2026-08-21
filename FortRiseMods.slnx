@@ -18,6 +18,7 @@
   <Project Path="Profiles/Profiles.csproj" />
   <Project Path="QuestRandomizer/QuestRandomizer.csproj" />
   <Project Path="ScoreCounter/ScoreCounter.csproj" />
+  <Project Path="TowerBall/TowerBall.csproj" />
   <Project Path="WiderSet/WiderSet.csproj" />
   <Project Path="Fortfeit/Fortfeit.csproj" />
 </Solution>
