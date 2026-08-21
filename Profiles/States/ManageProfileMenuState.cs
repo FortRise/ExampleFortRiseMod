@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FortRise;
 using Microsoft.Xna.Framework;
+using Monocle;
 using MonoMod.Utils;
 using TowerFall;
 
@@ -17,29 +18,13 @@ public sealed class ManageProfileMenuState : CustomMenuState
     public override void Create()
     {
         var bundle = BundleStateManager.Instance.Pop();
-        var state = bundle.Get<ProfileSelectState>("state");
 
-        PlayerProfile profile;
-
-        if (state == ProfileSelectState.Edit || (bundle.TryGet("alreadyinside", out bool v) && v))
-        {
-            profile = bundle.Get<PlayerProfile>("profile");
-        }
-        else 
-        {
-            profile = new PlayerProfile
-            {
-                Name = string.Empty,
-                GamepadConfig = GamepadConfig.GetDefault(),
-                KeyboardConfig = KeyboardConfig.GetDefault()
-            };
-        }
-
+        PlayerProfile profile = bundle.Get<PlayerProfile>("profile");
 
         var buttons = new List<OptionsButton>();
         var nameButton = CreateInputText("PROFILE NAME", InputBehavior.None, profile.Name, (x) =>
         {
-            if (state == ProfileSelectState.Edit && profile.Name != x)
+            if (profile.Name != x)
             {
                 ProfilesModule.Instance.Context.Storage.Delete($"Profiles/{profile.Name}.json", false);
                 var profileSaveData = ProfilesModule.Instance.GetSaveData<ProfileSaveData>()!;
@@ -67,12 +52,9 @@ public sealed class ManageProfileMenuState : CustomMenuState
             }
             profile.Name = x;
 
-            if (state == ProfileSelectState.Edit)
-            {
-                ProfilesModule.Instance.Profiles.Add(profile);
-                var saver = new Saver(true);
-                Main.Add(saver);
-            }
+            ProfilesModule.Instance.Profiles.Add(profile);
+            var saver = new Saver(true);
+            Main.Add(saver);
         });
 
         buttons.Add(nameButton);
@@ -81,7 +63,6 @@ public sealed class ManageProfileMenuState : CustomMenuState
         selectArcher.SetCallbacks(() =>
         {
             var movingBundle = BundleStateManager.Instance.CreateBundle();
-            movingBundle.Set("state", state);
             movingBundle.Set("alreadyinside", true);
             if (bundle.TryGet<PlayerProfile>("profile", out var prof))
             {
@@ -105,7 +86,6 @@ public sealed class ManageProfileMenuState : CustomMenuState
         gamepadConfig.SetCallbacks(() =>
         {
             var movingBundle = BundleStateManager.Instance.CreateBundle();
-            movingBundle.Set("state", state);
             movingBundle.Set("alreadyinside", true);
             if (bundle.TryGet<PlayerProfile>("profile", out var prof))
             {
@@ -136,7 +116,6 @@ public sealed class ManageProfileMenuState : CustomMenuState
             }
 
             var movingBundle = BundleStateManager.Instance.CreateBundle();
-            movingBundle.Set("state", state);
             movingBundle.Set("alreadyinside", true);
             if (bundle.TryGet<PlayerProfile>("profile", out var prof))
             {
@@ -164,23 +143,28 @@ public sealed class ManageProfileMenuState : CustomMenuState
         });
         buttons.Add(followsDefaultKeyboardConfig);
 
-        if (state == ProfileSelectState.Edit)
+        var dangerZone = new OptionsButtonHeader("DANGER ZONE");
+        buttons.Add(dangerZone);
+
+        var disableButton = new OptionsButton("DISABLE PROFILE");
+        disableButton.SetCallbacks(() => disableButton.State = bundle.Get<PlayerProfile>("profile").Disabled ? "ON" : "OFF", null, null, () =>
         {
-            var dangerZone = new OptionsButtonHeader("DANGER ZONE");
-            buttons.Add(dangerZone);
+            var profile = bundle.Get<PlayerProfile>("profile");
+            profile.Disabled = !profile.Disabled;
+            return profile.Disabled;
+        });
 
-            var disableButton = new OptionsButton("DISABLE PROFILE");
-            disableButton.SetCallbacks(() => disableButton.State = bundle.Get<PlayerProfile>("profile").Disabled ? "ON" : "OFF", null, null, () =>
+        buttons.Add(disableButton);
+
+        var deleteButton = new OptionsButton("DELETE PROFILE");
+        deleteButton.SetCallbacks(() =>
+        {
+            var deleteModal = new UIModal
             {
-                var profile = bundle.Get<PlayerProfile>("profile");
-                profile.Disabled = !profile.Disabled;
-                return profile.Disabled;
-            });
-
-            buttons.Add(disableButton);
-
-            var deleteButton = new OptionsButton("DELETE PROFILE");
-            deleteButton.SetCallbacks(() =>
+                Title = "DELETE PROFILE",
+                LayerIndex = -1
+            };
+            deleteModal.AddItem("YES", () => 
             {
                 var profile = bundle.Get<PlayerProfile>("profile");
                 var index = ProfilesModule.Instance.Profiles.IndexOf(profile);
@@ -192,39 +176,42 @@ public sealed class ManageProfileMenuState : CustomMenuState
                 ProfileSessionStats.RemoveOne(index);
 
                 var profileSaveData = ProfilesModule.Instance.GetSaveData<ProfileSaveData>()!;
-                foreach (var p in profileSaveData.ProfileStats.ToList())
+
+                for (int i = profileSaveData.ProfileStats.Count - 1; i >= 0; i -= 1)
                 {
+                    var p = profileSaveData.ProfileStats[i];
+
                     if (p.Name == profile.Name)
                     {
-                        profileSaveData.ProfileStats.Remove(p);
+                        profileSaveData.ProfileStats.RemoveAt(i);
                         break;
                     }
                 }
-            });
 
-            buttons.Add(deleteButton);
-        }
-        else
-        {
-            var createButton = new OptionsButton("CREATE");
-            createButton.SetCallbacks(() =>
+                Main.CanAct = true;
+            });
+            deleteModal.AddItem("NO", () => 
             {
-                if (string.IsNullOrEmpty(profile.Name))
-                {
-                    ShowAlert(createButton, "Name field is required");
-                    return;
-                }
-
-                var profileSaveData = ProfilesModule.Instance.GetSaveData<ProfileSaveData>()!;
-                profileSaveData.ProfileStats.Add(new ProfileStats() { Name = profile.Name });
-                
-                ProfileSessionStats.AddOne();
-                ProfilesModule.Instance.Profiles.Add(profile);
-                Main.State = MainMenu.MenuState.Options;
+                deleteButton.Selected = true;
+                Main.CanAct = true;
             });
 
-            buttons.Add(createButton);
-        }
+            deleteModal.OnBack = () => 
+            {
+                deleteButton.Selected = true;
+                Alarm.Set(deleteButton, 20, () => 
+                {
+                    Main.CanAct = true;
+                });
+            };
+
+            deleteButton.Selected = false;
+            Main.CanAct = false;
+
+            Main.Add(deleteModal);
+        });
+
+        buttons.Add(deleteButton);
 
         InitOptions(buttons, out int offset);
 

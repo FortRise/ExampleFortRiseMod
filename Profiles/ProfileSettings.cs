@@ -16,13 +16,31 @@ public sealed class ProfileSettings : ModuleSettings
     {
         if (Engine.Instance.Scene is MainMenu menu)
         {
-            settings.CreateButton("CREATE PROFILE", () =>
+            settings.CreateInput("CREATE PROFILE", string.Empty, (x) => 
             {
+                if (string.IsNullOrWhiteSpace(x))
+                {
+                    return;
+                }
+
+                var profileSaveData = ProfilesModule.Instance.GetSaveData<ProfileSaveData>()!;
+                profileSaveData.ProfileStats.Add(new ProfileStats() { Name = x });
+
+                var profile = new PlayerProfile() 
+                {
+                    Name = x
+                };
+
+                ProfilesModule.Instance.Profiles.Add(profile);
+
                 var bundle = BundleStateManager.Instance.CreateBundle();
-                bundle.Set("state", ProfileSelectState.Create);
+                bundle.Set("profile", profile);
                 BundleStateManager.Instance.Push(bundle);
+
+                ProfileSessionStats.AddOne();
+
                 menu.State = ProfilesModule.Instance.ManageProfileState.MenuState;
-            });
+            }, InputBehavior.None);
         }
 
 
@@ -32,15 +50,15 @@ public sealed class ProfileSettings : ModuleSettings
             {
                 var optionsButton = new QuickOptionsButton(profile.Name.ToUpperInvariant())
                 {
-                    OnToggle = (x) => profile.Disabled = x
+                    OnToggle = (x) => profile.Disabled = x,
+                    Disabled = profile.Disabled
                 };
-                optionsButton.Disabled = profile.Disabled;
+
                 optionsButton.SetCallbacks(() =>
                 {
                     if (Engine.Instance.Scene is MainMenu menu)
                     {
                         var bundle = BundleStateManager.Instance.CreateBundle();
-                        bundle.Set("state", ProfileSelectState.Edit);
                         bundle.Set("profile", profile);
                         BundleStateManager.Instance.Push(bundle);
                         menu.State = ProfilesModule.Instance.ManageProfileState.MenuState;
