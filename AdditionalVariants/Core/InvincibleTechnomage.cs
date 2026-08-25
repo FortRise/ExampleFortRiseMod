@@ -42,6 +42,20 @@ public class InvincibleTechnomage : TechnoMage, IRegisterable
 
 public class InvincibleTechnomageVariantSequence : Entity, IHookable
 {
+
+    internal const int PHASE_WAIT_ROUND_START = 0;
+    internal const int PHASE_WAIT_APPEAR = 1;
+    internal const int PHASE_PORTAL_APPEARING = 2;
+    internal const int PHASE_ENEMY_SPAWNED = 3;
+    internal const int PHASE_DONE = 4;
+
+    private const float APPEAR_DELAY = 20f;
+    private const float SPAWN_DELAY = 20f;
+    private const float DISAPPEAR_DELAY = 10f;
+
+    internal int Phase;
+    internal float Counter;
+
     public static void Load(IHarmony harmony)
     {
         harmony.Patch(
@@ -52,7 +66,7 @@ public class InvincibleTechnomageVariantSequence : Entity, IHookable
 
     private static void Session_OnLevelLoadFinish_Postfix(Session __instance)
     {
-        if (Variants.AnnoyingMage.IsActive() && __instance.MatchSettings == MainMenu.VersusMatchSettings)
+        if (Variants.AnnoyingMage.IsActive() && __instance.MatchSettings == MainMenu.VersusMatchSettings) 
         {
             __instance.CurrentLevel.Add(new InvincibleTechnomageVariantSequence());
         }
@@ -63,7 +77,6 @@ public class InvincibleTechnomageVariantSequence : Entity, IHookable
     public InvincibleTechnomageVariantSequence()
         : base(0)
     {
-        Add(new Coroutine(Sequence()));
     }
 
     public override void Added()
@@ -72,26 +85,94 @@ public class InvincibleTechnomageVariantSequence : Entity, IHookable
         level = (Scene as Level)!;
     }
 
-    private IEnumerator Sequence()
+    //A coroutine cannot be snapshotted
+    //Same as before but updated to be snapshotable
+    public override void Update()
     {
-        while (!level.Session.RoundLogic.RoundStarted)
-            yield return 0;
-        
-        Random random = new Random();
-        yield return 20;
+        base.Update();
+
+        switch (Phase)
+        {
+            case PHASE_WAIT_ROUND_START:
+                if (level.Session.RoundLogic.RoundStarted)
+                {
+                    Phase = PHASE_WAIT_APPEAR;
+                    Counter = 0f;
+                }
+                break;
+
+            case PHASE_WAIT_APPEAR:
+                Counter += Engine.TimeMult;
+                if (Counter >= APPEAR_DELAY)
+                {
+                    SpawnPortal();
+                }
+                break;
+
+            case PHASE_PORTAL_APPEARING:
+                Counter += Engine.TimeMult;
+                if (Counter >= SPAWN_DELAY)
+                {
+                    FindPortal()?.SpawnEnemy(InvincibleTechnomage.Metadata.ID);
+                    Phase = PHASE_ENEMY_SPAWNED;
+                    Counter = 0f;
+                }
+                break;
+
+            case PHASE_ENEMY_SPAWNED:
+                Counter += Engine.TimeMult;
+                if (Counter >= DISAPPEAR_DELAY)
+                {
+                    FindPortal()?.ForceDisappear();
+                    Phase = PHASE_DONE;
+                    Counter = 0f;
+                }
+                break;
+        }
+    }
+
+    private void SpawnPortal()
+    {
         var xmlpositions = level.GetXMLPositions("Spawner");
         if (xmlpositions.Count == 0)
         {
-            RemoveSelf();
-            yield break;
+            Phase = PHASE_DONE;
+            return;
         }
-        xmlpositions.Shuffle(random);
+
+        TfStateInterop.RegisterRng();
+        try
+        {
+            xmlpositions.Shuffle(Calc.Random);
+        }
+        finally
+        {
+            TfStateInterop.UnregisterRng();
+        }
+
         var portal = new QuestSpawnPortal(xmlpositions[0], null);
         level.Add(portal);
         portal.Appear();
-        yield return 20;
-        portal.SpawnEnemy(InvincibleTechnomage.Metadata.ID);
-        yield return 10;
-        portal.ForceDisappear();
+
+        Phase = PHASE_PORTAL_APPEARING;
+        Counter = 0f;
+    }
+
+    //TF.State delete-recreates the portal on load
+    //Instead lets find it
+    private QuestSpawnPortal? FindPortal()
+    {
+        foreach (var layer in level.Layers.Values)
+        {
+            foreach (var entity in layer.Entities)
+            {
+                if (entity is QuestSpawnPortal portal)
+                {
+                    return portal;
+                }
+            }
+        }
+
+        return null;
     }
 }

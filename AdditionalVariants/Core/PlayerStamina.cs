@@ -31,7 +31,7 @@ public class PlayerStamina : IHookable, IAscencoreAPI.IPlayerDodgeStateHookApi.I
 
     public Option<bool> IsDodgeEnabled(IAscencoreAPI.IPlayerDodgeStateHookApi.IHook.IsDodgeEnabledEventArgs args)
     {
-        if (DynamicData.For(args.Player).TryGet<DashStamina>("dashStamina", out var stamina))
+        if (DynamicData.For(args.Player).TryGet<DashStamina>("dashStamina", out var stamina) && stamina is not null)
         {
             if (stamina.UseSmallStamina())
             {
@@ -46,7 +46,7 @@ public class PlayerStamina : IHookable, IAscencoreAPI.IPlayerDodgeStateHookApi.I
 
     private static void Player_HUDRender_Postfix(Player __instance)
     {
-        if (DynamicData.For(__instance).TryGet<DashStamina>("dashStamina", out var stamina))
+        if (DynamicData.For(__instance).TryGet<DashStamina>("dashStamina", out var stamina) && stamina is not null)
         {
             stamina.Render();
         }
@@ -85,6 +85,10 @@ public class DashStamina : Component
     }
 
     public bool CanUseStamina => staminaBar >= 0.5f;
+
+    internal float Bar { get => staminaBar; set => staminaBar = value; }
+
+    internal float Alpha { get => alpha; set => alpha = value; }
 
     public override void Update()
     {

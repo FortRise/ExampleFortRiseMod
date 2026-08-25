@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FortRise;
 using Microsoft.Extensions.Logging;
 using Teuria.Ascencore;
@@ -60,6 +60,8 @@ public sealed class AdditionalVariantsModule : Mod
             EffectFile = content.Root.GetRelativePath("Content/Effects/neon.fxb"),
             PassName = "Neon"
         });
+
+        OnInitialize = _ => TfStateInterop.Register(this);
     }
 
     public override object? GetApi()
