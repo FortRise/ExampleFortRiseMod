@@ -16,8 +16,8 @@
 	],
 	"optionalDependencies": [
 		{
-			"name": "TF.EX",
-			"version": "0.9.5"
+			"name": "TF.State",
+			"version": "1.0.0"
 		}
 	],
 	"update": {

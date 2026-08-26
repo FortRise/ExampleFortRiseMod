@@ -1,9 +1,9 @@
-using System.Collections.Generic;
 using FortRise;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
+using System.Collections.Generic;
 using Teuria.Ascencore;
 using TowerFall;
 
@@ -53,7 +53,7 @@ public class JesterHat : IHookable, IAscencoreAPI.IPlayerDodgeStateHookApi.IHook
     {
         var player = args.Player;
         var dynSelf = DynamicData.For(player);
-        if (dynSelf.TryGet<List<Vector2>>("warpPoints", out var warpPoints))
+        if (dynSelf.TryGet<List<Vector2>>("warpPoints", out var warpPoints) && warpPoints is { Count: > 1 })
         {
             DoExplodeEffect(player);
             Sounds.sfx_cyanWarp.Play(player.X, 1f);
@@ -79,7 +79,7 @@ public class JesterHat : IHookable, IAscencoreAPI.IPlayerDodgeStateHookApi.IHook
         }
     }
 
-    private static int WarpSorter(Player player, Vector2 a, Vector2 b) 
+    private static int WarpSorter(Player player, Vector2 a, Vector2 b)
     {
         if (Vector2.DistanceSquared(a, player.Position) <= 400f)
         {
@@ -93,9 +93,33 @@ public class JesterHat : IHookable, IAscencoreAPI.IPlayerDodgeStateHookApi.IHook
         return (int)(WrapMath.WrapDistanceSquared(a, player.Position) - WrapMath.WrapDistanceSquared(b, player.Position));
     }
 
+    // For EX, its easier to freeze cosmetics during advance frame
+    // instead of trying to actually snapshot it
+    private class ShadowExplosion : Entity
+    {
+        public ShadowExplosion() : base(0)
+        {
+        }
+
+        public override void Update()
+        {
+            if (TfStateInterop.ShouldFreezeCosmetics)
+            {
+                return;
+            }
+
+            base.Update();
+        }
+    }
+
     private static void DoExplodeEffect(Player player)
     {
-        var entity = new Entity(0)
+        if (TfStateInterop.ShouldFreezeCosmetics)
+        {
+            return;
+        }
+
+        var entity = new ShadowExplosion
         {
             Position = player.Position,
             Depth = player.Depth - 1
