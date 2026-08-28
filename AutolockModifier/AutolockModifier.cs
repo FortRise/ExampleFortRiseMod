@@ -30,7 +30,8 @@ public sealed class AutolockModifier : Mod
                 Title = "SMART AUTOLOCK",
                 Icon = context.Registry.Subtextures.RegisterTexture(
                     content.Root.GetRelativePath("Content/variants/smartAutolock.png")),
-                Description = "PREDICTS THE TARGET BASED ON ITS VELOCITY"
+                Description = "PREDICTS THE TARGET BASED ON ITS VELOCITY",
+                Flags = CustomVariantFlags.PerPlayer | CustomVariantFlags.CanRandom
             }
         );
         
@@ -41,7 +42,8 @@ public sealed class AutolockModifier : Mod
                 Title = "NO AUTOLOCK",
                 Icon = context.Registry.Subtextures.RegisterTexture(
                     content.Root.GetRelativePath("Content/variants/noAutolock.png")),
-                Links = [smartAutolock]
+                Links = [smartAutolock],
+                Flags = CustomVariantFlags.PerPlayer | CustomVariantFlags.CanRandom
             }
         );
 
@@ -82,7 +84,7 @@ public sealed class AutolockModifier : Mod
         cursor.Emit(OpCodes.Ldloca, num3.Value);
         cursor.EmitDelegate(static (Vector2 targetPosition, Player p, in Vector2 vector, LevelEntity levelEntity2, in float num3) => 
         {
-            if (!smartAutolock.IsActive() && (Instance.Settings.AutolockBehavior != "Smart" 
+            if (!smartAutolock.IsActive(p.PlayerIndex) && (Instance.Settings.AutolockBehavior != "Smart" 
                 || (levelEntity2.Level.Session.MatchSettings.Mode == Modes.Trials 
                     && !Instance.Settings.AllowTrials)))
             {
@@ -147,7 +149,7 @@ public sealed class AutolockModifier : Mod
 
     private static bool Player_FindAutoLockAngle_Prefix(Player __instance, ref float __result)
     {
-        if (noAutolock.IsActive())
+        if (noAutolock.IsActive(__instance.PlayerIndex))
         {
             __result = __instance.AimDirection;
             return false;
